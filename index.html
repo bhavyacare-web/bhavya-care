@@ -75,19 +75,19 @@
     </div>
 
     <script>
-        // Yeh code header.html file ko fetch karega aur upar div mein daal dega
+        // Yeh code package.html file ko fetch karega aur upar div mein daal dega
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
+                document.getElementById('package-placeholder').innerHTML = data;
                 
                 // Header load hone ke baad, agar usme koi scripts hain (jaise toggleLogin), 
                 // toh unhe dobara execute karna padta hai.
                 // Abhi ke liye aapka UI direct set ho jayega!
             })
             .catch(error => {
-                console.error("Header load hone mein error aaya:", error);
-                document.getElementById('header-placeholder').innerHTML = "<p style='text-align:center; color:red;'>Header load nahi ho paya.</p>";
+                console.error("package load hone mein error aaya:", error);
+                document.getElementById('package-placeholder').innerHTML = "<p style='text-align:center; color:red;'>package load nahi ho paya.</p>";
             });
     </script>
 
