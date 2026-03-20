@@ -28,11 +28,17 @@
         .logo span { color: #28a745; }
 
         /* Right Side Actions */
-        .nav-actions { display: flex; align-items: center; gap: 20px; }
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
         .cart-btn { text-decoration: none; color: #333; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         #cart-count { background-color: #e74c3c; color: white; padding: 2px 7px; border-radius: 50%; font-size: 12px; }
-        .login-btn { background-color: #0056b3; color: white; border: none; padding: 10px 22px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        
+        /* Buttons */
+        .btn { border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
+        .login-btn { background-color: #0056b3; }
         .login-btn:hover { background-color: #004494; }
+        .logout-btn { background-color: #e74c3c; display: none; }
+        .logout-btn:hover { background-color: #c0392b; }
+        .dashboard-btn { background-color: #28a745; display: none; }
 
         /* Login Form Box */
         #login-section {
@@ -46,11 +52,10 @@
         .action-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .support-text { font-size: 12px; color: #888; margin-top: 15px; }
 
-        /* Mobile Responsive */
         @media (max-width: 768px) {
             .navbar { padding: 15px; }
             .logo h2 { font-size: 22px; }
-            .login-btn { padding: 8px 15px; font-size: 14px; }
+            .btn { padding: 8px 15px; font-size: 14px; }
             #login-section { right: 5%; left: 5%; width: 90%; top: 80px; margin: 0 auto; }
         }
     </style>
@@ -66,9 +71,9 @@
             <a href="#" class="cart-btn">
                 🛒 Cart <span id="cart-count">0</span>
             </a>
-            <button class="login-btn" onclick="toggleLogin()">
-                Login / Sign Up
-            </button>
+            <button id="nav-login-btn" class="btn login-btn" onclick="toggleLogin()">Login / Sign Up</button>
+            <button id="nav-dashboard-btn" class="btn dashboard-btn" onclick="goToDashboard()">My Dashboard</button>
+            <button id="nav-logout-btn" class="btn logout-btn" onclick="logoutUser()">Logout</button>
         </div>
     </header>
 
@@ -85,114 +90,28 @@
         <div id="otp-section" style="display: none;">
             <p style="text-align: left; font-size: 14px; color: #666;">Enter OTP:</p>
             <input type="tel" id="otpCode" class="input-box" placeholder="6-digit OTP" maxlength="6">
-            <button class="action-btn" style="background-color: #0056b3;" onclick="verifyOTP()">Verify & Login</button>
+            <button class="action-btn" style="background-color: #0056b3;" onclick="verifyOTP()">Verify Mobile</button>
             <p style="margin-top: 15px; font-size: 13px; color: #0056b3; cursor: pointer; text-decoration: underline;" onclick="resetForm()">Change Mobile Number</p>
+        </div>
+
+        <div id="role-section" style="display: none;">
+            <p style="text-align: left; font-size: 14px; color: #666;">Aap kaun hain?</p>
+            <select id="userRole" class="input-box">
+                <option value="" disabled selected>Select your profile...</option>
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+                <option value="lab">Lab</option>
+                <option value="pharmacy">Pharmacy</option>
+                <option value="hospital">Hospital</option>
+                <option value="executive">Executive</option>
+            </select>
+            <button class="action-btn" onclick="saveRole()">Save & Continue</button>
         </div>
         
         <p class="support-text">Need help? Email us at bhavyacare1@gmail.com</p>
     </div>
 
-    <script>
-        // --- UI Toggles ---
-        function toggleLogin() {
-            var loginDiv = document.getElementById('login-section');
-            if (loginDiv.style.display === 'none' || loginDiv.style.display === '') {
-                loginDiv.style.display = 'block'; 
-                
-                // Popup khulte hi Recaptcha ko background me ready rakhein
-                if (typeof setupRecaptcha === "function") {
-                    setupRecaptcha();
-                }
-            } else {
-                loginDiv.style.display = 'none'; 
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('otp-section').style.display = 'none';
-            document.getElementById('phone-section').style.display = 'block';
-            document.getElementById('form-title').innerText = "Login / Sign Up";
-        }
-
-        // --- Firebase Logic (Aapka app.gs) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyC2nYH22wkYDhh-BWfHvkT-bQvdKLCxask",
-            authDomain: "bhavya-care.firebaseapp.com",
-            projectId: "bhavya-care",
-            storageBucket: "bhavya-care.firebasestorage.app",
-            messagingSenderId: "979254809111",
-            appId: "1:979254809111:web:0181e0c97277a5d0d9c252",
-            measurementId: "G-G82G4VWGGT"
-        };
-
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-
-        // Window.onload ki jagah setupRecaptcha banaya taaki toggleLogin call kar sake
-        function setupRecaptcha() {
-            if (!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'normal',
-                    'callback': (response) => {
-                        console.log("Recaptcha verified!");
-                    }
-                });
-                window.recaptchaVerifier.render(); // Explicitly render karna zaroori hai
-            }
-        }
-
-        // Aapka exactly same sendOTP logic
-        function sendOTP() {
-            const userNumber = document.getElementById('phoneNumber').value.trim();
-            
-            if(userNumber.length !== 10 || isNaN(userNumber)) {
-                alert("Kripya sahi 10-digit mobile number daalein!");
-                return;
-            }
-
-            const finalNumberWithCode = "+91" + userNumber;
-
-            firebase.auth().signInWithPhoneNumber(finalNumberWithCode, window.recaptchaVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    
-                    // UI MAGIC: OTP chala gaya, ab form badlo
-                    document.getElementById('phone-section').style.display = 'none';
-                    document.getElementById('otp-section').style.display = 'block';
-                    document.getElementById('form-title').innerText = "Verify Mobile";
-                    
-                    alert("OTP SMS bhej diya gaya hai!");
-                }).catch((error) => {
-                    console.error("OTP Error:", error);
-                    alert("Firebase Error: " + error.message);
-                });
-        }
-
-        // Aapka exactly same verifyOTP logic
-        function verifyOTP() {
-            const code = document.getElementById('otpCode').value.trim();
-            
-            if(code.length !== 6) {
-                alert("Kripya 6-digit ka OTP daalein.");
-                return;
-            }
-
-            confirmationResult.confirm(code).then((result) => {
-                const user = result.user;
-                alert("Login Successful! Welcome to Bhavyacare.");
-                
-                console.log("User Data:", { uid: user.uid, phone: user.phoneNumber });
-
-                // OTP verify hone ke baad form ko wapas band kar dena
-                document.getElementById('login-section').style.display = 'none';
-                
-            }).catch((error) => {
-                alert("Galat OTP! Kripya dobara try karein.");
-            });
-        }
-    </script>
+    <script src="app.js"></script>
 
 </body>
 </html>
