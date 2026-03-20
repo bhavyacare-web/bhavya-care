@@ -54,7 +54,6 @@ function toggleLogin() {
 
 function resetForm() {
     document.getElementById('otp-section').style.display = 'none';
-    document.getElementById('role-section').style.display = 'none';
     document.getElementById('phone-section').style.display = 'block';
     document.getElementById('form-title').innerText = "Login / Sign Up";
 }
@@ -88,7 +87,7 @@ function sendOTP() {
         .then((confirmationResult) => {
             window.confirmationResult = confirmationResult;
             
-            // UI Update
+            // UI Update: Phone section band karke OTP section dikhao
             document.getElementById('phone-section').style.display = 'none';
             document.getElementById('otp-section').style.display = 'block';
             document.getElementById('form-title').innerText = "Verify Mobile";
@@ -102,6 +101,7 @@ function sendOTP() {
 
 function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
+    const selectedRole = document.getElementById('userRole').value; // Dropdown se role padhna
     
     if(code.length !== 6) {
         alert("Kripya 6-digit ka OTP daalein.");
@@ -111,44 +111,26 @@ function verifyOTP() {
     window.confirmationResult.confirm(code).then((result) => {
         const user = result.user;
         
-        // Step 1: Firebase se verify hote hi Mobile & UID save kar lo
+        // OTP sahi hote hi UID, Mobile aur Role teeno ek sath save kar lo
         localStorage.setItem("bhavya_uid", user.uid);
         localStorage.setItem("bhavya_mobile", user.phoneNumber);
+        localStorage.setItem("bhavya_role", selectedRole);
 
-        alert("OTP Verified! Kripya apni profile select karein.");
+        alert("Login Successful! Welcome to BhavyaCare.");
 
-        // Step 2: OTP section hide karo, Role Selection dikhao
-        document.getElementById('otp-section').style.display = 'none';
-        document.getElementById('role-section').style.display = 'block';
-        document.getElementById('form-title').innerText = "Complete Profile";
+        // Popup band karo aur Navbar update karo
+        document.getElementById('login-section').style.display = 'none';
+        checkLoginState();
+        
+        // YAHAN PAR HUM NEXT STEP MEIN GOOGLE SHEETS PAR DATA BHEJENGE
+        // sendDataToGoogleSheets(user.uid, user.phoneNumber, selectedRole);
         
     }).catch((error) => {
         alert("Galat OTP! Kripya dobara try karein.");
     });
 }
 
-// ---------------- NEW: ROLE SELECTION & LOGOUT LOGIC ---------------- //
-
-function saveRole() {
-    const role = document.getElementById('userRole').value;
-    
-    if(!role) {
-        alert("Kripya aage badhne ke liye apna profile (Type) select karein!");
-        return;
-    }
-
-    // Role ko local storage me save karein
-    localStorage.setItem("bhavya_role", role);
-    
-    alert("Profile Saved! Welcome to BhavyaCare.");
-    
-    // Popup band karein aur navbar update karein
-    document.getElementById('login-section').style.display = 'none';
-    checkLoginState();
-    
-    // YAHAN PAR HUM NEXT STEP MEIN GOOGLE SHEETS PAR DATA BHEJENGE
-    // sendDataToGoogleSheets(localStorage.getItem("bhavya_uid"), localStorage.getItem("bhavya_mobile"), role);
-}
+// ---------------- DASHBOARD & LOGOUT LOGIC ---------------- //
 
 function logoutUser() {
     // Firebase se logout aur Local Storage clear karna
