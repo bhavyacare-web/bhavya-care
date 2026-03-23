@@ -14,7 +14,10 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-let isPartnerMode = false; // By default, user is a Patient
+// AAPKA GOOGLE APPS SCRIPT URL YAHAN HAI 👇
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_PrRVzuVvPtTXdXuO57qFe-yiTrxXDk4cAglXJnrDEXg1xVE8oJruKp1ieasoLT39/exec";
+
+let isPartnerMode = false;
 
 window.onload = function () {
     checkLoginState();
@@ -25,7 +28,6 @@ function toggleMenu() {
     document.getElementById("myDropdown").classList.toggle("show-menu");
 }
 
-// Close menu if clicked outside
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -39,19 +41,16 @@ window.onclick = function(event) {
 
 // ---------------- UI & STATE LOGIC ---------------- //
 function checkLoginState() {
-    // Sirf mobile check kar rahe hain, email check hata diya gaya hai
     const savedMobile = localStorage.getItem("bhavya_mobile");
     const savedRole = localStorage.getItem("bhavya_role");
 
     if (savedMobile) {
-        // Logged In: Hide Main Login Button & 'Join Us'. Show Dashboard & Logout in Menu
         document.getElementById('nav-login-btn').style.display = 'none';
         document.getElementById('menu-join').style.display = 'none';
         document.getElementById('menu-dashboard').style.display = 'block';
         document.getElementById('menu-logout').style.display = 'block';
         document.getElementById('login-section').style.display = 'none'; 
     } else {
-        // Logged Out: Show Main Login Button & 'Join Us'. Hide Dashboard & Logout
         document.getElementById('nav-login-btn').style.display = 'inline-block';
         document.getElementById('menu-join').style.display = 'block';
         document.getElementById('menu-dashboard').style.display = 'none';
@@ -71,7 +70,7 @@ function openPartnerLogin() {
     isPartnerMode = true;
     document.getElementById('partner-role-container').style.display = 'block';
     document.getElementById('form-title').innerText = "Partner Registration";
-    toggleMenu(); // Menu band karein
+    toggleMenu(); 
     showPopup();
 }
 
@@ -86,8 +85,7 @@ function closePopup() {
     document.getElementById('login-section').style.display = 'none';
 }
 
-
-// ---------------- FIREBASE LOGIC ---------------- //
+// ---------------- FIREBASE & GOOGLE SHEETS LOGIC ---------------- //
 function setupRecaptcha() {
     if (!window.recaptchaVerifier) {
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
@@ -96,8 +94,6 @@ function setupRecaptcha() {
         window.recaptchaVerifier.render();
     }
 }
-
-// googleSignIn() function poori tarah delete kar diya gaya hai
 
 function sendOTP() {
     const userNumber = document.getElementById('phoneNumber').value.trim();
@@ -125,24 +121,51 @@ function verifyOTP() {
 
     window.confirmationResult.confirm(code).then((result) => {
         const user = result.user;
+        
+        // Data sheet par bhejna (Duplicate check backend mein hoga)
+        sendDataToGoogleSheets(user.uid, user.phoneNumber, selectedRole);
+
+        // Local Storage update
         localStorage.setItem("bhavya_uid", user.uid);
         localStorage.setItem("bhavya_mobile", user.phoneNumber);
         localStorage.setItem("bhavya_role", selectedRole);
 
-        alert("Login Successful! Welcome to BhavyaCare.");
         closePopup();
         checkLoginState();
-        
-        // YAHAN PAR HUM NEXT STEP MEIN GOOGLE SHEETS PAR DATA BHEJENGE
-        // sendDataToGoogleSheets(user.uid, user.phoneNumber, selectedRole);
     }).catch((error) => {
         alert("Invalid OTP! Please try again.");
     });
 }
 
+function sendDataToGoogleSheets(uid, mobile, role) {
+    console.log("Processing Data Backend...", { uid, mobile, role });
+
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+        body: JSON.stringify({ uid: uid, mobile: mobile, role: role })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === "exists") {
+            // Yeh purana user hai
+            alert("Welcome Back! This mobile number is already registered.");
+        } else {
+            // Yeh bilkul naya user hai
+            alert("Registration Successful! Welcome to BhavyaCare."); 
+        }
+    })
+    .catch(error => {
+        console.error("Backend warning:", error);
+        // Fallback agar internet slow ho
+        alert("Logged in Successfully!");
+    });
+}
+
+// ---------------- DASHBOARD & LOGOUT LOGIC ---------------- //
 function logoutUser() {
     firebase.auth().signOut().then(() => {
-        localStorage.clear(); // Saara data saaf karega (UID, mobile, role)
+        localStorage.clear(); 
         alert("You have successfully logged out!");
         window.location.reload(); 
     }).catch((error) => {
@@ -156,6 +179,6 @@ function goToDashboard() {
         alert("Redirecting to " + role.toUpperCase() + " Dashboard...");
         // Example: window.location.href = role + "_dashboard.html";
     } else {
-        alert("Role not found.");
+        alert("Role not found. Please log in again.");
     }
 }
