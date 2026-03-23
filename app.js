@@ -15,7 +15,7 @@ if (!firebase.apps.length) {
 }
 
 // AAPKA NAYA GOOGLE APPS SCRIPT URL 👇
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjS6Wz9lAP6XmNjaoGtwDf4JEyVNJ8vPOhT0eTYvQLve6HdQtiyic9F6ML8WSxNk-b/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTh1L_Lxro6B7Mv5x4WBJ-NeecFtDgG6KMP4knlHtrqF9qcRWgxLp92413YVOFTyN8/exec";
 
 let isPartnerMode = false;
 
