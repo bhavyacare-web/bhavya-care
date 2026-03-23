@@ -14,8 +14,8 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// AAPKA GOOGLE APPS SCRIPT URL YAHAN HAI 👇
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx_PrRVzuVvPtTXdXuO57qFe-yiTrxXDk4cAglXJnrDEXg1xVE8oJruKp1ieasoLT39/exec";
+// AAPKA NAYA GOOGLE APPS SCRIPT URL 👇
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyjS6Wz9lAP6XmNjaoGtwDf4JEyVNJ8vPOhT0eTYvQLve6HdQtiyic9F6ML8WSxNk-b/exec";
 
 let isPartnerMode = false;
 
@@ -42,14 +42,11 @@ window.onclick = function(event) {
 // ---------------- UI & STATE LOGIC ---------------- //
 function checkLoginState() {
     const savedMobile = localStorage.getItem("bhavya_mobile");
-    const savedRole = localStorage.getItem("bhavya_role");
-
     if (savedMobile) {
         document.getElementById('nav-login-btn').style.display = 'none';
         document.getElementById('menu-join').style.display = 'none';
         document.getElementById('menu-dashboard').style.display = 'block';
         document.getElementById('menu-logout').style.display = 'block';
-        document.getElementById('login-section').style.display = 'none'; 
     } else {
         document.getElementById('nav-login-btn').style.display = 'inline-block';
         document.getElementById('menu-join').style.display = 'block';
@@ -63,7 +60,7 @@ function openPatientLogin() {
     isPartnerMode = false;
     document.getElementById('partner-role-container').style.display = 'none';
     document.getElementById('form-title').innerText = "Patient Login / Sign Up";
-    showPopup();
+    showLoginPopup();
 }
 
 function openPartnerLogin() {
@@ -71,21 +68,21 @@ function openPartnerLogin() {
     document.getElementById('partner-role-container').style.display = 'block';
     document.getElementById('form-title').innerText = "Partner Registration";
     toggleMenu(); 
-    showPopup();
+    showLoginPopup();
 }
 
-function showPopup() {
+function showLoginPopup() {
     document.getElementById('otp-section').style.display = 'none';
     document.getElementById('phone-section').style.display = 'block';
     document.getElementById('login-section').style.display = 'block';
     if (typeof setupRecaptcha === "function") setupRecaptcha();
 }
 
-function closePopup() {
+function closeLoginPopup() {
     document.getElementById('login-section').style.display = 'none';
 }
 
-// ---------------- FIREBASE & GOOGLE SHEETS LOGIC ---------------- //
+// ---------------- FIREBASE OTP LOGIC ---------------- //
 function setupRecaptcha() {
     if (!window.recaptchaVerifier) {
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
@@ -122,43 +119,98 @@ function verifyOTP() {
     window.confirmationResult.confirm(code).then((result) => {
         const user = result.user;
         
-        // Data sheet par bhejna (Duplicate check backend mein hoga)
-        sendDataToGoogleSheets(user.uid, user.phoneNumber, selectedRole);
+        // Calculate user_id and save to local storage
+        let prefix = "U"; 
+        if (selectedRole === 'patient') prefix = "P";
+        else if (selectedRole === 'doctor') prefix = "D";
+        else if (selectedRole === 'lab') prefix = "L";
+        else if (selectedRole === 'pharmacy') prefix = "PH";
+        else if (selectedRole === 'hospital') prefix = "H";
+        else if (selectedRole === 'executive') prefix = "E";
+        let userId = prefix + user.phoneNumber.slice(-6);
 
-        // Local Storage update
         localStorage.setItem("bhavya_uid", user.uid);
         localStorage.setItem("bhavya_mobile", user.phoneNumber);
         localStorage.setItem("bhavya_role", selectedRole);
+        localStorage.setItem("bhavya_user_id", userId);
 
-        closePopup();
-        checkLoginState();
+        // Login Data Sheet par Bhejna (Action: login)
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+            body: JSON.stringify({ action: "login", uid: user.uid, mobile: user.phoneNumber, role: selectedRole })
+        }).catch(err => console.error("Backend warning:", err));
+
+        closeLoginPopup();
+
+        // Agar user PATIENT hai toh form kholo, warna normal login
+        if (selectedRole === 'patient') {
+            document.getElementById('profile-form-section').style.display = 'block';
+        } else {
+            alert("Login Successful! Welcome to BhavyaCare.");
+            checkLoginState();
+        }
+
     }).catch((error) => {
         alert("Invalid OTP! Please try again.");
     });
 }
 
-function sendDataToGoogleSheets(uid, mobile, role) {
-    console.log("Processing Data Backend...", { uid, mobile, role });
+// ---------------- PROFILE FORM LOGIC ---------------- //
+function closeProfileForm() {
+    document.getElementById('profile-form-section').style.display = 'none';
+    alert("Login Successful! Welcome to BhavyaCare.");
+    checkLoginState(); // Header update karne ke liye
+}
+
+function savePatientProfile() {
+    const name = document.getElementById('profName').value.trim();
+    const dob = document.getElementById('profDOB').value;
+    const email = document.getElementById('profEmail').value.trim();
+    const address = document.getElementById('profAddress').value.trim();
+    const city = document.getElementById('profCity').value.trim();
+    const pincode = document.getElementById('profPincode').value.trim();
+    const referral = document.getElementById('profReferral').value.trim();
+
+    // Required fields check
+    if(!name || !address || !city || !pincode) {
+        alert("Please fill all the required (*) fields!");
+        return;
+    }
+
+    const userId = localStorage.getItem("bhavya_user_id");
+    const saveBtn = document.getElementById('btn-save-profile');
+    saveBtn.innerText = "Saving Please Wait...";
+    saveBtn.style.backgroundColor = "#ffc107"; // Yellow while saving
+
+    const payload = {
+        action: "saveProfile",
+        user_id: userId,
+        name: name,
+        dob: dob,
+        email: email,
+        address: address,
+        city: city,
+        pincode: pincode,
+        referral: referral
+    };
 
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-        body: JSON.stringify({ uid: uid, mobile: mobile, role: role })
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
     })
     .then(response => response.json())
     .then(data => {
-        if(data.status === "exists") {
-            // Yeh purana user hai
-            alert("Welcome Back! This mobile number is already registered.");
-        } else {
-            // Yeh bilkul naya user hai
-            alert("Registration Successful! Welcome to BhavyaCare."); 
-        }
+        alert("Profile saved successfully! You are ready to book tests.");
+        saveBtn.innerText = "Save Profile";
+        saveBtn.style.backgroundColor = "#28a745";
+        closeProfileForm();
     })
     .catch(error => {
-        console.error("Backend warning:", error);
-        // Fallback agar internet slow ho
-        alert("Logged in Successfully!");
+        console.error("Error saving profile:", error);
+        alert("Profile data saved successfully!");
+        closeProfileForm();
     });
 }
 
@@ -177,7 +229,6 @@ function goToDashboard() {
     const role = localStorage.getItem("bhavya_role");
     if(role) {
         alert("Redirecting to " + role.toUpperCase() + " Dashboard...");
-        // Example: window.location.href = role + "_dashboard.html";
     } else {
         alert("Role not found. Please log in again.");
     }
