@@ -25,39 +25,55 @@
     /* --- LOGIN FORM BOX --- */
     #login-section { width: 90%; max-width: 400px; margin: 40px auto; padding: 30px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; text-align: center; display: none; position: absolute; top: 70px; right: 40px; z-index: 999; }
     #login-section h3 { color: #333; margin-bottom: 20px; }
-    .input-box { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none; }
-    .input-box:focus { border-color: #0056b3; }
+    .input-box { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none; transition: 0.3s;}
+    .input-box:focus { border-color: #0056b3; box-shadow: 0 0 5px rgba(0,86,179,0.2); }
     .action-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
     .action-btn:hover { background-color: #218838; }
     .support-text { font-size: 12px; color: #888; margin-top: 15px; }
 
-    /* --- NEW: PATIENT PROFILE FORM BOX --- */
+    /* --- PREMIUM PATIENT PROFILE FORM BOX --- */
     #profile-form-section {
-        width: 90%; max-width: 500px; margin: 20px auto; padding: 30px; background: white; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-radius: 12px; text-align: left; 
-        display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 1002; 
+        width: 90%; max-width: 550px; margin: 20px auto; padding: 35px 30px; 
+        background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+        border-radius: 15px; text-align: left; display: none; 
+        position: absolute; top: 60px; left: 50%; transform: translateX(-50%); 
+        z-index: 1002; animation: slideDown 0.4s ease-out; border-top: 5px solid #0056b3;
     }
-    #profile-form-section h3 { color: #0056b3; margin-bottom: 5px; text-align: center; font-size: 22px; }
-    #profile-form-section p.sub-text { color: #666; font-size: 14px; text-align: center; margin-bottom: 20px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    
+    .form-header-logo { text-align: center; margin-bottom: 15px; }
+    .form-header-logo h2 { color: #0056b3; font-size: 28px; font-weight: 800; margin: 0; }
+    .form-header-logo h2 span { color: #28a745; }
+    
+    /* Stylized Headline */
+    .styled-headline {
+        text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 5px;
+        background: -webkit-linear-gradient(45deg, #0056b3, #28a745);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    
+    #profile-form-section p.sub-text { color: #777; font-size: 14px; text-align: center; margin-bottom: 25px; font-weight: 500; }
+    
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .full-width { grid-column: span 2; }
-    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 22px; color: #888; cursor: pointer; border: none; background: none; transition: 0.2s; }
-    .close-btn:hover { color: #dc3545; }
-    .btn-skip { background-color: #f8f9fa; color: #555; border: 1px solid #ddd; padding: 12px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; font-size: 16px;}
-    .btn-skip:hover { background-color: #e2e2e2; }
+    
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; border: none; background: none; transition: 0.2s; }
+    .close-btn:hover { color: #dc3545; transform: rotate(90deg); }
+    
+    .btn-skip { background-color: transparent; color: #888; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; font-size: 14px; text-decoration: underline;}
+    .btn-skip:hover { color: #555; }
+    
+    /* Auto-gen Referral Box Styling */
+    .referral-box { background-color: #f1f8ff; border: 1px dashed #0056b3; color: #0056b3; font-weight: bold; text-align: center; font-size: 18px; letter-spacing: 2px; cursor: not-allowed; }
 
     @media (max-width: 768px) { .navbar { padding: 15px; } .logo h2 { font-size: 22px; } .btn { padding: 8px 15px; font-size: 14px; } #login-section { right: 5%; left: 5%; width: 90%; top: 80px; margin: 0 auto; } .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
 </style>
 
 <header class="navbar">
-    <div class="logo">
-        <h2>Bhavya<span>Care</span></h2>
-    </div>
-
+    <div class="logo"><h2>Bhavya<span>Care</span></h2></div>
     <div class="nav-actions">
         <a href="#" class="cart-btn">🛒 Cart <span id="cart-count">0</span></a>
         <button id="nav-login-btn" class="btn login-btn" onclick="openPatientLogin()">Login</button>
-        
         <div class="dropdown">
             <button class="dropbtn" onclick="toggleMenu()">⋮</button>
             <div id="myDropdown" class="dropdown-content">
@@ -100,13 +116,18 @@
 
 <div id="profile-form-section">
     <button class="close-btn" onclick="closeProfileForm()">✖</button>
-    <h3>Complete Your Profile</h3>
-    <p class="sub-text">Please fill this information to book tests.</p>
+    
+    <div class="form-header-logo">
+        <h2>Bhavya<span>Care</span></h2>
+    </div>
+    
+    <h3 class="styled-headline">Welcome to BhavyaCare!</h3>
+    <p class="sub-text">Please complete your profile to book tests & get reports.</p>
     
     <div class="form-grid">
         <div class="full-width">
             <label style="font-size: 13px; color: #555; font-weight: bold;">Full Name *</label>
-            <input type="text" id="profName" class="input-box" placeholder="Enter your name">
+            <input type="text" id="profName" class="input-box" placeholder="Enter your name" onkeyup="autoGenerateReferral()">
         </div>
         
         <div>
@@ -135,11 +156,11 @@
         </div>
 
         <div class="full-width">
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Referral Code (If any)</label>
-            <input type="text" id="profReferral" class="input-box" placeholder="Optional">
+            <label style="font-size: 13px; color: #555; font-weight: bold;">Your Unique Referral Code <span style="font-weight: normal; color: #888;">(Share to earn!)</span></label>
+            <input type="text" id="profReferral" class="input-box referral-box" placeholder="Auto-generated" readonly>
         </div>
     </div>
 
-    <button id="btn-save-profile" class="action-btn" onclick="savePatientProfile()">Save Profile</button>
-    <button class="btn-skip" onclick="closeProfileForm()">Skip for Now</button>
+    <button id="btn-save-profile" class="action-btn" style="margin-top: 20px; font-size: 18px; padding: 15px;" onclick="savePatientProfile()">Save & Continue <i class="fas fa-arrow-right"></i></button>
+    <button class="btn-skip" onclick="closeProfileForm()">I'll do this later (Skip)</button>
 </div>
