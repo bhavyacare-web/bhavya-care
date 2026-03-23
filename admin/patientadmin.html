@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management - BhavyaCare Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; }
+
+        /* Sidebar Styling */
+        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; }
+        .sidebar .logo { padding: 20px; font-size: 24px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar .logo span { color: #28a745; }
+        .sidebar .menu { flex: 1; padding: 20px 0; }
+        .sidebar .menu a { display: block; padding: 15px 25px; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .sidebar .menu a:hover, .sidebar .menu a.active { background-color: #004494; border-left: 4px solid #28a745; }
+        .sidebar .menu a i { margin-right: 10px; width: 20px; text-align: center; }
+
+        /* Main Content Styling */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header h2 { color: #333; font-size: 22px; }
+        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; }
+        .admin-profile i { font-size: 24px; color: #0056b3; }
+
+        .container { padding: 30px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        /* Tabs Styling */
+        .tab-container { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 20px; }
+        .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 16px; font-weight: bold; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.3s; }
+        .tab-btn:hover { color: #0056b3; }
+        .tab-btn.active { color: #0056b3; border-bottom-color: #0056b3; }
+
+        /* Content Visibility */
+        .tab-content { display: none; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .tab-content.active { display: block; }
+
+        /* Form & Input */
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 14px; color: #555; margin-bottom: 5px; font-weight: 600; }
+        .input-box { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; }
+        .input-box:focus { border-color: #0056b3; }
+        .btn-action { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-action:hover { background-color: #218838; }
+
+        /* Table Styling */
+        .table-wrapper { background: white; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 15px 20px; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #333; font-weight: 600; }
+        td { color: #555; font-size: 14px; }
+        tr:hover { background-color: #f1f1f1; }
+
+        /* Action Buttons Grid in Table */
+        .action-btns button { border: none; padding: 8px 12px; margin-right: 5px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-upload { background-color: #17a2b8; }
+        .btn-upload:hover { background-color: #138496; }
+        .btn-block { background-color: #dc3545; }
+        .btn-block:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Bhavya<span>Admin</span></div>
+        <div class="menu">
+            <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="patientadmin.html" class="active"><i class="fas fa-user-injured"></i> Patients Center</a>
+            <a href="#"><i class="fas fa-flask"></i> Labs</a>
+            <a href="#"><i class="fas fa-user-md"></i> Doctors</a>
+            <a href="#"><i class="fas fa-pills"></i> Pharmacies</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2>Patient Action Center</h2>
+            <div class="admin-profile">
+                <span>Super Admin</span>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="tab-container">
+                <button class="tab-btn active" onclick="switchTab('manage')">🔍 Manage / Patient List</button>
+                <button class="tab-btn" onclick="switchTab('add')">➕ Add New Patient</button>
+            </div>
+
+            <div id="manage-tab" class="tab-content active">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 10px; top: 12px; color: #888;"></i>
+                        <input type="text" id="searchQuery" class="input-box" style="width: 350px; padding-left: 35px;" placeholder="Search Mobile or User ID..." onkeyup="filterTable()">
+                    </div>
+                    <button class="btn-action" style="background-color: #0056b3;" onclick="fetchPatients()">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="patientTable">
+                        <thead>
+                            <tr>
+                                <th>Date Joined</th>
+                                <th>User ID</th>
+                                <th>Mobile Number</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 20px;">Fetching patients data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="add-tab" class="tab-content">
+                <h3 style="margin-bottom: 20px; color: #333;">Register New Patient Manually</h3>
+                
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="newPatName" class="input-box" placeholder="Enter patient's full name">
+                </div>
+                
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="newPatMobile" class="input-box" placeholder="10-digit mobile number" maxlength="10">
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Age</label>
+                        <input type="number" id="newPatAge" class="input-box" placeholder="Years">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Gender</label>
+                        <select id="newPatGender" class="input-box">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-action" style="width: 100%; margin-top: 10px;" onclick="alert('Backend linking pending for manual registration.')">
+                    <i class="fas fa-save"></i> Save Patient Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AAPKA NAYA GOOGLE APP SCRIPT URL
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIWqy-7o5I-IcCCx9TRSqYZuQ1E_ih6EOO-a_OBH0CI1xQwl-P3if6_mDt7EcvuTF7/exec";
+
+        // Jaise hi page load hoga, patients ki list aayegi
+        window.onload = function() {
+            fetchPatients();
+        };
+
+        // Tab badalne ka function
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if(tabName === 'manage') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('manage-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('add-tab').classList.add('active');
+            }
+        }
+
+        // Google Sheet se Data mangwana (GET Request)
+        function fetchPatients() {
+            const tableBody = document.getElementById('patientTableBody');
+            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+
+            fetch(GOOGLE_SCRIPT_URL)
+            .then(response => response.json())
+            .then(result => {
+                if(result.status === "success") {
+                    const patients = result.data;
+                    tableBody.innerHTML = ""; // Purana loading text hatao
+                    
+                    if(patients.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No patients found in the database.</td></tr>';
+                        return;
+                    }
+
+                    // Har patient ke liye ek nayi row (tr) banao
+                    patients.forEach(pat => {
+                        // Date ko sahi format mein dikhana (DD/MM/YYYY)
+                        let formattedDate = "N/A";
+                        if(pat.timestamp) {
+                            let dateObj = new Date(pat.timestamp);
+                            formattedDate = dateObj.toLocaleDateString('en-GB'); 
+                        }
+
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td><strong>${pat.user_id}</strong></td>
+                            <td>${pat.mobile}</td>
+                            <td class="action-btns">
+                                <button class="btn-upload" title="Upload Report" onclick="alert('Upload logic pending for ${pat.user_id}')"><i class="fas fa-file-upload"></i> Upload Report</button>
+                                <button class="btn-block" title="Block User" onclick="alert('Block logic pending for ${pat.user_id}')"><i class="fas fa-ban"></i> Block</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red; padding: 20px;">Failed to load data: ${result.message}</td></tr>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red; padding: 20px;">Connection error. Please check the URL or your internet.</td></tr>';
+            });
+        }
+
+        // Real-time Search Box ka logic
+        function filterTable() {
+            let input = document.getElementById("searchQuery");
+            let filter = input.value.toUpperCase();
+            let table = document.getElementById("patientTableBody");
+            let tr = table.getElementsByTagName("tr");
+
+            // Har row ko check karo
+            for (let i = 0; i < tr.length; i++) {
+                // Index 1 = User ID, Index 2 = Mobile Number
+                let tdId = tr[i].getElementsByTagName("td")[1];
+                let tdMobile = tr[i].getElementsByTagName("td")[2];
+                
+                if (tdId || tdMobile) {
+                    let txtValueId = tdId.textContent || tdId.innerText;
+                    let txtValueMobile = tdMobile.textContent || tdMobile.innerText;
+                    
+                    // Agar match ho jaye toh dikhao, warna hide kardo (display="none")
+                    if (txtValueId.toUpperCase().indexOf(filter) > -1 || txtValueMobile.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+    </script>
+</body>
+</html>
