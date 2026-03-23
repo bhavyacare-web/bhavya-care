@@ -39,11 +39,11 @@ window.onclick = function(event) {
 
 // ---------------- UI & STATE LOGIC ---------------- //
 function checkLoginState() {
+    // Sirf mobile check kar rahe hain, email check hata diya gaya hai
     const savedMobile = localStorage.getItem("bhavya_mobile");
-    const savedEmail = localStorage.getItem("bhavya_email");
     const savedRole = localStorage.getItem("bhavya_role");
 
-    if (savedMobile || savedEmail) {
+    if (savedMobile) {
         // Logged In: Hide Main Login Button & 'Join Us'. Show Dashboard & Logout in Menu
         document.getElementById('nav-login-btn').style.display = 'none';
         document.getElementById('menu-join').style.display = 'none';
@@ -97,26 +97,7 @@ function setupRecaptcha() {
     }
 }
 
-function googleSignIn() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    const selectedRole = isPartnerMode ? document.getElementById('partnerRole').value : 'patient';
-
-    firebase.auth().signInWithPopup(provider).then((result) => {
-        const user = result.user;
-        localStorage.setItem("bhavya_uid", user.uid);
-        localStorage.setItem("bhavya_email", user.email);
-        localStorage.setItem("bhavya_role", selectedRole);
-
-        alert("Google Login Successful!");
-        closePopup();
-        checkLoginState();
-        
-        // YAHAN PAR HUM NEXT STEP MEIN GOOGLE SHEETS PAR DATA BHEJENGE
-        // sendDataToGoogleSheets(user.uid, user.email, selectedRole, "Google");
-    }).catch((error) => {
-        alert("Google Login Failed: " + error.message);
-    });
-}
+// googleSignIn() function poori tarah delete kar diya gaya hai
 
 function sendOTP() {
     const userNumber = document.getElementById('phoneNumber').value.trim();
@@ -153,7 +134,7 @@ function verifyOTP() {
         checkLoginState();
         
         // YAHAN PAR HUM NEXT STEP MEIN GOOGLE SHEETS PAR DATA BHEJENGE
-        // sendDataToGoogleSheets(user.uid, user.phoneNumber, selectedRole, "Phone");
+        // sendDataToGoogleSheets(user.uid, user.phoneNumber, selectedRole);
     }).catch((error) => {
         alert("Invalid OTP! Please try again.");
     });
@@ -161,7 +142,7 @@ function verifyOTP() {
 
 function logoutUser() {
     firebase.auth().signOut().then(() => {
-        localStorage.clear();
+        localStorage.clear(); // Saara data saaf karega (UID, mobile, role)
         alert("You have successfully logged out!");
         window.location.reload(); 
     }).catch((error) => {
