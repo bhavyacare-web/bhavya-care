@@ -157,6 +157,34 @@ function verifyOTP() {
 }
 
 // ---------------- PROFILE FORM LOGIC ---------------- //
+// NAYA FUNCTION: Auto Generate Referral Code
+function autoGenerateReferral() {
+    const nameInput = document.getElementById('profName').value.trim().toUpperCase();
+    const savedMobile = localStorage.getItem("bhavya_mobile") || "0000"; 
+    
+    // Naam me se sirf alphabets nikalna aur pehle 3 letters lena
+    let namePart = nameInput.replace(/[^A-Z]/g, '').substring(0, 3);
+    
+    // Agar user ne naam type kiya hai, par 3 letters se kam hai, toh 'X' laga do
+    if(nameInput.length > 0 && namePart.length < 3) {
+        namePart = namePart.padEnd(3, 'X'); 
+    }
+    
+    // Agar field khali hai toh code bhi khali kardo
+    if(nameInput.length === 0) {
+        document.getElementById('profReferral').value = "";
+        return;
+    }
+
+    // Mobile ke last 4 digits nikalna
+    const mobilePart = savedMobile.slice(-4);
+    
+    // Dono ko jod kar box mein dikhana
+    const finalReferralCode = namePart + mobilePart;
+    document.getElementById('profReferral').value = finalReferralCode;
+}
+
+// ... (Aapke baaki purane functions jaise closeProfileForm aur savePatientProfile yahi rahenge)
 function closeProfileForm() {
     document.getElementById('profile-form-section').style.display = 'none';
     alert("Login Successful! Welcome to BhavyaCare.");
