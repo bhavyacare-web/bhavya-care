@@ -14,15 +14,9 @@
 
         /* Navbar Design */
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #ffffff;
-            padding: 15px 40px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: #ffffff; padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 1000;
         }
         .logo h2 { color: #0056b3; font-size: 26px; font-weight: 800; }
         .logo span { color: #28a745; }
@@ -32,13 +26,18 @@
         .cart-btn { text-decoration: none; color: #333; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         #cart-count { background-color: #e74c3c; color: white; padding: 2px 7px; border-radius: 50%; font-size: 12px; }
         
-        /* Buttons */
         .btn { border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
         .login-btn { background-color: #0056b3; }
         .login-btn:hover { background-color: #004494; }
-        .logout-btn { background-color: #e74c3c; display: none; }
-        .logout-btn:hover { background-color: #c0392b; }
-        .dashboard-btn { background-color: #28a745; display: none; }
+
+        /* 3-Dot Dropdown Menu */
+        .dropdown { position: relative; display: inline-block; }
+        .dropbtn { background-color: transparent; color: #333; font-size: 24px; border: none; cursor: pointer; padding: 0 5px; font-weight: bold; }
+        .dropbtn:hover { color: #0056b3; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: #ffffff; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 1001; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+        .dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; border-bottom: 1px solid #f4f4f4; font-weight: 500; }
+        .dropdown-content a:hover { background-color: #f9f9f9; color: #0056b3; }
+        .show-menu { display: block; }
 
         /* Login Form Box */
         #login-section {
@@ -71,9 +70,17 @@
             <a href="#" class="cart-btn">
                 🛒 Cart <span id="cart-count">0</span>
             </a>
-            <button id="nav-login-btn" class="btn login-btn" onclick="toggleLogin()">Login / Sign Up</button>
-            <button id="nav-dashboard-btn" class="btn dashboard-btn" onclick="goToDashboard()">My Dashboard</button>
-            <button id="nav-logout-btn" class="btn logout-btn" onclick="logoutUser()">Logout</button>
+            
+            <button id="nav-login-btn" class="btn login-btn" onclick="openPatientLogin()">Login</button>
+            
+            <div class="dropdown">
+                <button class="dropbtn" onclick="toggleMenu()">⋮</button>
+                <div id="myDropdown" class="dropdown-content">
+                    <a href="#" id="menu-join" onclick="openPartnerLogin()">🤝 Join Us (Partner)</a>
+                    <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;">📊 My Dashboard</a>
+                    <a href="#" id="menu-logout" onclick="logoutUser()" style="display: none; color: #e74c3c;">🚪 Logout</a>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -93,6 +100,12 @@
                 </select>
             </div>
 
+            <button class="action-btn" style="background-color: #db4437; margin-bottom: 10px;" onclick="googleSignIn()">
+                G Sign in with Google
+            </button>
+            
+            <div style="text-align: center; margin: 15px 0; color: #888; font-size: 14px; font-weight: bold;">--- OR ---</div>
+
             <p style="text-align: left; font-size: 14px; color: #666;">Mobile Number:</p>
             <input type="tel" id="phoneNumber" class="input-box" placeholder="e.g. 8950112467" maxlength="10">
             <div id="recaptcha-container" style="margin-top: 10px;"></div>
@@ -103,11 +116,7 @@
             <p style="text-align: left; font-size: 14px; color: #666;">Enter OTP:</p>
             <input type="tel" id="otpCode" class="input-box" placeholder="6-digit OTP" maxlength="6">
             <button class="action-btn" style="background-color: #0056b3;" onclick="verifyOTP()">Verify Mobile</button>
-            <p style="margin-top: 15px; font-size: 13px; color: #0056b3; cursor: pointer; text-decoration: underline;" onclick="resetForm()">Change Mobile Number</p>
-        </div>
-        
-        <div id="partner-link-container">
-            <p id="partner-toggle-text" style="margin-top: 15px; font-size: 14px; font-weight: 600; color: #0056b3; cursor: pointer; text-decoration: underline;" onclick="togglePartnerMode()">Register as a Partner</p>
+            <p style="margin-top: 15px; font-size: 13px; color: #0056b3; cursor: pointer; text-decoration: underline;" onclick="closePopup()">Cancel</p>
         </div>
 
         <p class="support-text">Need help? Email us at bhavyacare1@gmail.com</p>
