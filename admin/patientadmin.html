@@ -36,13 +36,8 @@
         .tab-content { display: none; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .tab-content.active { display: block; }
 
-        /* Forms & Inputs */
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 14px; color: #555; margin-bottom: 5px; font-weight: 600; }
-        .input-box { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; }
-        .input-box:focus { border-color: #0056b3; }
+        .input-box { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; }
         .btn-action { background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-action:hover { background-color: #218838; }
 
         /* Table */
         .table-wrapper { background: white; border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid #eee; }
@@ -53,8 +48,30 @@
         tr:hover { background-color: #f1f1f1; }
 
         .action-btns button { border: none; padding: 8px 12px; margin-right: 5px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-view { background-color: #0056b3; } /* Naya View Button */
         .btn-upload { background-color: #17a2b8; }
         .btn-block { background-color: #dc3545; }
+        
+        /* Status Badge */
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; }
+        .status-complete { background-color: #28a745; }
+        .status-pending { background-color: #ffc107; color: #333 !important; }
+
+        /* --- VIEW DETAILS MODAL --- */
+        #detailsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 600px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; animation: slideDown 0.3s ease-out; }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; }
+        .close-modal:hover { color: #dc3545; }
+        
+        .modal-header { border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-header h3 { color: #0056b3; font-size: 22px; }
+        
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .detail-box { background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #eee; }
+        .detail-box label { display: block; font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .detail-box p { font-size: 15px; color: #333; font-weight: 600; margin: 0; }
+        .full-width { grid-column: span 2; }
     </style>
 </head>
 <body>
@@ -81,7 +98,6 @@
         <div class="container">
             <div class="tab-container">
                 <button class="tab-btn active" onclick="switchTab('manage')">🔍 Manage / Patient List</button>
-                <button class="tab-btn" onclick="switchTab('add')">➕ Add New Patient</button>
             </div>
 
             <div id="manage-tab" class="tab-content active">
@@ -102,86 +118,90 @@
                                 <th>Date Joined</th>
                                 <th>User ID</th>
                                 <th>Mobile Number</th>
+                                <th>Profile Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="patientTableBody">
-                            <tr><td colspan="4" style="text-align: center; padding: 20px;">Fetching patients data...</td></tr>
+                            <tr><td colspan="5" style="text-align: center; padding: 20px;">Fetching patients data...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div id="add-tab" class="tab-content">
-                <h3 style="margin-bottom: 20px; color: #333;">Register New Patient Manually</h3>
-                <div class="input-group"><label>Full Name</label><input type="text" id="newPatName" class="input-box" placeholder="Enter patient's full name"></div>
-                <div class="input-group"><label>Mobile Number</label><input type="tel" id="newPatMobile" class="input-box" placeholder="10-digit mobile number" maxlength="10"></div>
-                <div style="display: flex; gap: 15px;">
-                    <div class="input-group" style="flex: 1;"><label>Age</label><input type="number" id="newPatAge" class="input-box" placeholder="Years"></div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>Gender</label>
-                        <select id="newPatGender" class="input-box">
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn-action" style="width: 100%; margin-top: 10px;" onclick="alert('Manual add function coming soon!')"><i class="fas fa-save"></i> Save Patient Data</button>
+    <div id="detailsModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">✖</button>
+            <div class="modal-header">
+                <h3 id="mod-name">Patient Name</h3>
+                <span id="mod-status" class="status-badge status-complete">Active</span>
+            </div>
+            
+            <div class="details-grid">
+                <div class="detail-box"><label>User ID</label><p id="mod-id">P123456</p></div>
+                <div class="detail-box"><label>Mobile Number</label><p id="mod-mobile">+910000000000</p></div>
+                
+                <div class="detail-box"><label>Date of Birth</label><p id="mod-dob">N/A</p></div>
+                <div class="detail-box"><label>Email Address</label><p id="mod-email">N/A</p></div>
+                
+                <div class="detail-box full-width"><label>Full Address</label><p id="mod-address">N/A</p></div>
+                
+                <div class="detail-box"><label>City</label><p id="mod-city">N/A</p></div>
+                <div class="detail-box"><label>Pincode</label><p id="mod-pincode">N/A</p></div>
+                
+                <div class="detail-box full-width"><label>Referral Code</label><p id="mod-referral" style="color: #0056b3;">N/A</p></div>
             </div>
         </div>
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIWqy-7o5I-IcCCx9TRSqYZuQ1E_ih6EOO-a_OBH0CI1xQwl-P3if6_mDt7EcvuTF7/exec";
+        // APNA NAYA URL YAHAN BHI DHYAN SE REKHEIN
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4iPVs5bfSmte41GNgdcKZ_SDetRBdwOrAzclZjJks5cMlnrjEYdX3XryOsl-n8_Il/exec";
+        
+        let allPatientsData = []; // Data save karne ke liye array
 
-        window.onload = function() {
-            fetchPatients();
-        };
+        window.onload = function() { fetchPatients(); };
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            if(tabName === 'manage') {
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.getElementById('manage-tab').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.getElementById('add-tab').classList.add('active');
-            }
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            document.getElementById('manage-tab').classList.add('active');
         }
 
         function fetchPatients() {
             const tableBody = document.getElementById('patientTableBody');
-            tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
 
             fetch(GOOGLE_SCRIPT_URL)
             .then(response => response.json())
             .then(result => {
                 if(result.status === "success") {
-                    const patients = result.data;
+                    allPatientsData = result.data; // Data array mein save kar liya
                     tableBody.innerHTML = ""; 
                     
-                    if(patients.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">No patients found in the database.</td></tr>';
+                    if(allPatientsData.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No patients found.</td></tr>';
                         return;
                     }
 
-                    patients.forEach(pat => {
-                        let formattedDate = "N/A";
-                        if(pat.timestamp) {
-                            let dateObj = new Date(pat.timestamp);
-                            formattedDate = dateObj.toLocaleDateString('en-GB'); 
-                        }
+                    allPatientsData.forEach((pat, index) => {
+                        let formattedDate = pat.timestamp ? new Date(pat.timestamp).toLocaleDateString('en-GB') : "N/A";
+                        
+                        let badgeClass = pat.profile_status === "Profile Complete" ? "status-complete" : "status-pending";
 
                         let tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${formattedDate}</td>
                             <td><strong>${pat.user_id}</strong></td>
                             <td>${pat.mobile}</td>
+                            <td><span class="status-badge ${badgeClass}">${pat.profile_status}</span></td>
                             <td class="action-btns">
-                                <button class="btn-upload" title="Upload Report" onclick="alert('Upload Report for ${pat.user_id}')"><i class="fas fa-file-upload"></i> Upload Report</button>
-                                <button class="btn-block" title="Block User" onclick="alert('Block ${pat.user_id}?')"><i class="fas fa-ban"></i> Block</button>
+                                <button class="btn-view" title="View Full Profile" onclick="openDetailsModal(${index})"><i class="fas fa-eye"></i> View</button>
+                                <button class="btn-upload" title="Upload Report" onclick="alert('Upload Report for ${pat.user_id}')"><i class="fas fa-file-upload"></i></button>
+                                <button class="btn-block" title="Block User" onclick="alert('Block ${pat.user_id}?')"><i class="fas fa-ban"></i></button>
                             </td>
                         `;
                         tableBody.appendChild(tr);
@@ -190,10 +210,37 @@
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red; padding: 20px;">Connection error. Please check your internet.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Connection error.</td></tr>';
             });
         }
 
+        // --- MODAL LOGIC ---
+        function openDetailsModal(index) {
+            const pat = allPatientsData[index]; // Array se patient ka data nikala
+            
+            // Modal mein data bharna
+            document.getElementById('mod-name').innerText = pat.name !== "N/A" ? pat.name : "Profile Pending";
+            document.getElementById('mod-status').innerText = pat.profile_status;
+            document.getElementById('mod-status').className = pat.profile_status === "Profile Complete" ? "status-badge status-complete" : "status-badge status-pending";
+            
+            document.getElementById('mod-id').innerText = pat.user_id;
+            document.getElementById('mod-mobile').innerText = pat.mobile;
+            document.getElementById('mod-dob').innerText = pat.dob;
+            document.getElementById('mod-email').innerText = pat.email;
+            document.getElementById('mod-address').innerText = pat.address;
+            document.getElementById('mod-city').innerText = pat.city;
+            document.getElementById('mod-pincode').innerText = pat.pincode;
+            document.getElementById('mod-referral').innerText = pat.referral;
+
+            // Modal ko show karna
+            document.getElementById('detailsModal').style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = "none";
+        }
+
+        // Filter/Search Logic
         function filterTable() {
             let input = document.getElementById("searchQuery");
             let filter = input.value.toUpperCase();
