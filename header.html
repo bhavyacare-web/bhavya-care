@@ -13,14 +13,14 @@
     .login-btn { background-color: #0056b3; }
     .login-btn:hover { background-color: #004494; }
 
-    /* --- NAYA: Dynamic User Menu Container --- */
-    #user-menu-container { display: none; /* By default hidden rahega, JS ise control karega */ }
+    /* --- Dynamic User Menu Container --- */
+    #user-menu-container { display: none; }
     
     .user-profile-btn { background: #f4f7f6; color: #0056b3; border: 1px solid #cce5ff; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
     .user-profile-btn:hover { background: #e6f0fa; }
     .user-profile-btn i { font-size: 16px; }
 
-    /* 3-Dot Dropdown Menu (For both General & Logged In) */
+    /* 3-Dot Dropdown Menu */
     .dropdown { position: relative; display: inline-block; }
     .dropbtn { background-color: transparent; color: #333; font-size: 24px; border: none; cursor: pointer; padding: 0 5px; font-weight: bold; }
     .dropbtn:hover { color: #0056b3; }
@@ -39,7 +39,7 @@
     .action-btn:hover { background-color: #218838; }
     .support-text { font-size: 12px; color: #888; margin-top: 15px; }
 
-    /* --- PREMIUM PATIENT PROFILE FORM BOX --- */
+    /* --- PATIENT PROFILE FORM BOX --- */
     #profile-form-section {
         width: 90%; max-width: 550px; margin: 20px auto; padding: 35px 30px; 
         background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
@@ -47,31 +47,38 @@
         position: absolute; top: 60px; left: 50%; transform: translateX(-50%); 
         z-index: 1002; animation: slideDown 0.4s ease-out; border-top: 5px solid #0056b3;
     }
+    
+    /* --- DOCTOR PROFILE FORM BOX --- */
+    #doctor-profile-section {
+        width: 95%; max-width: 700px; margin: 20px auto; padding: 25px 30px; 
+        background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+        border-radius: 15px; text-align: left; display: none; 
+        position: absolute; top: 60px; left: 50%; transform: translateX(-50%); 
+        z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #28a745; max-height: 85vh; overflow-y: auto;
+    }
+
     @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
     
     .form-header-logo { text-align: center; margin-bottom: 15px; }
     .form-header-logo h2 { color: #0056b3; font-size: 28px; font-weight: 800; margin: 0; }
     .form-header-logo h2 span { color: #28a745; }
     
-    /* Stylized Headline */
     .styled-headline {
         text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 5px;
         background: -webkit-linear-gradient(45deg, #0056b3, #28a745);
         -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     
-    #profile-form-section p.sub-text { color: #777; font-size: 14px; text-align: center; margin-bottom: 25px; font-weight: 500; }
-    
+    .sub-text { color: #777; font-size: 14px; text-align: center; margin-bottom: 25px; font-weight: 500; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .full-width { grid-column: span 2; }
-    
+    .section-title { border-bottom: 1px solid #eee; padding-bottom: 5px; color: #0056b3; margin-top: 15px; font-size: 16px; font-weight: bold;}
+
     .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; border: none; background: none; transition: 0.2s; }
     .close-btn:hover { color: #dc3545; transform: rotate(90deg); }
-    
     .btn-skip { background-color: transparent; color: #888; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; font-size: 14px; text-decoration: underline;}
     .btn-skip:hover { color: #555; }
     
-    /* Auto-gen Referral Box Styling */
     .referral-box { background-color: #f1f8ff; border: 1px dashed #0056b3; color: #0056b3; font-weight: bold; text-align: center; font-size: 18px; letter-spacing: 2px; cursor: not-allowed; }
 
     @media (max-width: 768px) { .navbar { padding: 15px; } .logo h2 { font-size: 22px; } .btn { padding: 8px 15px; font-size: 14px; } #login-section { right: 5%; left: 5%; width: 90%; top: 80px; margin: 0 auto; } .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
@@ -95,11 +102,9 @@
 
             <div id="myDropdown" class="dropdown-content">
                 <a href="#" id="menu-join" onclick="openPartnerLogin()">🤝 Join Us (Partner)</a>
-                
                 <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;">📊 My Dashboard</a>
                 <a href="#" id="menu-orders" style="display: none;" onclick="alert('Your Orders page pending')">📦 My Orders</a>
                 <a href="#" id="menu-logout" onclick="logoutUser()" style="display: none; color: #e74c3c;">🚪 Logout</a>
-                
                 <a href="admin/admin.html" id="menu-admin" style="color: #0056b3; border-top: 1px solid #eee;"><i class="fas fa-user-shield"></i> 🛡️ Admin Panel</a>
             </div>
         </div>
@@ -135,52 +140,71 @@
 </div>
 
 <div id="profile-form-section">
-    <button class="close-btn" onclick="closeProfileForm()">✖</button>
-    
-    <div class="form-header-logo">
-        <h2>Bhavya<span>Care</span></h2>
-    </div>
-    
+    <button class="close-btn" onclick="closeProfileForm('patient')">✖</button>
+    <div class="form-header-logo"><h2>Bhavya<span>Care</span></h2></div>
     <h3 class="styled-headline">Welcome to BhavyaCare!</h3>
     <p class="sub-text">Please complete your profile to book tests & get reports.</p>
     
     <div class="form-grid">
-        <div class="full-width">
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Full Name *</label>
-            <input type="text" id="profName" class="input-box" placeholder="Enter your name" onkeyup="autoGenerateReferral()">
-        </div>
-        
-        <div>
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Date of Birth</label>
-            <input type="date" id="profDOB" class="input-box">
-        </div>
-        
-        <div>
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Email ID</label>
-            <input type="email" id="profEmail" class="input-box" placeholder="optional@gmail.com">
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Name *</label><input type="text" id="profName" class="input-box" placeholder="Enter your name" onkeyup="autoGenerateReferral()"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Date of Birth</label><input type="date" id="profDOB" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Email ID</label><input type="email" id="profEmail" class="input-box" placeholder="optional@gmail.com"></div>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Address *</label><input type="text" id="profAddress" class="input-box" placeholder="House No, Street, Area"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">City *</label><input type="text" id="profCity" class="input-box" placeholder="e.g. Delhi"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label><input type="number" id="profPincode" class="input-box" placeholder="6 digits"></div>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Your Unique Referral Code <span style="font-weight: normal; color: #888;">(Share to earn!)</span></label><input type="text" id="profReferral" class="input-box referral-box" placeholder="Auto-generated" readonly></div>
+    </div>
+    <button id="btn-save-profile" class="action-btn" style="margin-top: 20px; font-size: 18px; padding: 15px;" onclick="savePatientProfile()">Save & Continue <i class="fas fa-arrow-right"></i></button>
+    <button class="btn-skip" onclick="closeProfileForm('patient')">I'll do this later (Skip)</button>
+</div>
+
+<div id="doctor-profile-section">
+    <button class="close-btn" onclick="closeProfileForm('doctor')">✖</button>
+    <h3 class="styled-headline" style="color: #28a745;">Doctor Registration Profile</h3>
+    <p class="sub-text">Please complete your details to get verified and start receiving patients.</p>
+
+    <div class="form-grid">
+        <h4 class="full-width section-title">👤 Basic Information</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Full Name *</label><input type="text" id="docName" class="input-box" placeholder="Dr. Full Name"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Email Address *</label><input type="email" id="docEmail" class="input-box" placeholder="Email"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Speciality *</label><input type="text" id="docSpeciality" class="input-box" placeholder="e.g. Cardiologist"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Qualification *</label><input type="text" id="docQual" class="input-box" placeholder="e.g. MBBS, MD"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Experience (Years) *</label><input type="number" id="docExp" class="input-box" placeholder="e.g. 5"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Service Type *</label>
+            <select id="docServiceType" class="input-box"><option value="Clinic">Clinic Only</option><option value="Online">Online Only</option><option value="Both">Clinic + Online</option></select>
         </div>
 
-        <div class="full-width">
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Address *</label>
-            <input type="text" id="profAddress" class="input-box" placeholder="House No, Street, Area">
+        <h4 class="full-width section-title">🏥 Clinic Details</h4>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Clinic Name *</label><input type="text" id="docClinicName" class="input-box"></div>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Clinic Address *</label><input type="text" id="docClinicAddress" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">City *</label><input type="text" id="docCity" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label><input type="number" id="docPincode" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Clinic Fee (₹) *</label><input type="number" id="docClinicFee" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Slot Duration (Mins)</label>
+            <select id="docSlotDuration" class="input-box"><option value="15 Mins">15 Mins</option><option value="30 Mins">30 Mins</option></select>
         </div>
 
-        <div>
-            <label style="font-size: 13px; color: #555; font-weight: bold;">City *</label>
-            <input type="text" id="profCity" class="input-box" placeholder="e.g. Delhi">
+        <h4 class="full-width section-title">🌐 Online Consultation</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Provide Online Consultation?</label>
+            <select id="docOnlineConsult" class="input-box"><option value="Yes">Yes</option><option value="No">No</option></select>
         </div>
+        <div><label style="font-size: 13px; font-weight: bold;">Online Fee (₹)</label><input type="number" id="docOnlineFee" class="input-box" placeholder="Fee"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Online Start Time</label><input type="time" id="docOnlineStart" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Online End Time</label><input type="time" id="docOnlineEnd" class="input-box"></div>
 
-        <div>
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Pincode *</label>
-            <input type="number" id="profPincode" class="input-box" placeholder="6 digits">
-        </div>
+        <h4 class="full-width section-title">🕒 Clinic Timings</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Monday</label><div style="display:flex; gap:5px;"><input type="time" id="monOpen" class="input-box"><input type="time" id="monClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Tuesday</label><div style="display:flex; gap:5px;"><input type="time" id="tueOpen" class="input-box"><input type="time" id="tueClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Wednesday</label><div style="display:flex; gap:5px;"><input type="time" id="wedOpen" class="input-box"><input type="time" id="wedClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Thursday</label><div style="display:flex; gap:5px;"><input type="time" id="thuOpen" class="input-box"><input type="time" id="thuClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Friday</label><div style="display:flex; gap:5px;"><input type="time" id="friOpen" class="input-box"><input type="time" id="friClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Saturday</label><div style="display:flex; gap:5px;"><input type="time" id="satOpen" class="input-box"><input type="time" id="satClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Sunday</label><div style="display:flex; gap:5px;"><input type="time" id="sunOpen" class="input-box"><input type="time" id="sunClose" class="input-box"></div></div>
 
-        <div class="full-width">
-            <label style="font-size: 13px; color: #555; font-weight: bold;">Your Unique Referral Code <span style="font-weight: normal; color: #888;">(Share to earn!)</span></label>
-            <input type="text" id="profReferral" class="input-box referral-box" placeholder="Auto-generated" readonly>
-        </div>
+        <h4 class="full-width section-title">📂 Document & Photo</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Upload Medical Doc (Max 2MB) *</label><input type="file" id="docFile" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Doctor Photo (Max 2MB) *</label><input type="file" id="docImage" class="input-box" accept="image/*"></div>
     </div>
 
-    <button id="btn-save-profile" class="action-btn" style="margin-top: 20px; font-size: 18px; padding: 15px;" onclick="savePatientProfile()">Save & Continue <i class="fas fa-arrow-right"></i></button>
-    <button class="btn-skip" onclick="closeProfileForm()">I'll do this later (Skip)</button>
+    <button id="btn-save-doctor" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px;" onclick="saveDoctorProfile()">Submit Profile</button>
 </div>
