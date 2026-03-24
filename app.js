@@ -14,7 +14,7 @@ if (!firebase.apps.length) {
 }
 
 // 🌟 LATEST GOOGLE APPS SCRIPT URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4Nf1xuL3V8bfa_B95tlQAU0eogJB6ZA_jB0GwLd6cikLJInBOdEm5iHbGDD2-0jHv/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdVK-JKlIzj6l92ccXBgleiiX5Td1p9j-7NZZiY91l3OyZnjhCq41ZwlP94Jp4Mc8G/exec";
 
 let isPartnerMode = false;
 
