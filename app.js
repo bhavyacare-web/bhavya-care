@@ -1,4 +1,4 @@
-// Firebase Configuration
+// Firebase Configuration (Aapki keys)
 const firebaseConfig = {
     apiKey: "AIzaSyC2nYH22wkYDhh-BWfHvkT-bQvdKLCxask",
     authDomain: "bhavya-care.firebaseapp.com",
@@ -15,13 +15,39 @@ if (!firebase.apps.length) {
 }
 
 // AAPKA NAYA GOOGLE APPS SCRIPT URL 👇
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTh1L_Lxro6B7Mv5x4WBJ-NeecFtDgG6KMP4knlHtrqF9qcRWgxLp92413YVOFTyN8/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqsEyj3cXaA1ScB-cBn19s-WYuHLXj66KjZtlWMh0D321CeZ-WFnVgsqXqG6GKSrMi/exec";
 
 let isPartnerMode = false;
 
-window.onload = function () {
-    checkLoginState();
-};
+// 🌟 BUG FIX: Firebase Session Watcher (Ye refresh hone par logout nahi hone dega)
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        // Agar Firebase kehta hai ki session zinda hai, toh localStorage ensure karo
+        if (!localStorage.getItem("bhavya_mobile")) {
+            localStorage.setItem("bhavya_uid", user.uid);
+            localStorage.setItem("bhavya_mobile", user.phoneNumber);
+        }
+        checkLoginState();
+    } else {
+        // Agar user sach mein logout hua hai tabhi local storage saaf karo
+        localStorage.removeItem("bhavya_mobile");
+        localStorage.removeItem("bhavya_uid");
+        localStorage.removeItem("bhavya_role");
+        localStorage.removeItem("bhavya_user_id");
+        checkLoginState();
+    }
+});
+
+// ---------------- UI INITIALIZATION ---------------- //
+function initApp() {
+    const loginBtn = document.getElementById('nav-login-btn');
+    if (loginBtn) {
+        checkLoginState();
+    } else {
+        setTimeout(initApp, 100); // Wait for header.html to be fetched
+    }
+}
+initApp();
 
 // ---------------- MENU LOGIC ---------------- //
 function toggleMenu() {
@@ -42,17 +68,24 @@ window.onclick = function(event) {
 // ---------------- UI & STATE LOGIC ---------------- //
 function checkLoginState() {
     const savedMobile = localStorage.getItem("bhavya_mobile");
+    
+    const navLoginBtn = document.getElementById('nav-login-btn');
+    const menuJoin = document.getElementById('menu-join');
+    const menuDash = document.getElementById('menu-dashboard');
+    const menuLogout = document.getElementById('menu-logout');
+
     if (savedMobile) {
-        document.getElementById('nav-login-btn').style.display = 'none';
-        document.getElementById('menu-join').style.display = 'none';
-        document.getElementById('menu-dashboard').style.display = 'block';
-        document.getElementById('menu-logout').style.display = 'block';
+        if(navLoginBtn) navLoginBtn.style.display = 'none';
+        if(menuJoin) menuJoin.style.display = 'none';
+        if(menuDash) menuDash.style.display = 'block';
+        if(menuLogout) menuLogout.style.display = 'block';
     } else {
-        document.getElementById('nav-login-btn').style.display = 'inline-block';
-        document.getElementById('menu-join').style.display = 'block';
-        document.getElementById('menu-dashboard').style.display = 'none';
-        document.getElementById('menu-logout').style.display = 'none';
-        setupRecaptcha();
+        if(navLoginBtn) navLoginBtn.style.display = 'inline-block';
+        if(menuJoin) menuJoin.style.display = 'block';
+        if(menuDash) menuDash.style.display = 'none';
+        if(menuLogout) menuLogout.style.display = 'none';
+        // Sirf tabhi recaptcha set karo jab header load ho chuka ho
+        if(document.getElementById('recaptcha-container')) setupRecaptcha();
     }
 }
 
@@ -75,7 +108,7 @@ function showLoginPopup() {
     document.getElementById('otp-section').style.display = 'none';
     document.getElementById('phone-section').style.display = 'block';
     document.getElementById('login-section').style.display = 'block';
-    if (typeof setupRecaptcha === "function") setupRecaptcha();
+    setupRecaptcha();
 }
 
 function closeLoginPopup() {
@@ -84,7 +117,7 @@ function closeLoginPopup() {
 
 // ---------------- FIREBASE OTP LOGIC ---------------- //
 function setupRecaptcha() {
-    if (!window.recaptchaVerifier) {
+    if (document.getElementById('recaptcha-container') && !window.recaptchaVerifier) {
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
             'size': 'normal'
         });
@@ -119,7 +152,6 @@ function verifyOTP() {
     window.confirmationResult.confirm(code).then((result) => {
         const user = result.user;
         
-        // Calculate user_id and save to local storage
         let prefix = "U"; 
         if (selectedRole === 'patient') prefix = "P";
         else if (selectedRole === 'doctor') prefix = "D";
@@ -134,7 +166,6 @@ function verifyOTP() {
         localStorage.setItem("bhavya_role", selectedRole);
         localStorage.setItem("bhavya_user_id", userId);
 
-        // Login Data Sheet par Bhejna (Action: login)
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" }, 
@@ -143,7 +174,6 @@ function verifyOTP() {
 
         closeLoginPopup();
 
-        // Agar user PATIENT hai toh form kholo, warna normal login
         if (selectedRole === 'patient') {
             document.getElementById('profile-form-section').style.display = 'block';
         } else {
@@ -157,38 +187,27 @@ function verifyOTP() {
 }
 
 // ---------------- PROFILE FORM LOGIC ---------------- //
-// NAYA FUNCTION: Auto Generate Referral Code
 function autoGenerateReferral() {
     const nameInput = document.getElementById('profName').value.trim().toUpperCase();
     const savedMobile = localStorage.getItem("bhavya_mobile") || "0000"; 
     
-    // Naam me se sirf alphabets nikalna aur pehle 3 letters lena
     let namePart = nameInput.replace(/[^A-Z]/g, '').substring(0, 3);
-    
-    // Agar user ne naam type kiya hai, par 3 letters se kam hai, toh 'X' laga do
     if(nameInput.length > 0 && namePart.length < 3) {
         namePart = namePart.padEnd(3, 'X'); 
     }
-    
-    // Agar field khali hai toh code bhi khali kardo
     if(nameInput.length === 0) {
         document.getElementById('profReferral').value = "";
         return;
     }
 
-    // Mobile ke last 4 digits nikalna
     const mobilePart = savedMobile.slice(-4);
-    
-    // Dono ko jod kar box mein dikhana
-    const finalReferralCode = namePart + mobilePart;
-    document.getElementById('profReferral').value = finalReferralCode;
+    document.getElementById('profReferral').value = namePart + mobilePart;
 }
 
-// ... (Aapke baaki purane functions jaise closeProfileForm aur savePatientProfile yahi rahenge)
 function closeProfileForm() {
     document.getElementById('profile-form-section').style.display = 'none';
     alert("Login Successful! Welcome to BhavyaCare.");
-    checkLoginState(); // Header update karne ke liye
+    checkLoginState(); 
 }
 
 function savePatientProfile() {
@@ -200,7 +219,6 @@ function savePatientProfile() {
     const pincode = document.getElementById('profPincode').value.trim();
     const referral = document.getElementById('profReferral').value.trim();
 
-    // Required fields check
     if(!name || !address || !city || !pincode) {
         alert("Please fill all the required (*) fields!");
         return;
@@ -209,17 +227,13 @@ function savePatientProfile() {
     const userId = localStorage.getItem("bhavya_user_id");
     const saveBtn = document.getElementById('btn-save-profile');
     saveBtn.innerText = "Saving Please Wait...";
-    saveBtn.style.backgroundColor = "#ffc107"; // Yellow while saving
+    saveBtn.style.backgroundColor = "#ffc107"; 
 
     const payload = {
         action: "saveProfile",
         user_id: userId,
-        name: name,
-        dob: dob,
-        email: email,
-        address: address,
-        city: city,
-        pincode: pincode,
+        name: name, dob: dob, email: email,
+        address: address, city: city, pincode: pincode,
         referral: referral
     };
 
@@ -244,8 +258,8 @@ function savePatientProfile() {
 
 // ---------------- DASHBOARD & LOGOUT LOGIC ---------------- //
 function logoutUser() {
+    // Firebase se proper sign out hoga, jo watcher trigger karke sab clean kar dega
     firebase.auth().signOut().then(() => {
-        localStorage.clear(); 
         alert("You have successfully logged out!");
         window.location.reload(); 
     }).catch((error) => {
