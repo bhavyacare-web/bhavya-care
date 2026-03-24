@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Admin - BhavyaCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; }
+        .sidebar .logo { padding: 20px; font-size: 24px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar .logo span { color: #28a745; }
+        .sidebar .menu { flex: 1; padding: 20px 0; }
+        .sidebar .menu a { display: block; padding: 15px 25px; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .sidebar .menu a:hover, .sidebar .menu a.active { background-color: #004494; border-left: 4px solid #28a745; }
+        .sidebar .menu a i { margin-right: 10px; width: 20px; text-align: center; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header h2 { color: #333; font-size: 22px; }
+        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; cursor: pointer;}
+        .admin-profile i { font-size: 24px; color: #0056b3; }
+
+        .container { padding: 30px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        .input-box { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; width: 100%; }
+        .btn-action { background-color: #0056b3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+
+        .table-wrapper { background: white; border-radius: 8px; overflow-x: auto; margin-top: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 15px 20px; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #333; font-weight: 600; }
+        td { color: #555; font-size: 14px; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .action-btns button { border: none; padding: 8px 12px; margin-right: 5px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-view { background-color: #0056b3; } 
+        .btn-upload { background-color: #17a2b8; }
+        .btn-bill { background-color: #ffc107; color: #333 !important;} 
+
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 600px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto;}
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; }
+        .close-modal:hover { color: #dc3545; }
+        .modal-header { border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-header h3 { color: #0056b3; font-size: 22px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Bhavya<span>Admin</span></div>
+        <div class="menu">
+            <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="patientadmin.html"><i class="fas fa-user-injured"></i> Patients Center</a>
+            <a href="medicineadmin.html" class="active"><i class="fas fa-pills"></i> Medicine Center</a>
+            <a href="#" onclick="alert('Lab Admin page pending')"><i class="fas fa-flask"></i> Labs Center</a>
+            <a href="#" onclick="alert('Doctor Admin page pending')"><i class="fas fa-user-md"></i> Doctors Center</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2>Medicine Action Center</h2>
+            <div class="admin-profile" onclick="window.location.href='../index.html'">
+                <span>Logout Admin</span>
+                <i class="fas fa-sign-out-alt" style="color: #dc3545;"></i>
+            </div>
+        </div>
+
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 10px; top: 12px; color: #888;"></i>
+                    <input type="text" id="searchOrder" class="input-box" style="width: 350px; padding-left: 35px;" placeholder="Search Order ID or Patient ID..." onkeyup="filterTable()">
+                </div>
+                <button class="btn-action" onclick="fetchMedicineOrders()">
+                    <i class="fas fa-sync-alt"></i> Refresh Orders
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order Date</th>
+                            <th>Order ID</th>
+                            <th>Patient ID</th>
+                            <th>Type</th>
+                            <th>Action/Bill</th>
+                        </tr>
+                    </thead>
+                    <tbody id="medicineTableBody">
+                        <tr><td colspan="5" style="text-align: center; padding: 20px;">Fetching medicine orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="billModal" class="modal-bg">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('billModal')">✖</button>
+            <div class="modal-header">
+                <h3>Generate Medicine Bill</h3>
+                <p id="bill-order-id" style="font-weight: bold; color: #666; font-size: 14px; margin-top: 5px;"></p>
+            </div>
+            
+            <div class="form-group">
+                <label>Amount (₹) - Column J</label>
+                <input type="number" id="billAmount" class="input-box" placeholder="e.g. 500">
+            </div>
+            <div class="form-group">
+                <label>Medicine Bill Link/Note - Column K</label>
+                <input type="text" id="billLink" class="input-box" placeholder="Link to PDF or Note">
+            </div>
+            <div class="form-group">
+                <label>Available Medicine & Date/Time - Column L</label>
+                <textarea id="billAvailable" class="input-box" rows="2" placeholder="e.g. Paracetamol ready for dispatch"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Not Available Medicine - Column M</label>
+                <textarea id="billNotAvailable" class="input-box" rows="2" placeholder="e.g. Cough syrup out of stock"></textarea>
+            </div>
+
+            <button id="btn-save-bill" class="btn-action" style="width: 100%; padding: 12px; font-size: 16px; background-color: #28a745;" onclick="saveMedicineBill()">Update & Generate Bill</button>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwENQF42EK93nUjLcTGAp-gIUg0NXfuXvkVUNwQZ277l9EZMSsu2lFlcnzdt8yRJQgG/exec";
+        
+        let allMedicineOrders = []; 
+        let currentOrderIdToUpdate = "";
+
+        window.onload = function() { fetchMedicineOrders(); };
+
+        function fetchMedicineOrders() {
+            const tbody = document.getElementById('medicineTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+
+            fetch(GOOGLE_SCRIPT_URL)
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === "success" && result.medicineOrders) {
+                    allMedicineOrders = result.medicineOrders || [];
+                    renderMedicineOrders();
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No orders found.</td></tr>';
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function renderMedicineOrders() {
+            const tbody = document.getElementById('medicineTableBody');
+            tbody.innerHTML = ""; 
+            if(allMedicineOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No orders found.</td></tr>'; return;
+            }
+            allMedicineOrders.forEach((ord) => {
+                let date = ord.order_date ? new Date(ord.order_date).toLocaleDateString('en-GB') : "N/A";
+                
+                let presBtn = "";
+                if(ord.order_type === "Prescription" && ord.upload_prescription !== "No File") {
+                    presBtn = `<a href="${ord.upload_prescription}" target="_blank" style="text-decoration:none;"><button class="btn-upload"><i class="fas fa-file-pdf"></i> View Prescription</button></a>`;
+                } else {
+                    presBtn = `<button class="btn-view" onclick="alert('Manual Entry: ${ord.medicine_details}')"><i class="fas fa-eye"></i> View Text</button>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${date}</td>
+                        <td><strong>${ord.order_id}</strong></td>
+                        <td>${ord.user_id}</td>
+                        <td>${ord.order_type}</td>
+                        <td class="action-btns">
+                            ${presBtn}
+                            <button class="btn-bill" onclick="openBillModal('${ord.order_id}')"><i class="fas fa-file-invoice-dollar"></i> Generate Bill</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
+
+        function openBillModal(orderId) {
+            currentOrderIdToUpdate = orderId;
+            document.getElementById('bill-order-id').innerText = "Order ID: " + orderId;
+            
+            document.getElementById('billAmount').value = "";
+            document.getElementById('billLink').value = "";
+            document.getElementById('billAvailable').value = "";
+            document.getElementById('billNotAvailable').value = "";
+
+            document.getElementById('billModal').style.display = "flex";
+        }
+
+        function saveMedicineBill() {
+            const amount = document.getElementById('billAmount').value;
+            const btn = document.getElementById('btn-save-bill');
+
+            if(!amount) { alert("Amount bharna zaroori hai!"); return; }
+
+            btn.innerText = "Updating...";
+            btn.disabled = true;
+
+            const payload = {
+                action: "updateMedicineBill",
+                order_id: currentOrderIdToUpdate,
+                amount: amount,
+                medicine_bill: document.getElementById('billLink').value,
+                availble_medicine: document.getElementById('billAvailable').value,
+                not_availble_medicine: document.getElementById('billNotAvailable').value
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === "success") {
+                    alert("Bill & Medicine details updated successfully!");
+                    closeModal('billModal');
+                    fetchMedicineOrders(); 
+                } else {
+                    alert("Error: " + data.message);
+                }
+                btn.innerText = "Update & Generate Bill";
+                btn.disabled = false;
+            })
+            .catch(err => {
+                alert("Network error.");
+                btn.innerText = "Update & Generate Bill";
+                btn.disabled = false;
+            });
+        }
+
+        function filterTable() {
+            let filter = document.getElementById('searchOrder').value.toUpperCase();
+            let trs = document.getElementById('medicineTableBody').getElementsByTagName("tr");
+            for (let i = 0; i < trs.length; i++) {
+                let tds = trs[i].getElementsByTagName("td");
+                let rowText = Array.from(tds).map(td => td.textContent).join(" ").toUpperCase();
+                trs[i].style.display = rowText.includes(filter) ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
