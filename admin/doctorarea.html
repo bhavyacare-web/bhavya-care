@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management - BhavyaCare Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; }
+
+        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; }
+        .sidebar .logo { padding: 20px; font-size: 24px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar .logo span { color: #28a745; }
+        .sidebar .menu { flex: 1; padding: 20px 0; }
+        .sidebar .menu a { display: block; padding: 15px 25px; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .sidebar .menu a:hover, .sidebar .menu a.active { background-color: #004494; border-left: 4px solid #28a745; }
+        .sidebar .menu a i { margin-right: 10px; width: 20px; text-align: center; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header h2 { color: #333; font-size: 22px; }
+        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; cursor: pointer;}
+        .admin-profile i { font-size: 24px; color: #0056b3; }
+
+        .container { padding: 30px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        .input-box { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; width: 100%; }
+        .btn-action { background-color: #0056b3; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+
+        .table-wrapper { background: white; border-radius: 8px; overflow-x: auto; margin-top: 15px; border: 1px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+        th, td { padding: 15px 20px; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #333; font-weight: 600; }
+        td { color: #555; font-size: 14px; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .action-btns button { border: none; padding: 8px 12px; margin-right: 5px; border-radius: 4px; cursor: pointer; color: white; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-view { background-color: #0056b3; } 
+        
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; color: white; }
+        .status-approved { background-color: #28a745; }
+        .status-pending { background-color: #ffc107; color: #333 !important; }
+        .status-rejected { background-color: #dc3545; }
+
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 90%; max-width: 800px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; max-height: 90vh; overflow-y: auto;}
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; }
+        .close-modal:hover { color: #dc3545; }
+        
+        .modal-header { border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { color: #0056b3; font-size: 22px; }
+        
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .detail-box { background: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #eee; }
+        .detail-box label { display: block; font-size: 11px; color: #888; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .detail-box p { font-size: 14px; color: #333; font-weight: 600; margin: 0; word-wrap: break-word;}
+        .full-width { grid-column: span 3; }
+        
+        .docs-area { display: flex; gap: 15px; margin-bottom: 25px; border-top: 1px solid #eee; padding-top: 15px;}
+        .docs-area a { flex: 1; text-align: center; background: #e6f0fa; color: #0056b3; padding: 10px; border-radius: 6px; font-weight: bold; text-decoration: none; border: 1px solid #cce5ff; transition: 0.3s;}
+        .docs-area a:hover { background: #0056b3; color: white; }
+
+        .approval-actions { display: flex; gap: 15px; }
+        .btn-approve { flex: 1; background: #28a745; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer;}
+        .btn-reject { flex: 1; background: #dc3545; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer;}
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">Bhavya<span>Admin</span></div>
+        <div class="menu">
+            <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="patientadmin.html"><i class="fas fa-user-injured"></i> Patients Center</a>
+            <a href="medicineadmin.html"><i class="fas fa-pills"></i> Medicine Center</a>
+            <a href="doctorarea.html" class="active"><i class="fas fa-user-md"></i> Doctors Center</a>
+            <a href="#" onclick="alert('Lab Admin page pending')"><i class="fas fa-flask"></i> Labs Center</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2>Doctors Action Center</h2>
+            <div class="admin-profile" onclick="window.location.href='../index.html'">
+                <span>Logout Admin</span>
+                <i class="fas fa-sign-out-alt" style="color: #dc3545;"></i>
+            </div>
+        </div>
+
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 10px; top: 12px; color: #888;"></i>
+                    <input type="text" id="searchDoctor" class="input-box" style="width: 350px; padding-left: 35px;" placeholder="Search Doctor Name or ID..." onkeyup="filterTable()">
+                </div>
+                <button class="btn-action" onclick="fetchDoctors()">
+                    <i class="fas fa-sync-alt"></i> Refresh List
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Doctor ID</th>
+                            <th>Name</th>
+                            <th>Speciality</th>
+                            <th>City</th>
+                            <th>Verification Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doctorTableBody">
+                        <tr><td colspan="6" style="text-align: center; padding: 20px;">Fetching doctors data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="doctorModal" class="modal-bg">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">✖</button>
+            <div class="modal-header">
+                <h3>Doctor Profile Verification</h3>
+                <span id="mod-status" class="status-badge">Status</span>
+            </div>
+            
+            <div class="details-grid">
+                <div class="detail-box"><label>Doctor ID</label><p id="mod-id">-</p></div>
+                <div class="detail-box"><label>Full Name</label><p id="mod-name">-</p></div>
+                <div class="detail-box"><label>Email</label><p id="mod-email">-</p></div>
+                
+                <div class="detail-box"><label>Speciality</label><p id="mod-speciality">-</p></div>
+                <div class="detail-box"><label>Qualification</label><p id="mod-qual">-</p></div>
+                <div class="detail-box"><label>Experience</label><p id="mod-exp">-</p></div>
+
+                <div class="detail-box full-width"><label>Clinic Name & Address</label><p id="mod-clinic">-</p></div>
+                
+                <div class="detail-box"><label>City / Pincode</label><p id="mod-city-pin">-</p></div>
+                <div class="detail-box"><label>Clinic Fee (₹)</label><p id="mod-fee">-</p></div>
+                <div class="detail-box"><label>Slot Duration</label><p id="mod-slot">-</p></div>
+
+                <div class="detail-box"><label>Service Type</label><p id="mod-service">-</p></div>
+                <div class="detail-box"><label>Online Consultation?</label><p id="mod-online-status">-</p></div>
+                <div class="detail-box"><label>Online Fee (₹)</label><p id="mod-online-fee">-</p></div>
+            </div>
+
+            <div class="docs-area">
+                <a id="btn-view-doc" href="#" target="_blank"><i class="fas fa-file-medical"></i> View Medical Degree/Doc</a>
+                <a id="btn-view-img" href="#" target="_blank"><i class="fas fa-user-circle"></i> View Doctor Photo</a>
+            </div>
+
+            <div class="approval-actions" id="action-buttons-div">
+                <button class="btn-approve" onclick="updateStatus('Approved')"><i class="fas fa-check-circle"></i> Approve Doctor</button>
+                <button class="btn-reject" onclick="updateStatus('Not Approved')"><i class="fas fa-times-circle"></i> Reject Profile</button>
+            </div>
+            
+            <p id="action-loading" style="display:none; text-align:center; color:#0056b3; font-weight:bold; margin-top:10px;">
+                <i class="fas fa-spinner fa-spin"></i> Updating status & sending email...
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 🌟 LATEST GOOGLE APPS SCRIPT URL SET
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_9KIJtcX9sKuNeuKCEGIKxLe1auuzfGyS6o-afQ4H9FKo9o6MrveD0pK0t4MPdYRI/exec"; 
+        
+        let allDoctorsData = []; 
+        let currentDocId = "";
+
+        window.onload = function() { fetchDoctors(); };
+
+        function fetchDoctors() {
+            const tbody = document.getElementById('doctorTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr>';
+
+            fetch(GOOGLE_SCRIPT_URL)
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === "success" && result.doctors) {
+                    allDoctorsData = result.doctors || [];
+                    renderDoctors();
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No doctors found.</td></tr>';
+                }
+            })
+            .catch(error => {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Error connecting to database.</td></tr>';
+            });
+        }
+
+        function renderDoctors() {
+            const tbody = document.getElementById('doctorTableBody');
+            tbody.innerHTML = ""; 
+            if(allDoctorsData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No doctors found.</td></tr>'; return;
+            }
+            
+            allDoctorsData.forEach((doc, index) => {
+                let badge = "status-pending";
+                if(doc.status === "Approved") badge = "status-approved";
+                if(doc.status === "Not Approved") badge = "status-rejected";
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${doc.user_id}</strong></td>
+                        <td>${doc.name}</td>
+                        <td>${doc.speciality}</td>
+                        <td>${doc.city}</td>
+                        <td><span class="status-badge ${badge}">${doc.status}</span></td>
+                        <td class="action-btns">
+                            <button class="btn-view" onclick="openDoctorModal(${index})"><i class="fas fa-eye"></i> Review Details</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function openDoctorModal(index) {
+            const doc = allDoctorsData[index];
+            currentDocId = doc.user_id;
+
+            // Fill Data
+            document.getElementById('mod-id').innerText = doc.user_id;
+            document.getElementById('mod-name').innerText = doc.name;
+            document.getElementById('mod-email').innerText = doc.email;
+            document.getElementById('mod-speciality').innerText = doc.speciality;
+            document.getElementById('mod-qual').innerText = doc.qualification;
+            document.getElementById('mod-exp').innerText = doc.experience + " Years";
+            document.getElementById('mod-clinic').innerText = doc.clinic_name + " - " + doc.clinic_address;
+            document.getElementById('mod-city-pin').innerText = doc.city + " (" + doc.pincode + ")";
+            document.getElementById('mod-fee').innerText = "₹" + doc.clinic_fee;
+            document.getElementById('mod-slot').innerText = doc.slot_duration;
+            document.getElementById('mod-service').innerText = doc.service_type;
+            document.getElementById('mod-online-status').innerText = doc.online_consultation;
+            document.getElementById('mod-online-fee').innerText = doc.online_fee ? "₹" + doc.online_fee : "N/A";
+            
+            // Set Links
+            document.getElementById('btn-view-doc').href = doc.doc_url !== "No File" ? doc.doc_url : "#";
+            document.getElementById('btn-view-img').href = doc.img_url !== "No File" ? doc.img_url : "#";
+
+            // Status Badge
+            const badgeObj = document.getElementById('mod-status');
+            badgeObj.innerText = doc.status;
+            badgeObj.className = "status-badge"; // reset
+            if(doc.status === "Approved") badgeObj.classList.add("status-approved");
+            else if(doc.status === "Not Approved") badgeObj.classList.add("status-rejected");
+            else badgeObj.classList.add("status-pending");
+
+            // Hide action buttons if already approved
+            if(doc.status === "Approved") {
+                document.getElementById('action-buttons-div').style.display = "none";
+            } else {
+                document.getElementById('action-buttons-div').style.display = "flex";
+            }
+
+            document.getElementById('doctorModal').style.display = "flex";
+        }
+
+        function closeModal() { document.getElementById('doctorModal').style.display = "none"; }
+
+        function updateStatus(newStatus) {
+            if(!confirm(`Are you sure you want to mark this Doctor as '${newStatus}'? An email will be sent automatically.`)) return;
+
+            document.getElementById('action-buttons-div').style.display = "none";
+            document.getElementById('action-loading').style.display = "block";
+
+            const payload = {
+                action: "updateDoctorStatus",
+                user_id: currentDocId,
+                new_status: newStatus
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('action-loading').style.display = "none";
+                if(data.status === "success") {
+                    alert("Success: " + data.message);
+                    closeModal();
+                    fetchDoctors(); // Refresh table
+                } else {
+                    alert("Error: " + data.message);
+                    document.getElementById('action-buttons-div').style.display = "flex";
+                }
+            })
+            .catch(err => {
+                alert("Network Error!");
+                document.getElementById('action-loading').style.display = "none";
+                document.getElementById('action-buttons-div').style.display = "flex";
+            });
+        }
+
+        function filterTable() {
+            let filter = document.getElementById('searchDoctor').value.toUpperCase();
+            let trs = document.getElementById('doctorTableBody').getElementsByTagName("tr");
+            for (let i = 0; i < trs.length; i++) {
+                let tds = trs[i].getElementsByTagName("td");
+                let rowText = Array.from(tds).map(td => td.textContent).join(" ").toUpperCase();
+                trs[i].style.display = rowText.includes(filter) ? "" : "none";
+            }
+        }
+    </script>
+</body>
+</html>
