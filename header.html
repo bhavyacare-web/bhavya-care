@@ -13,11 +13,19 @@
     .login-btn { background-color: #0056b3; }
     .login-btn:hover { background-color: #004494; }
 
-    /* 3-Dot Dropdown Menu */
+    /* --- NAYA: Dynamic User Menu Container --- */
+    #user-menu-container { display: none; /* By default hidden rahega, JS ise control karega */ }
+    
+    .user-profile-btn { background: #f4f7f6; color: #0056b3; border: 1px solid #cce5ff; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+    .user-profile-btn:hover { background: #e6f0fa; }
+    .user-profile-btn i { font-size: 16px; }
+
+    /* 3-Dot Dropdown Menu (For both General & Logged In) */
     .dropdown { position: relative; display: inline-block; }
     .dropbtn { background-color: transparent; color: #333; font-size: 24px; border: none; cursor: pointer; padding: 0 5px; font-weight: bold; }
     .dropbtn:hover { color: #0056b3; }
-    .dropdown-content { display: none; position: absolute; right: 0; background-color: #ffffff; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 1001; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+    
+    .dropdown-content { display: none; position: absolute; right: 0; background-color: #ffffff; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 1001; border-radius: 8px; overflow: hidden; border: 1px solid #eee; margin-top: 10px;}
     .dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; border-bottom: 1px solid #f4f4f4; font-weight: 500; }
     .dropdown-content a:hover { background-color: #f9f9f9; color: #0056b3; }
     .show-menu { display: block; }
@@ -73,14 +81,26 @@
     <div class="logo"><h2>Bhavya<span>Care</span></h2></div>
     <div class="nav-actions">
         <a href="#" class="cart-btn">🛒 Cart <span id="cart-count">0</span></a>
+        
         <button id="nav-login-btn" class="btn login-btn" onclick="openPatientLogin()">Login</button>
+        
         <div class="dropdown">
-            <button class="dropbtn" onclick="toggleMenu()">⋮</button>
+            <button id="main-menu-btn" class="dropbtn" onclick="toggleMenu()">⋮</button>
+            
+            <div id="user-menu-container">
+                 <button class="user-profile-btn" onclick="toggleMenu()">
+                     <i class="fas fa-user-circle"></i> My Account
+                 </button>
+            </div>
+
             <div id="myDropdown" class="dropdown-content">
                 <a href="#" id="menu-join" onclick="openPartnerLogin()">🤝 Join Us (Partner)</a>
+                
                 <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;">📊 My Dashboard</a>
-                <a href="admin/admin.html" id="menu-admin" style="color: #0056b3;"><i class="fas fa-user-shield"></i> 🛡️ Admin Panel</a>
+                <a href="#" id="menu-orders" style="display: none;" onclick="alert('Your Orders page pending')">📦 My Orders</a>
                 <a href="#" id="menu-logout" onclick="logoutUser()" style="display: none; color: #e74c3c;">🚪 Logout</a>
+                
+                <a href="admin/admin.html" id="menu-admin" style="color: #0056b3; border-top: 1px solid #eee;"><i class="fas fa-user-shield"></i> 🛡️ Admin Panel</a>
             </div>
         </div>
     </div>
