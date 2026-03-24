@@ -81,23 +81,18 @@
         </div>
     </div>
 
+    <script src="app.js"></script>
+
     <script>
-        // --- 1. DYNAMICALLY LOAD HEADER & APP.JS ---
+        // --- 1. DYNAMICALLY LOAD HEADER ---
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
-                
-                // Load app.js ONLY after header is loaded to avoid errors
-                let script = document.createElement('script');
-                script.src = 'app.js';
-                document.body.appendChild(script);
             })
             .catch(error => console.error('Error loading header:', error));
 
-
         // --- 2. MEDICINE ORDER LOGIC ---
-        // Tumhara latest Apps Script URL
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqsEyj3cXaA1ScB-cBn19s-WYuHLXj66KjZtlWMh0D321CeZ-WFnVgsqXqG6GKSrMi/exec";
         let currentType = 'Prescription';
 
@@ -115,7 +110,6 @@
             document.getElementById('address-sec').style.display = mode === 'Home Delivery' ? 'block' : 'none';
         }
 
-        // Convert Image to Base64 Text
         function getBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -130,13 +124,9 @@
             const userId = localStorage.getItem("bhavya_user_id");
             
             if (!userId) {
-                // Trigger auto-login popup from app.js if user is not logged in
-                if (typeof openPatientLogin === "function") {
-                    alert("Please log in to your account to place a medicine order.");
-                    openPatientLogin(); 
-                } else {
-                    alert("System loading. Please try again in a second.");
-                }
+                // 🌟 FIX: Ab ye directly app.js ka function bula lega bina fail hue
+                alert("Please log in to your account to place a medicine order.");
+                openPatientLogin(); 
                 return;
             }
 
@@ -146,7 +136,6 @@
             
             let fileData = null;
 
-            // --- VALIDATION: Prescription Mode ---
             if (currentType === 'Prescription') {
                 const fileInput = document.getElementById('presFile');
                 if (fileInput.files.length === 0) {
@@ -180,9 +169,7 @@
                     btn.disabled = false;
                     return;
                 }
-            } 
-            // --- VALIDATION: Manual Mode ---
-            else {
+            } else {
                 const details = document.getElementById('medDetails').value.trim();
                 if (details === "") {
                     alert("Please provide the medicine details and quantities.");
@@ -192,7 +179,6 @@
                 btn.disabled = true;
             }
 
-            // --- PREPARE DATA TO SEND ---
             const payload = {
                 action: "orderMedicine",
                 user_id: userId,
@@ -204,7 +190,6 @@
                 address: document.getElementById('deliveryAddress').value
             };
 
-            // --- SEND TO BACKEND (APPS SCRIPT) ---
             fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
