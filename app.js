@@ -9,16 +9,11 @@ const firebaseConfig = {
     measurementId: "G-G82G4VWGGT"
 };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-// 🌟 LATEST GOOGLE APPS SCRIPT URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdVK-JKlIzj6l92ccXBgleiiX5Td1p9j-7NZZiY91l3OyZnjhCq41ZwlP94Jp4Mc8G/exec";
-
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-HbUh6_NCHCkyzzfNernbZPLBULsCr3HiCXWhat931_hXTMbAcLpH8seGeGPPuHQr/exec";
 let isPartnerMode = false;
 
-// Session Watcher
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
         if (!localStorage.getItem("bhavya_mobile")) {
@@ -26,40 +21,32 @@ firebase.auth().onAuthStateChanged(function(user) {
             localStorage.setItem("bhavya_mobile", user.phoneNumber);
         }
         checkLoginState();
+        checkProfileBanner(); // Banner check karo
     } else {
-        localStorage.removeItem("bhavya_mobile");
-        localStorage.removeItem("bhavya_uid");
-        localStorage.removeItem("bhavya_role");
-        localStorage.removeItem("bhavya_user_id");
+        localStorage.clear();
         checkLoginState();
+        checkProfileBanner();
     }
 });
 
-// UI Initialization
 function initApp() {
     const loginBtn = document.getElementById('nav-login-btn');
-    if (loginBtn) checkLoginState();
+    if (loginBtn) { checkLoginState(); checkProfileBanner(); }
     else setTimeout(initApp, 100); 
 }
 initApp();
 
-// Menu Logic
-function toggleMenu() {
-    document.getElementById("myDropdown").classList.toggle("show-menu");
-}
+function toggleMenu() { document.getElementById("myDropdown").classList.toggle("show-menu"); }
 
 window.onclick = function(event) {
     if (!event.target.matches('.dropbtn') && !event.target.matches('.user-profile-btn') && !event.target.matches('.fa-user-circle')) {
         var dropdowns = document.getElementsByClassName("dropdown-content");
         for (var i = 0; i < dropdowns.length; i++) {
-            if (dropdowns[i].classList.contains('show-menu')) {
-                dropdowns[i].classList.remove('show-menu');
-            }
+            if (dropdowns[i].classList.contains('show-menu')) dropdowns[i].classList.remove('show-menu');
         }
     }
 }
 
-// Login State Control
 function checkLoginState() {
     const savedMobile = localStorage.getItem("bhavya_mobile");
     const navLoginBtn = document.getElementById('nav-login-btn');
@@ -90,7 +77,29 @@ function checkLoginState() {
     }
 }
 
-// Login Popups
+// 🌟 NAYA: Check Profile Banner Logic
+function checkProfileBanner() {
+    const isSkipped = localStorage.getItem("bhavya_profile_skipped");
+    const role = localStorage.getItem("bhavya_role");
+    let banner = document.getElementById("profile-warning-banner");
+    
+    if(isSkipped === "true" && role) {
+        if(banner) banner.style.display = "block";
+    } else {
+        if(banner) banner.style.display = "none";
+    }
+}
+
+// 🌟 NAYA: Reopen Form from Banner
+function reopenProfileForm() {
+    const role = localStorage.getItem("bhavya_role");
+    if(role === 'doctor') {
+        document.getElementById('doctor-profile-section').style.display = 'block';
+    } else {
+        document.getElementById('profile-form-section').style.display = 'block';
+    }
+}
+
 function openPatientLogin() {
     isPartnerMode = false;
     document.getElementById('partner-role-container').style.display = 'none';
@@ -115,7 +124,6 @@ function showLoginPopup() {
 
 function closeLoginPopup() { document.getElementById('login-section').style.display = 'none'; }
 
-// Firebase OTP Auth
 function setupRecaptcha() {
     if (document.getElementById('recaptcha-container') && !window.recaptchaVerifier) {
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'normal' });
@@ -147,7 +155,6 @@ function verifyOTP() {
         if (selectedRole === 'patient') prefix = "P"; else if (selectedRole === 'doctor') prefix = "D";
         else if (selectedRole === 'lab') prefix = "L"; else if (selectedRole === 'pharmacy') prefix = "PH";
         else if (selectedRole === 'hospital') prefix = "H"; else if (selectedRole === 'executive') prefix = "E";
-        
         let userId = prefix + user.phoneNumber.slice(-6);
 
         localStorage.setItem("bhavya_uid", user.uid);
@@ -162,7 +169,6 @@ function verifyOTP() {
 
         closeLoginPopup();
 
-        // 🌟 Role-based Form Routing
         if (selectedRole === 'patient') {
             document.getElementById('profile-form-section').style.display = 'block';
         } else if (selectedRole === 'doctor') {
@@ -171,13 +177,12 @@ function verifyOTP() {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
         }
-
     }).catch((error) => { alert("Invalid OTP! Please try again."); });
 }
 
-// ---------------- COMMON FUNCTIONS ---------------- //
 function logoutUser() {
     firebase.auth().signOut().then(() => {
+        localStorage.clear();
         alert("You have successfully logged out!");
         window.location.reload(); 
     }).catch((err) => { console.error("Logout Error:", err); });
@@ -189,10 +194,16 @@ function goToDashboard() {
     else alert("Role not found. Please log in again.");
 }
 
+// 🌟 NAYA: Handle Skipped Form
 function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
-    alert("Welcome to BhavyaCare.");
+    
+    // Set skip flag
+    localStorage.setItem("bhavya_profile_skipped", "true");
+    checkProfileBanner();
+    
+    alert("Welcome to BhavyaCare. Please complete your profile later from the banner above.");
     checkLoginState(); 
 }
 
@@ -229,14 +240,27 @@ function savePatientProfile() {
     .then(data => {
         alert("Profile saved successfully! You are ready to book tests.");
         saveBtn.innerText = "Save & Continue"; saveBtn.style.backgroundColor = "#28a745";
-        closeProfileForm('patient');
+        localStorage.removeItem("bhavya_profile_skipped"); // Clear skip flag
+        checkProfileBanner();
+        document.getElementById('profile-form-section').style.display = 'none';
     })
     .catch(error => {
-        alert("Profile data saved successfully!"); closeProfileForm('patient');
+        alert("Network Error!"); document.getElementById('profile-form-section').style.display = 'none';
     });
 }
 
 // ---------------- DOCTOR PROFILE LOGIC ---------------- //
+// 🌟 NAYA: Toggle Online Fields
+function toggleOnlineFields() {
+    const val = document.getElementById('docOnlineConsult').value;
+    const container = document.getElementById('online-fields-container');
+    if(val === "Yes") {
+        container.style.display = "grid"; // Show
+    } else {
+        container.style.display = "none"; // Hide
+    }
+}
+
 function getBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader(); reader.readAsDataURL(file);
@@ -256,7 +280,7 @@ async function saveDoctorProfile() {
         alert("Please fill all required fields and select both Document and Image files."); return;
     }
 
-    const maxSize = 2 * 1024 * 1024; // 2MB Limit
+    const maxSize = 2 * 1024 * 1024; // 2MB
     if (docFile.size > maxSize || docImage.size > maxSize) {
         alert("File size too large! Please keep document and image under 2MB each."); return;
     }
@@ -269,6 +293,12 @@ async function saveDoctorProfile() {
         const docB64 = await getBase64(docFile);
         const imgB64 = await getBase64(docImage);
 
+        // NAYA: Handle Optional Online fields
+        const isOnline = document.getElementById('docOnlineConsult').value;
+        const onlineFee = isOnline === "Yes" ? document.getElementById('docOnlineFee').value.trim() : "";
+        const onlineStart = isOnline === "Yes" ? document.getElementById('docOnlineStart').value : "";
+        const onlineEnd = isOnline === "Yes" ? document.getElementById('docOnlineEnd').value : "";
+
         const payload = {
             action: "saveDoctorProfile",
             user_id: userId, doctor_name: name, doctor_email: document.getElementById('docEmail').value.trim(),
@@ -276,8 +306,11 @@ async function saveDoctorProfile() {
             experience: document.getElementById('docExp').value.trim(), clinic_name: document.getElementById('docClinicName').value.trim(),
             clinic_address: document.getElementById('docClinicAddress').value.trim(), city: document.getElementById('docCity').value.trim(),
             pincode: document.getElementById('docPincode').value.trim(), clinic_fee: document.getElementById('docClinicFee').value.trim(),
-            service_type: document.getElementById('docServiceType').value, online_consultation: document.getElementById('docOnlineConsult').value,
-            online_fee: document.getElementById('docOnlineFee').value.trim(), slot_duration: document.getElementById('docSlotDuration').value,
+            service_type: document.getElementById('docServiceType').value, // Ab ye "Doctor" bhejega automatically
+            
+            online_consultation: isOnline,
+            online_fee: onlineFee, 
+            slot_duration: document.getElementById('docSlotDuration').value,
             
             mon_open: document.getElementById('monOpen').value, mon_close: document.getElementById('monClose').value,
             tue_open: document.getElementById('tueOpen').value, tue_close: document.getElementById('tueClose').value,
@@ -286,7 +319,8 @@ async function saveDoctorProfile() {
             fri_open: document.getElementById('friOpen').value, fri_close: document.getElementById('friClose').value,
             sat_open: document.getElementById('satOpen').value, sat_close: document.getElementById('satClose').value,
             sun_open: document.getElementById('sunOpen').value, sun_close: document.getElementById('sunClose').value,
-            online_start: document.getElementById('docOnlineStart').value, online_end: document.getElementById('docOnlineEnd').value,
+            
+            online_start: onlineStart, online_end: onlineEnd,
 
             docData: { base64: docB64.split(',')[1], filename: userId + "_Doc_" + docFile.name, mimeType: docFile.type },
             imageData: { base64: imgB64.split(',')[1], filename: userId + "_Img_" + docImage.name, mimeType: docImage.type }
@@ -297,7 +331,9 @@ async function saveDoctorProfile() {
         
         if (data.status === "success") {
             alert("Your profile has been submitted successfully for verification!");
-            closeProfileForm('doctor');
+            localStorage.removeItem("bhavya_profile_skipped"); // Clear skip flag
+            checkProfileBanner();
+            document.getElementById('doctor-profile-section').style.display = 'none';
         } else {
             alert("Server Error: " + data.message);
         }
