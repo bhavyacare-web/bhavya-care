@@ -93,9 +93,11 @@
             .catch(error => console.error('Error loading header:', error));
 
         // --- 2. MEDICINE ORDER LOGIC ---
+        // AAPKA NAYA SCRIPT URL
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzF36rQGMmSRiJj86e0vjVrtVsiZUyCu_IIO1OirOoHJdFWz831aa3WXe4pO6njIelp/exec";
         let currentType = 'Prescription';
 
+        // UI Toggles
         function toggleOrderType(type, btn) {
             currentType = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -110,6 +112,7 @@
             document.getElementById('address-sec').style.display = mode === 'Home Delivery' ? 'block' : 'none';
         }
 
+        // Base64 File Converter
         function getBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -119,14 +122,17 @@
             });
         }
 
+        // Main Order Submission
         async function submitOrder() {
             // Check if user is logged in
             const userId = localStorage.getItem("bhavya_user_id");
             
             if (!userId) {
-                // 🌟 FIX: Ab ye directly app.js ka function bula lega bina fail hue
+                // 🌟 SUCCESS FIX: Ab ye bina error ke directly app.js ka popup open karega
                 alert("Please log in to your account to place a medicine order.");
-                openPatientLogin(); 
+                if(typeof openPatientLogin === "function") {
+                    openPatientLogin(); 
+                }
                 return;
             }
 
@@ -136,6 +142,7 @@
             
             let fileData = null;
 
+            // --- VALIDATION: Prescription Mode ---
             if (currentType === 'Prescription') {
                 const fileInput = document.getElementById('presFile');
                 if (fileInput.files.length === 0) {
@@ -169,7 +176,9 @@
                     btn.disabled = false;
                     return;
                 }
-            } else {
+            } 
+            // --- VALIDATION: Manual Mode ---
+            else {
                 const details = document.getElementById('medDetails').value.trim();
                 if (details === "") {
                     alert("Please provide the medicine details and quantities.");
@@ -179,6 +188,7 @@
                 btn.disabled = true;
             }
 
+            // --- PREPARE DATA TO SEND ---
             const payload = {
                 action: "orderMedicine",
                 user_id: userId,
@@ -190,6 +200,7 @@
                 address: document.getElementById('deliveryAddress').value
             };
 
+            // --- SEND TO BACKEND (APPS SCRIPT) ---
             fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
