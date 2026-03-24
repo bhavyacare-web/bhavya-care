@@ -44,8 +44,8 @@
             <a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
             <a href="patientadmin.html"><i class="fas fa-user-injured"></i> Patients Center</a>
             <a href="medicineadmin.html"><i class="fas fa-pills"></i> Medicine Center</a>
+            <a href="doctorarea.html"><i class="fas fa-user-md"></i> Doctors Center</a>
             <a href="#" onclick="alert('Lab Admin page pending')"><i class="fas fa-flask"></i> Labs Center</a>
-            <a href="#" onclick="alert('Doctor Admin page pending')"><i class="fas fa-user-md"></i> Doctors Center</a>
             <a style="margin-top: 50px; color: #ffcccc;" href="../index.html"><i class="fas fa-home"></i> Back to Website</a>
         </div>
     </div>
@@ -77,32 +77,47 @@
                     </div>
                 </a>
                 
-                <div class="stat-card" style="border-left-color: #28a745;">
+                <a href="doctorarea.html" class="stat-card" style="border-left-color: #28a745; text-decoration: none;">
                     <div class="stat-icon" style="color: #28a745; background: #e8f5e9;"><i class="fas fa-user-md"></i></div>
                     <div class="stat-info">
-                        <h3>0</h3>
-                        <p>Active Doctors</p>
+                        <h3 id="dash-doctor-count">...</h3>
+                        <p>Total Doctors</p>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <h3 style="margin-bottom: 10px; color: #0056b3;">Welcome to Master Control</h3>
-                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu se specific center (jaise Patients ya Medicine) choose karein aage ki processing ke liye.</p>
+                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu ya upar diye gaye cards par click karke specific center (jaise Patients, Medicine ya Doctors) mein enter karein.</p>
             </div>
         </div>
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwENQF42EK93nUjLcTGAp-gIUg0NXfuXvkVUNwQZ277l9EZMSsu2lFlcnzdt8yRJQgG/exec";
+        // 🌟 LATEST GOOGLE SCRIPT URL
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_9KIJtcX9sKuNeuKCEGIKxLe1auuzfGyS6o-afQ4H9FKo9o6MrveD0pK0t4MPdYRI/exec";
 
         window.onload = function() {
             fetch(GOOGLE_SCRIPT_URL)
             .then(response => response.json())
             .then(result => {
                 if(result.status === "success") {
-                    if(result.data) document.getElementById('dash-patient-count').innerText = result.data.length;
-                    if(result.medicineOrders) document.getElementById('dash-medicine-count').innerText = result.medicineOrders.length;
+                    // Update Patient Count
+                    if(result.data) {
+                        document.getElementById('dash-patient-count').innerText = result.data.length;
+                    }
+                    // Update Medicine Orders Count
+                    if(result.medicineOrders) {
+                        document.getElementById('dash-medicine-count').innerText = result.medicineOrders.length;
+                    }
+                    // Update Doctor Count
+                    if(result.doctors) {
+                        document.getElementById('dash-doctor-count').innerText = result.doctors.length;
+                        /* Optional: Agar sirf 'Approved' doctor ka count dikhana ho toh isey use karein:
+                        const approvedDocs = result.doctors.filter(d => d.status === "Approved").length;
+                        document.getElementById('dash-doctor-count').innerText = approvedDocs;
+                        */
+                    }
                 }
             })
             .catch(error => console.error('Error fetching dashboard counts:', error));
