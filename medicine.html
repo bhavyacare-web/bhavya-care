@@ -93,8 +93,10 @@
             .catch(error => console.error('Error loading header:', error));
 
         // --- 2. MEDICINE ORDER LOGIC ---
-        // AAPKA NAYA SCRIPT URL
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzF36rQGMmSRiJj86e0vjVrtVsiZUyCu_IIO1OirOoHJdFWz831aa3WXe4pO6njIelp/exec";
+        
+        // 🌟 BUG FIX: Naam change kar diya taaki app.js ke sath clash na ho!
+        const MEDICINE_API_URL = "https://script.google.com/macros/s/AKfycbzF36rQGMmSRiJj86e0vjVrtVsiZUyCu_IIO1OirOoHJdFWz831aa3WXe4pO6njIelp/exec";
+        
         let currentType = 'Prescription';
 
         // UI Toggles
@@ -128,7 +130,6 @@
             const userId = localStorage.getItem("bhavya_user_id");
             
             if (!userId) {
-                // 🌟 SUCCESS FIX: Ab ye bina error ke directly app.js ka popup open karega
                 alert("Please log in to your account to place a medicine order.");
                 if(typeof openPatientLogin === "function") {
                     openPatientLogin(); 
@@ -200,8 +201,8 @@
                 address: document.getElementById('deliveryAddress').value
             };
 
-            // --- SEND TO BACKEND (APPS SCRIPT) ---
-            fetch(GOOGLE_SCRIPT_URL, {
+            // --- SEND TO BACKEND (Yahan MEDICINE_API_URL use kiya hai) ---
+            fetch(MEDICINE_API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify(payload)
