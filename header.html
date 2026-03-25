@@ -221,7 +221,8 @@
         <div class="hosp-tab-btn active" onclick="switchHospTab(event, 'tab-basic')">1. Basic Info</div>
         <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-charges')">2. Room Charges</div>
         <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-tpa')">3. Insurances</div>
-        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-surgeries')">4. Surgeries Pricing</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-surgeries')">4. Surgeries</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-docs')">5. Documents</div>
     </div>
 
     <form id="hospitalForm">
@@ -234,8 +235,10 @@
                 <input type="email" id="hospEmail" class="input-box"></div>
             <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Address *</label>
                 <input type="text" id="hospAddress" class="input-box"></div>
-            <div><label style="font-size: 13px; font-weight: bold;">NABH Accredited?</label>
-                <select id="hospNabh" class="input-box"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+            
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Basic Facilities (Type comma separated)</label>
+                <textarea id="hospFacilities" class="input-box" rows="2" placeholder="e.g. 24x7 Emergency, Ambulance, Kitchen, Pharmacy..."></textarea>
+            </div>
         </div>
 
         <div id="tab-charges" class="hosp-tab-content form-grid">
@@ -249,19 +252,30 @@
                 <input type="number" id="hospDocConsult" class="input-box" placeholder="₹"></div>
         </div>
 
-        <div id="tab-tpa" class="hosp-tab-content">
-            <label style="font-size: 13px; font-weight: bold; color: #0056b3;">Empanelled Insurances, TPAs & Govt. Schemes</label>
-            <p style="font-size: 12px; color: #666; margin-bottom: 5px;">Type the names separated by commas (e.g. Ayushman Bharat, CGHS, Star Health, HDFC Ergo)</p>
-            <textarea id="hospInsurances" class="input-box" rows="4" placeholder="Enter your cashless government, private insurance & TPAs here..."></textarea>
+        <div id="tab-tpa" class="hosp-tab-content form-grid">
+            <div class="full-width">
+                <label style="font-size: 13px; font-weight: bold;">Empanelled Insurances, TPAs & Govt. Schemes</label>
+                <textarea id="hospInsurances" class="input-box" rows="2" placeholder="e.g. Ayushman Bharat, CGHS, Star Health..."></textarea>
+            </div>
+            <div><label style="font-size: 13px; font-weight: bold;">Cashless Facility?</label>
+                <select id="hospCashless" class="input-box"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Reimbursement Accepted?</label>
+                <select id="hospReimbursement" class="input-box"><option value="Yes">Yes</option><option value="No">No</option></select></div>
         </div>
 
         <div id="tab-surgeries" class="hosp-tab-content">
             <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Type the surgery name and enter the package rates. Click '+ Add More' for another surgery.</p>
-            
-            <div id="dynamic-surgeries-container">
-                </div>
-            
+            <div id="dynamic-surgeries-container"></div>
             <button type="button" class="btn" style="background-color: #28a745; width: 100%; margin-top: 10px;" onclick="addSurgeryRow()">➕ Add Another Surgery Package</button>
+        </div>
+
+        <div id="tab-docs" class="hosp-tab-content form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Hospital Image / Photo (Max 2MB)</label>
+                <input type="file" id="hospImg" class="input-box" accept="image/*"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Hospital Reg. Document (Max 2MB)</label>
+                <input type="file" id="hospDoc" class="input-box"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">NABH / NABL Certificate (Optional)</label>
+                <input type="file" id="hospCert" class="input-box"></div>
         </div>
 
         <button type="button" id="btn-save-hospital" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #17a2b8;" onclick="saveHospitalProfile()">Submit Hospital Details</button>
