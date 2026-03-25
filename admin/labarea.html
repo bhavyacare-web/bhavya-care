@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Lab Approvals | BhavyaCare</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .header h2 { margin: 0; color: #8e44ad; } /* Lab color theme */
+        
+        .table-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; color: #333; }
+        tr:hover { background-color: #f9f2fb; }
+        
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-inactive { background: #ffeeba; color: #856404; }
+        .badge-active { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+
+        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; color: white; margin-right: 5px; transition: 0.2s;}
+        .btn-view { background-color: #17a2b8; }
+        .btn-approve { background-color: #28a745; }
+        .btn-reject { background-color: #dc3545; }
+        .btn:hover { opacity: 0.8; }
+
+        /* Modal CSS */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: #fff; margin: 3% auto; padding: 25px; border-radius: 10px; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #aaa; }
+        .close-modal:hover { color: red; }
+        
+        .data-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;}
+        .data-box h4 { margin-top: 0; color: #8e44ad; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+        .doc-link { display: inline-block; background: #e9ecef; padding: 5px 10px; margin: 5px; border-radius: 5px; text-decoration: none; color: #8e44ad; font-weight: bold; font-size: 13px;}
+        
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 14px; }
+        .services-grid label { display: flex; align-items: center; gap: 8px; background: white; padding: 8px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; }
+        .services-grid label:hover { border-color: #8e44ad; }
+        
+        .action-bar { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>🔬 Diagnostic Lab Approvals</h2>
+    <a href="admin.html" style="text-decoration: none; color: #555; font-weight: bold;">⬅ Back to Dashboard</a>
+</div>
+
+<div class="table-container">
+    <table id="labTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Lab ID</th>
+                <th>Lab Name</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="labTableBody">
+            <tr><td colspan="6" style="text-align: center; padding: 20px;">Loading Labs...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 id="modal-lab-name" style="color: #8e44ad; margin-top: 0;">Lab Name</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="data-box">
+                <h4>Contact & Address</h4>
+                <p id="modal-contact"></p>
+            </div>
+            <div class="data-box">
+                <h4>Uploaded Documents</h4>
+                <div id="modal-docs"></div>
+            </div>
+        </div>
+
+        <div class="data-box">
+            <h4>Verify & Approve Services</h4>
+            <p style="font-size: 12px; color: #dc3545; margin-bottom: 10px; font-weight: bold;">⚠️ Admin Control: Uncheck the services you want to reject before approving.</p>
+            <div id="modal-services" class="services-grid">
+                </div>
+        </div>
+
+        <div class="action-bar" id="modal-action-bar">
+            </div>
+    </div>
+</div>
+
+<script>
+    // 🌟 TUMHARA LATEST NAYA G-Script URL
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx63ClqQBQ6XXfVb7B-JRl2MG47H12zL_uYgYcgt1gY6fnrvlcoYFCMTUSsOL9ebEc4/exec";
+    let globalLabs = [];
+    let currentViewingUserId = null;
+
+    const ALL_SERVICES = [
+        "pathology_lab", "package_lab", "usg_lab", "xray_lab", "ct__lab", "mri_lab", 
+        "ecg_lab", "echo_lab", "tml_lab", "eeg_lab", "pft_lab", "holter_lab", "abp_lab", 
+        "ncv_emg_lab", "ssep_lab", "evoked_potentiat_lab", "sleep_study_lab", 
+        "mammography_lab", "dlco_lab", "endoscopy_lab", "colonoscopy"
+    ];
+
+    function fetchLabs() {
+        fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(response => {
+                if (response.status === "success") {
+                    globalLabs = response.labs || [];
+                    renderTable();
+                } else {
+                    alert("Failed to load data.");
+                }
+            }).catch(err => console.log(err));
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('labTableBody');
+        tbody.innerHTML = "";
+
+        if (globalLabs.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No labs found.</td></tr>";
+            return;
+        }
+
+        globalLabs.forEach((lab, index) => {
+            let statusBadge = "badge-inactive";
+            if (lab.status === "Active") statusBadge = "badge-active";
+            else if (lab.status === "Rejected") statusBadge = "badge-rejected";
+
+            let row = `<tr>
+                <td>${new Date(lab.Timestamp).toLocaleDateString()}</td>
+                <td><strong>${lab.user_id}</strong></td>
+                <td>${lab.lab_name || "N/A"}</td>
+                <td>${lab.city || "N/A"}</td>
+                <td><span class="badge ${statusBadge}">${lab.status || "Inactive"}</span></td>
+                <td><button class="btn btn-view" onclick="viewDetails(${index})">👁️ Review Lab</button></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function viewDetails(index) {
+        const lab = globalLabs[index];
+        currentViewingUserId = lab.user_id;
+        document.getElementById('modal-lab-name').innerText = (lab.lab_name || "Lab") + " (" + lab.user_id + ")";
+        
+        // 1. Contact & Address
+        document.getElementById('modal-contact').innerHTML = `
+            <b>Email:</b> ${lab.lab_email || 'N/A'}<br>
+            <b>City:</b> ${lab.city || 'N/A'} - ${lab.pincode || ''}<br>
+            <b>Address:</b> ${lab.lab_address || 'N/A'}
+        `;
+
+        // 2. Documents (Drive Links)
+        let docHtml = "";
+        if(lab.lab_registration_docoment) docHtml += `<a href="${lab.lab_registration_docoment}" class="doc-link" target="_blank">📄 Reg. Document</a>`;
+        if(lab.lab_image1) docHtml += `<a href="${lab.lab_image1}" class="doc-link" target="_blank">🖼️ Image 1</a>`;
+        if(lab.lab_image2) docHtml += `<a href="${lab.lab_image2}" class="doc-link" target="_blank">🖼️ Image 2</a>`;
+        if(lab.lab_image3) docHtml += `<a href="${lab.lab_image3}" class="doc-link" target="_blank">🖼️ Image 3</a>`;
+        document.getElementById('modal-docs').innerHTML = docHtml || "No documents uploaded.";
+
+        // 3. Render Editable Services
+        let srvHtml = "";
+        ALL_SERVICES.forEach(key => {
+            // Lab ne form me jo Yes kiya hoga, usme checked aayega
+            let isChecked = (lab[key] === "Yes") ? "checked" : "";
+            let displayName = key.replace(/_lab/g, '').replace(/_/g, ' ').toUpperCase();
+            
+            // Only highlight the ones lab requested
+            let bgColor = (lab[key] === "Yes") ? "background: #fdf5ff;" : ""; 
+
+            srvHtml += `<label style="${bgColor}"><input type="checkbox" class="admin-srv-chk" value="${key}" ${isChecked}> ${displayName}</label>`;
+        });
+        document.getElementById('modal-services').innerHTML = srvHtml;
+
+        // 4. Set Action Buttons based on status
+        let actionHtml = "";
+        if (lab.status !== "Active") {
+            actionHtml += `<button class="btn btn-approve" style="padding:12px 25px; font-size:16px;" onclick="approveLab()">✅ Save Services & Approve Lab</button>`;
+        }
+        if (lab.status !== "Rejected") {
+            actionHtml += `<button class="btn btn-reject" style="padding:12px 25px; font-size:16px;" onclick="rejectLab()">❌ Reject Lab</button>`;
+        }
+        document.getElementById('modal-action-bar').innerHTML = actionHtml;
+
+        document.getElementById('detailsModal').style.display = "block";
+    }
+
+    function closeModal() { 
+        document.getElementById('detailsModal').style.display = "none"; 
+        currentViewingUserId = null;
+    }
+
+    // 🌟 APPROVE LAB LOGIC (Sends checked services to backend)
+    function approveLab() {
+        if(!confirm("Are you sure? This will send an approval email to the lab with the TICKED services only.")) return;
+        
+        // Gather current checkbox states
+        let approvedServices = {};
+        document.querySelectorAll('.admin-srv-chk').forEach(chk => {
+            approvedServices[chk.value] = chk.checked ? "Yes" : "No";
+        });
+
+        const payload = {
+            action: "updateLabStatus",
+            user_id: currentViewingUserId,
+            new_status: "Active",
+            approved_services: approvedServices // Sending updated services
+        };
+
+        sendUpdateToBackend(payload);
+    }
+
+    function rejectLab() {
+        if(!confirm("Are you sure you want to REJECT this lab?")) return;
+        sendUpdateToBackend({ action: "updateLabStatus", user_id: currentViewingUserId, new_status: "Rejected" });
+    }
+
+    function sendUpdateToBackend(payload) {
+        document.getElementById('modal-action-bar').innerHTML = "<b>Processing... Please wait...</b>";
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === "success") {
+                alert(`Lab successfully updated! An email notification has been sent.`);
+                closeModal();
+                fetchLabs(); // Refresh table
+            } else {
+                alert("Error: " + data.message);
+                closeModal();
+            }
+        });
+    }
+
+    // Load data on start
+    window.onload = fetchLabs; 
+</script>
+
+</body>
+</html>
