@@ -11,7 +11,8 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJyrw4TfXI3-2dFQ1oqluakXhP_-MTj3FDAvw5ka54eMjU65KqZvpxR_nQ_hRqwJ1F/exec";
+// 🌟 LATEST GOOGLE SCRIPT URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmuom2FixrNacF2UvsN6LqJySNs0RBe9wwB78aqyMu2qAq-rYO1mUt6wMwta091JJX/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -77,7 +78,6 @@ function checkLoginState() {
     }
 }
 
-// 🌟 FIXED: Ab Hospital ko bhi Banner dikhega Skip karne par
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
@@ -91,6 +91,8 @@ function checkProfileBanner() {
         
         if (role === 'hospital') {
             bannerText.innerHTML = "🏥 <b>Action Required:</b> Please complete your Hospital Profile to activate your account.";
+        } else if (role === 'lab') { // 🌟 LAB ADDED
+            bannerText.innerHTML = "🔬 <b>Action Required:</b> Please complete your Lab Profile to start receiving test bookings.";
         } else if (role === 'doctor') {
             bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
         } else {
@@ -107,6 +109,8 @@ function reopenProfileForm() {
         document.getElementById('doctor-profile-section').style.display = 'block';
     } else if(role === 'hospital') {
         document.getElementById('hospital-profile-section').style.display = 'block';
+    } else if(role === 'lab') { // 🌟 LAB ADDED
+        document.getElementById('lab-profile-section').style.display = 'block';
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
     }
@@ -187,6 +191,8 @@ function verifyOTP() {
             document.getElementById('doctor-profile-section').style.display = 'block';
         } else if (selectedRole === 'hospital') {
             document.getElementById('hospital-profile-section').style.display = 'block';
+        } else if (selectedRole === 'lab') { // 🌟 LAB ADDED
+            document.getElementById('lab-profile-section').style.display = 'block';
         } else {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
@@ -212,8 +218,6 @@ function logoutUser() {
 function goToDashboard() {
     const role = localStorage.getItem("bhavya_role");
     if(role === "hospital") {
-        // Hospital ke liye specific dashboard redirect (jab dashboard file ready hogi)
-        // window.location.href = "hospital_dashboard.html"; 
         alert("Redirecting to HOSPITAL Dashboard... (Coming Soon)");
     } else if (role) {
         alert("Redirecting to " + role.toUpperCase() + " Dashboard... (Coming Soon)");
@@ -222,16 +226,16 @@ function goToDashboard() {
     }
 }
 
-// 🌟 FIXED: Har user ko ab proper "Complete your profile" ka alert aayega
 function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
+    if(type === 'lab') document.getElementById('lab-profile-section').style.display = 'none'; // 🌟 LAB ADDED
     
     localStorage.setItem("bhavya_profile_skipped", "true");
     
     checkLoginState(); 
-    checkProfileBanner(); // Ye banner top par show karega
+    checkProfileBanner(); 
     
     alert("Welcome to BhavyaCare! Please complete your profile later from the banner above.");
 }
@@ -498,6 +502,112 @@ window.saveHospitalProfile = async function() {
     } finally {
         saveBtn.innerText = "Submit Hospital Details Online";
         saveBtn.style.backgroundColor = "#17a2b8";
+        saveBtn.disabled = false;
+    }
+};
+
+// =======================================================
+// 🌟 LAB PROFILE LOGIC
+// =======================================================
+window.switchLabTab = function(evt, tabId) {
+    let contents = document.querySelectorAll("#lab-profile-section .hosp-tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+    let btns = document.querySelectorAll("#lab-profile-section .hosp-tab-btn");
+    for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+    
+    let targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        if(targetTab.classList.contains('form-grid')) targetTab.style.display = "grid";
+        else targetTab.style.display = "block";
+        targetTab.classList.add("active");
+    }
+    evt.currentTarget.classList.add("active");
+};
+
+window.saveLabProfile = async function() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const saveBtn = document.getElementById('btn-save-lab');
+    
+    const labName = document.getElementById('labName').value.trim();
+    const labEmail = document.getElementById('labEmail').value.trim();
+    const labCity = document.getElementById('labCity').value.trim();
+    const labAddress = document.getElementById('labAddress').value.trim();
+
+    if (!labName || !labCity || !labAddress) {
+        alert("Please fill Lab Name, City, and Address!");
+        return;
+    }
+
+    saveBtn.innerText = "Uploading Files & Saving... Please Wait";
+    saveBtn.style.backgroundColor = "#ffc107";
+    saveBtn.disabled = true;
+
+    try {
+        // --- Gather Checked Services ---
+        const services = {};
+        const checkboxes = document.querySelectorAll('.lab-srv');
+        checkboxes.forEach(cb => { services[cb.value] = cb.checked ? "Yes" : "No"; });
+
+        // --- File Upload Logic ---
+        const docFile = document.getElementById('labDoc').files[0];
+        const img1 = document.getElementById('labImg1').files[0];
+        const img2 = document.getElementById('labImg2').files[0];
+        const img3 = document.getElementById('labImg3').files[0];
+
+        if(!docFile || !img1) {
+            alert("Lab Registration Document and Image 1 are mandatory!");
+            throw new Error("Missing mandatory files");
+        }
+
+        let docData = null, img1Data = null, img2Data = null, img3Data = null;
+        if(docFile) docData = { base64: (await getBase64(docFile)).split(',')[1], filename: userId + "_LabDoc_" + docFile.name, mimeType: docFile.type };
+        if(img1) img1Data = { base64: (await getBase64(img1)).split(',')[1], filename: userId + "_LabImg1_" + img1.name, mimeType: img1.type };
+        if(img2) img2Data = { base64: (await getBase64(img2)).split(',')[1], filename: userId + "_LabImg2_" + img2.name, mimeType: img2.type };
+        if(img3) img3Data = { base64: (await getBase64(img3)).split(',')[1], filename: userId + "_LabImg3_" + img3.name, mimeType: img3.type };
+
+        const payload = {
+            action: "saveLabProfile",
+            user_id: userId,
+            lab_name: labName,
+            lab_email: labEmail,
+            lab_address: labAddress,
+            city: labCity,
+            pincode: document.getElementById('labPincode').value.trim(),
+            services: services, // JSON object of Yes/No
+            
+            // Timings
+            mon_open: document.getElementById('lab_monOpen').value, mon_close: document.getElementById('lab_monClose').value,
+            tue_open: document.getElementById('lab_tueOpen').value, tue_close: document.getElementById('lab_tueClose').value,
+            wed_open: document.getElementById('lab_wedOpen').value, wed_close: document.getElementById('lab_wedClose').value,
+            thu_open: document.getElementById('lab_thuOpen').value, thu_close: document.getElementById('lab_thuClose').value,
+            fri_open: document.getElementById('lab_friOpen').value, fri_close: document.getElementById('lab_friClose').value,
+            sat_open: document.getElementById('lab_satOpen').value, sat_close: document.getElementById('lab_satClose').value,
+            sun_open: document.getElementById('lab_sunOpen').value, sun_close: document.getElementById('lab_sunClose').value,
+            
+            files: { doc: docData, img1: img1Data, img2: img2Data, img3: img3Data },
+            status: "Inactive"
+        };
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            alert("Lab profile successfully submitted! Waiting for Admin Approval.");
+            localStorage.removeItem("bhavya_profile_skipped"); 
+            checkProfileBanner();
+            document.getElementById('lab-profile-section').style.display = 'none';
+        } else {
+            alert("Server Error: " + data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert(error.message === "Missing mandatory files" ? error.message : "Upload failed! Check your connection or file size (Max 2MB each).");
+    } finally {
+        saveBtn.innerText = "Submit Lab Profile";
+        saveBtn.style.backgroundColor = "#8e44ad";
         saveBtn.disabled = false;
     }
 };
