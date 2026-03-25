@@ -11,7 +11,7 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziXglh4GqjD_IBLCO3JOxn6asEG0SfUfMokLMbYNptM62wwq2Mb9ZZftb8ZdnqJzv-/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXLA_Y4ecF_jJn5oXHoHTDUdlhB983GrWARkc-0m37YlUxFOHOTRmT4dr28YJ4Lgw/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -77,29 +77,26 @@ function checkLoginState() {
     }
 }
 
-// 🌟 BULLETPROOF BANNER LOGIC
+// 🌟 FIXED: Ab Hospital ko bhi Banner dikhega Skip karne par
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
     let banner = document.getElementById("profile-warning-banner");
     let bannerText = document.getElementById("banner-text"); 
     
-    // Agar banner element hi HTML mein nahi hai toh aage mat bado
     if (!banner || !bannerText) return;
 
-    if (role === 'hospital') {
-        // Hospital ke liye HAMESHA banner hide rahega, chahe wo form bhare ya skip kare
-        banner.style.display = "none";
-    } else if (isSkipped === "true" && role) {
-        // Patient ya Doctor ne skip kiya hai toh banner dikhao
+    if (isSkipped === "true" && role) {
         banner.style.display = "block"; 
-        if (role === 'doctor') {
+        
+        if (role === 'hospital') {
+            bannerText.innerHTML = "🏥 <b>Action Required:</b> Please complete your Hospital Profile to activate your account.";
+        } else if (role === 'doctor') {
             bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
         } else {
             bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
         }
     } else {
-        // Agar form bhar diya hai (isSkipped hat gaya hai) ya login nahi hai
         banner.style.display = "none"; 
     }
 }
@@ -184,7 +181,6 @@ function verifyOTP() {
 
         closeLoginPopup();
 
-        // Show appropriate form popup
         if (selectedRole === 'patient') {
             document.getElementById('profile-form-section').style.display = 'block';
         } else if (selectedRole === 'doctor') {
@@ -195,7 +191,14 @@ function verifyOTP() {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
         }
-    }).catch((error) => { alert("Invalid OTP! Please try again."); });
+    }).catch((error) => { 
+        console.error("OTP Error Details:", error);
+        if(error.code) { 
+            alert("Invalid OTP! Please try again."); 
+        } else {
+            alert("System Error. Please check console logs.");
+        }
+    });
 }
 
 function logoutUser() {
@@ -208,28 +211,29 @@ function logoutUser() {
 
 function goToDashboard() {
     const role = localStorage.getItem("bhavya_role");
-    if(role) alert("Redirecting to " + role.toUpperCase() + " Dashboard...");
-    else alert("Role not found. Please log in again.");
+    if(role === "hospital") {
+        // Hospital ke liye specific dashboard redirect (jab dashboard file ready hogi)
+        // window.location.href = "hospital_dashboard.html"; 
+        alert("Redirecting to HOSPITAL Dashboard... (Coming Soon)");
+    } else if (role) {
+        alert("Redirecting to " + role.toUpperCase() + " Dashboard... (Coming Soon)");
+    } else {
+        alert("Role not found. Please log in again.");
+    }
 }
 
-// 🌟 FIXED SKIP LOGIC
+// 🌟 FIXED: Har user ko ab proper "Complete your profile" ka alert aayega
 function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
     
-    // Yahan hum local storage mein mark kar rahe hain ki form skip hua
     localStorage.setItem("bhavya_profile_skipped", "true");
     
-    // CheckLogin chalane se navbar set ho jayega, checkProfileBanner se top banner aa jayega
     checkLoginState(); 
-    checkProfileBanner();
+    checkProfileBanner(); // Ye banner top par show karega
     
-    if (type !== 'hospital') {
-        alert("Welcome to BhavyaCare. Please complete your profile later from the banner above.");
-    } else {
-        alert("Hospital Registration Skipped. Your account is offline pending.");
-    }
+    alert("Welcome to BhavyaCare! Please complete your profile later from the banner above.");
 }
 
 // ---------------- PATIENT PROFILE LOGIC ---------------- //
