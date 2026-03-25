@@ -1,1 +1,225 @@
-nn
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Hospital Approvals | BhavyaCare</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .header h2 { margin: 0; color: #0056b3; }
+        
+        .table-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f8f9fa; color: #333; }
+        tr:hover { background-color: #f1f8ff; }
+        
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-inactive { background: #ffeeba; color: #856404; }
+        .badge-active { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+
+        .btn { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; color: white; margin-right: 5px; transition: 0.2s;}
+        .btn-view { background-color: #17a2b8; }
+        .btn-approve { background-color: #28a745; }
+        .btn-reject { background-color: #dc3545; }
+        .btn:hover { opacity: 0.8; }
+
+        /* 🌟 Modal (Popup) CSS */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border-radius: 10px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #aaa; }
+        .close-modal:hover { color: red; }
+        
+        .data-box { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;}
+        .data-box h4 { margin-top: 0; color: #0056b3; border-bottom: 2px solid #ccc; padding-bottom: 5px; }
+        .doc-link { display: inline-block; background: #e9ecef; padding: 5px 10px; margin: 5px; border-radius: 5px; text-decoration: none; color: #0056b3; font-weight: bold; font-size: 13px;}
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>🏥 Hospital Approvals</h2>
+    <a href="admin.html" style="text-decoration: none; color: #555; font-weight: bold;">⬅ Back to Dashboard</a>
+</div>
+
+<div class="table-container">
+    <table id="hospitalTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Hospital ID</th>
+                <th>Hospital Name</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="hospitalTableBody">
+            <tr><td colspan="6" style="text-align: center; padding: 20px;">Loading Hospitals...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 id="modal-hosp-name" style="color: #0056b3; margin-top: 0;">Hospital Name</h2>
+        
+        <div id="offline-pdf-alert" style="display: none; background: #d4edda; padding: 10px; border-radius: 5px; color: #155724; font-weight: bold; margin-bottom: 15px;">
+            📄 Offline PDF Uploaded! <a id="offline-pdf-link" href="#" target="_blank" style="color: #0056b3; margin-left: 10px; text-decoration: underline;">View PDF</a>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="data-box">
+                <h4>Contact & Address</h4>
+                <p id="modal-contact"></p>
+            </div>
+            <div class="data-box">
+                <h4>Facilities & TPA</h4>
+                <p id="modal-facilities"></p>
+            </div>
+        </div>
+
+        <div class="data-box">
+            <h4>Uploaded Documents (Drive)</h4>
+            <div id="modal-docs"></div>
+        </div>
+
+        <div class="data-box">
+            <h4>Room Charges & Insurance Rules</h4>
+            <pre id="modal-rooms" style="font-family: monospace; white-space: pre-wrap; font-size: 13px;"></pre>
+        </div>
+
+        <div class="data-box">
+            <h4>Surgeries Pricing</h4>
+            <pre id="modal-surgeries" style="font-family: monospace; white-space: pre-wrap; font-size: 13px; background: #fff; padding: 10px; border: 1px solid #ccc;"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 🌟 TUMHARA NAYA GOOGLE SCRIPT URL YAHAN UPDATE KIYA GAYA HAI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbys39-X31HquSRLmYTaS8PVMAsLl9pYKhRAZMhBC-s-z28a8Su6f9jX2Pb_sv6Vw93h/exec";
+    let globalHospitals = [];
+
+    function fetchHospitals() {
+        fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(response => {
+                if (response.status === "success") {
+                    globalHospitals = response.hospitals || [];
+                    renderTable();
+                } else {
+                    alert("Failed to load data.");
+                }
+            }).catch(err => console.log(err));
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('hospitalTableBody');
+        tbody.innerHTML = "";
+
+        if (globalHospitals.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No hospitals found.</td></tr>";
+            return;
+        }
+
+        globalHospitals.forEach((hosp, index) => {
+            let statusBadge = "badge-inactive";
+            if (hosp.status === "Active") statusBadge = "badge-active";
+            else if (hosp.status === "Rejected") statusBadge = "badge-rejected";
+
+            // Safe parsing for phone
+            let phone = "N/A";
+            try { phone = JSON.parse(hosp.contact_details).phone || "N/A"; } catch(e){}
+
+            let row = `<tr>
+                <td>${new Date(hosp.timestamp).toLocaleDateString()}</td>
+                <td><strong>${hosp.user_id}</strong></td>
+                <td>${hosp.hospital_name || "N/A"}</td>
+                <td>${phone}</td>
+                <td><span class="badge ${statusBadge}">${hosp.status || "Inactive"}</span></td>
+                <td>
+                    <button class="btn btn-view" onclick="viewDetails(${index})">👁️ View</button>
+                    ${hosp.status !== "Active" ? `<button class="btn btn-approve" onclick="updateStatus('${hosp.user_id}', 'Active')">✅ Approve</button>` : ""}
+                    ${hosp.status !== "Rejected" ? `<button class="btn btn-reject" onclick="updateStatus('${hosp.user_id}', 'Rejected')">❌ Reject</button>` : ""}
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function viewDetails(index) {
+        const hosp = globalHospitals[index];
+        document.getElementById('modal-hosp-name').innerText = (hosp.hospital_name || "Hospital") + " (" + hosp.user_id + ")";
+        
+        // 1. Offline PDF Check (Column O)
+        if (hosp.offline_pdf && hosp.offline_pdf.includes("http")) {
+            document.getElementById('offline-pdf-alert').style.display = "block";
+            document.getElementById('offline-pdf-link').href = hosp.offline_pdf;
+        } else {
+            document.getElementById('offline-pdf-alert').style.display = "none";
+        }
+
+        // 2. Contact & Address
+        let contact = {}; try { contact = JSON.parse(hosp.contact_details); } catch(e){}
+        document.getElementById('modal-contact').innerHTML = `
+            <b>Phone:</b> ${contact.phone || 'N/A'}<br>
+            <b>Email:</b> ${contact.email || 'N/A'}<br>
+            <b>Address:</b> ${hosp.address_info || 'N/A'}
+        `;
+
+        // 3. Facilities & TPA
+        document.getElementById('modal-facilities').innerHTML = `
+            <b>Basic Facilities:</b> ${hosp.basic_facilities || 'N/A'}<br>
+            <b>Empanelled TPA:</b> ${hosp.empanelment || 'N/A'}
+        `;
+
+        // 4. Parse Drive Documents
+        let docs = {}; try { docs = JSON.parse(hosp.documents); } catch(e){}
+        let docHtml = "";
+        if(docs.HospitalImage && docs.HospitalImage !== "No File") docHtml += `<a href="${docs.HospitalImage}" class="doc-link" target="_blank">🖼️ View Image</a>`;
+        if(docs.HospitalDoc && docs.HospitalDoc !== "No File") docHtml += `<a href="${docs.HospitalDoc}" class="doc-link" target="_blank">📄 View Document</a>`;
+        if(docs.NablCertificate && docs.NablCertificate !== "No File") docHtml += `<a href="${docs.NablCertificate}" class="doc-link" target="_blank">📜 View NABH/NABL</a>`;
+        document.getElementById('modal-docs').innerHTML = docHtml || "No online documents uploaded.";
+
+        // 5. Pretty Print JSON for Pricing
+        let rooms = {}; try { rooms = JSON.parse(hosp.room_charges); } catch(e){}
+        let rules = {}; try { rules = JSON.parse(hosp.insurance_rules); } catch(e){}
+        document.getElementById('modal-rooms').innerText = "ROOMS:\n" + JSON.stringify(rooms, null, 2) + "\n\nRULES:\n" + JSON.stringify(rules, null, 2);
+
+        let surgeries = {}; try { surgeries = JSON.parse(hosp.surgeries); } catch(e){}
+        document.getElementById('modal-surgeries').innerText = JSON.stringify(surgeries, null, 4);
+
+        document.getElementById('detailsModal').style.display = "block";
+    }
+
+    function closeModal() { document.getElementById('detailsModal').style.display = "none"; }
+
+    function updateStatus(userId, newStatus) {
+        if(!confirm(`Are you sure you want to mark this hospital as ${newStatus}?`)) return;
+        
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "updateHospitalStatus", user_id: userId, new_status: newStatus })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === "success") {
+                alert(`Hospital successfully marked as ${newStatus}. Email sent.`);
+                fetchHospitals(); // Refresh table
+            } else {
+                alert("Error: " + data.message);
+            }
+        });
+    }
+
+    // Load data on start
+    window.onload = fetchHospitals;
+</script>
+
+</body>
+</html>
