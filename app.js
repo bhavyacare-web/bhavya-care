@@ -89,13 +89,13 @@ function checkProfileBanner() {
     }
 }
 
-// 🌟 UPDATE: Reopen Form (Hospital Added)
 function reopenProfileForm() {
     const role = localStorage.getItem("bhavya_role");
     if(role === 'doctor') {
         document.getElementById('doctor-profile-section').style.display = 'block';
     } else if(role === 'hospital') {
         document.getElementById('hospital-profile-section').style.display = 'block';
+        generateSurgeriesUI(); // 🌟 Yahan UI generate hoga
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
     }
@@ -145,7 +145,6 @@ function sendOTP() {
     }).catch((err) => { alert("Firebase Error: " + err.message); });
 }
 
-// 🌟 UPDATE: Verify OTP (Hospital Redirect Added)
 function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
     const selectedRole = isPartnerMode ? document.getElementById('partnerRole').value : 'patient';
@@ -178,6 +177,7 @@ function verifyOTP() {
             document.getElementById('doctor-profile-section').style.display = 'block';
         } else if (selectedRole === 'hospital') {
             document.getElementById('hospital-profile-section').style.display = 'block';
+            generateSurgeriesUI(); // 🌟 Yahan UI generate hoga
         } else {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
@@ -199,7 +199,6 @@ function goToDashboard() {
     else alert("Role not found. Please log in again.");
 }
 
-// 🌟 UPDATE: Handle Skipped Form (Hospital Added)
 function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
@@ -349,6 +348,52 @@ async function saveDoctorProfile() {
 }
 
 // =======================================================
+// 🌟 NAYA: HOSPITAL TAB SWITCH & SURGERY GENERATION
+// =======================================================
+window.switchHospTab = function(evt, tabId) {
+    let contents = document.getElementsByClassName("hosp-tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+    
+    let btns = document.getElementsByClassName("hosp-tab-btn");
+    for (let i = 0; i < btns.length; i++) {
+        btns[i].classList.remove("active");
+    }
+    
+    let targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        // Fix for grid layout in Basic & Charges tab
+        if(targetTab.classList.contains('form-grid')) {
+            targetTab.style.display = "grid";
+        } else {
+            targetTab.style.display = "block";
+        }
+        targetTab.classList.add("active");
+    }
+    evt.currentTarget.classList.add("active");
+};
+
+window.generateSurgeriesUI = function() {
+    const surgeries = ["Appendix", "Hernia", "Gallbladder", "Normal Delivery", "C-Section", "Knee Replacement", "Cataract"];
+    const container = document.getElementById('surgery-list-container');
+    
+    // Check lagaya hai taaki baar-baar form kholne pe duplicate inputs na banein
+    if(container && container.innerHTML.trim() === "") {
+        surgeries.forEach(surg => {
+            let idBase = surg.replace(/\s+/g, '');
+            container.innerHTML += `
+                <div class="full-width" style="margin-top: 10px; border-bottom: 1px solid #eee;"><strong style="color:#17a2b8;">${surg} Surgery</strong></div>
+                <div><input type="number" id="surg_${idBase}_Normal" class="input-box surg-input" data-surg="${surg}" data-type="Normal" placeholder="Gen Ward ₹"></div>
+                <div><input type="number" id="surg_${idBase}_Medium" class="input-box surg-input" data-surg="${surg}" data-type="Medium" placeholder="Private ₹"></div>
+                <div><input type="number" id="surg_${idBase}_VIP" class="input-box surg-input" data-surg="${surg}" data-type="VIP" placeholder="VIP ₹"></div>
+            `;
+        });
+    }
+};
+
+// =======================================================
 // 🌟 NAYA: HOSPITAL PROFILE LOGIC (SMART JSON GROUPING)
 // =======================================================
 function saveHospitalProfile() {
@@ -396,7 +441,7 @@ function saveHospitalProfile() {
 
     // 4. Create Master Payload exactly for Code.gs JSON setup
     const payload = {
-        action: "saveHospitalProfile", // Backend me ye action match karna hoga
+        action: "saveHospitalProfile",
         user_id: userId,
         hospital_name: hospName,
         contact_details: JSON.stringify(contactDetails),
