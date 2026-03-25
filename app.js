@@ -77,28 +77,31 @@ function checkLoginState() {
     }
 }
 
-// 🌟 SMART BANNER LOGIC (Replace this in app.js)
+// 🌟 SMART BANNER LOGIC (Hospital ke liye Banner Disable)
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
     let banner = document.getElementById("profile-warning-banner");
-    let bannerText = document.getElementById("banner-text"); // Ye text change karega
+    let bannerText = document.getElementById("banner-text"); 
     
+    // 💡 AGAR ROLE HOSPITAL HAI, TOH BANNER HAMESHA HIDE RAKHO
+    if (role === 'hospital') {
+        if(banner) banner.style.display = "none";
+        return; // Yahin se function stop ho jayega, aage ka warning code nahi chalega
+    }
+
+    // Baaki Patient aur Doctor ke liye banner dikhao
     if(isSkipped === "true" && role) {
         if(banner) {
-            banner.style.display = "block"; // Banner dikhao
-            
-            // 💡 Proactive Advice: Role ke hisaab se text change!
-            if (role === 'hospital' && bannerText) {
-                bannerText.innerHTML = "🏥 <b>Hospital Alert:</b> Please complete your hospital registration to list your packages.";
-            } else if (role === 'doctor' && bannerText) {
+            banner.style.display = "block"; 
+            if (role === 'doctor' && bannerText) {
                 bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
             } else if (bannerText) {
                 bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
             }
         }
     } else {
-        if(banner) banner.style.display = "none"; // Banner chhupao
+        if(banner) banner.style.display = "none"; 
     }
 }
 function reopenProfileForm() {
