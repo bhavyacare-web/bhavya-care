@@ -101,7 +101,7 @@
 
 <script>
     // 🌟 TUMHARA NAYA GOOGLE SCRIPT URL YAHAN UPDATE KIYA GAYA HAI
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbys39-X31HquSRLmYTaS8PVMAsLl9pYKhRAZMhBC-s-z28a8Su6f9jX2Pb_sv6Vw93h/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJyrw4TfXI3-2dFQ1oqluakXhP_-MTj3FDAvw5ka54eMjU65KqZvpxR_nQ_hRqwJ1F/exec";
     let globalHospitals = [];
 
     function fetchHospitals() {
