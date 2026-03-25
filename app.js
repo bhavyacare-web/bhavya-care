@@ -77,18 +77,30 @@ function checkLoginState() {
     }
 }
 
+// 🌟 SMART BANNER LOGIC (Replace this in app.js)
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
     let banner = document.getElementById("profile-warning-banner");
+    let bannerText = document.getElementById("banner-text"); // Ye text change karega
     
     if(isSkipped === "true" && role) {
-        if(banner) banner.style.display = "block";
+        if(banner) {
+            banner.style.display = "block"; // Banner dikhao
+            
+            // 💡 Proactive Advice: Role ke hisaab se text change!
+            if (role === 'hospital' && bannerText) {
+                bannerText.innerHTML = "🏥 <b>Hospital Alert:</b> Please complete your hospital registration to list your packages.";
+            } else if (role === 'doctor' && bannerText) {
+                bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
+            } else if (bannerText) {
+                bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
+            }
+        }
     } else {
-        if(banner) banner.style.display = "none";
+        if(banner) banner.style.display = "none"; // Banner chhupao
     }
 }
-
 function reopenProfileForm() {
     const role = localStorage.getItem("bhavya_role");
     if(role === 'doctor') {
