@@ -45,6 +45,7 @@
             <a href="patientadmin.html"><i class="fas fa-user-injured"></i> Patients Center</a>
             <a href="medicineadmin.html"><i class="fas fa-pills"></i> Medicine Center</a>
             <a href="doctorarea.html"><i class="fas fa-user-md"></i> Doctors Center</a>
+            <a href="hospitalarea.html"><i class="fas fa-hospital"></i> Hospitals Center</a>
             <a href="#" onclick="alert('Lab Admin page pending')"><i class="fas fa-flask"></i> Labs Center</a>
             <a style="margin-top: 50px; color: #ffcccc;" href="../index.html"><i class="fas fa-home"></i> Back to Website</a>
         </div>
@@ -84,18 +85,26 @@
                         <p>Total Doctors</p>
                     </div>
                 </a>
+
+                <a href="hospitalarea.html" class="stat-card" style="border-left-color: #17a2b8; text-decoration: none;">
+                    <div class="stat-icon" style="color: #17a2b8; background: #e0f2f4;"><i class="fas fa-hospital"></i></div>
+                    <div class="stat-info">
+                        <h3 id="dash-hospital-count">...</h3>
+                        <p>Total Hospitals</p>
+                    </div>
+                </a>
             </div>
 
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <h3 style="margin-bottom: 10px; color: #0056b3;">Welcome to Master Control</h3>
-                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu ya upar diye gaye cards par click karke specific center (jaise Patients, Medicine ya Doctors) mein enter karein.</p>
+                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu ya upar diye gaye cards par click karke specific center (jaise Patients, Medicine, Doctors ya Hospitals) mein enter karein.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // 🌟 LATEST GOOGLE SCRIPT URL
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuEFgK3hfPQsO0v18ozi0F_VkeeIn9wpDQDZZ3XATuEfEKqDAXZg2_Lv4_JjYB7kyq/exec";
+        // 🌟 LATEST GOOGLE SCRIPT URL UPDATE KIYA HAI TAKI HOSPITAL FETCH HO SAKE
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbys39-X31HquSRLmYTaS8PVMAsLl9pYKhRAZMhBC-s-z28a8Su6f9jX2Pb_sv6Vw93h/exec";
 
         window.onload = function() {
             fetch(GOOGLE_SCRIPT_URL)
@@ -113,10 +122,10 @@
                     // Update Doctor Count
                     if(result.doctors) {
                         document.getElementById('dash-doctor-count').innerText = result.doctors.length;
-                        /* Optional: Agar sirf 'Approved' doctor ka count dikhana ho toh isey use karein:
-                        const approvedDocs = result.doctors.filter(d => d.status === "Approved").length;
-                        document.getElementById('dash-doctor-count').innerText = approvedDocs;
-                        */
+                    }
+                    // 🌟 NAYA: Update Hospital Count
+                    if(result.hospitals) {
+                        document.getElementById('dash-hospital-count').innerText = result.hospitals.length;
                     }
                 }
             })
