@@ -407,9 +407,9 @@ window.addSurgeryRow = function() {
 };
 
 // =======================================================
-// 🌟 HOSPITAL PROFILE LOGIC (SMART JSON DATA EXTRACTION)
+// 🌟 UPDATED: HOSPITAL PROFILE LOGIC (WITH FILES & INACTIVE STATUS)
 // =======================================================
-window.saveHospitalProfile = function() {
+window.saveHospitalProfile = async function() {
     const userId = localStorage.getItem("bhavya_user_id");
     const saveBtn = document.getElementById('btn-save-hospital');
     
@@ -423,81 +423,74 @@ window.saveHospitalProfile = function() {
         return;
     }
 
-    saveBtn.innerText = "Packing & Saving... Please Wait";
+    saveBtn.innerText = "Uploading Files & Saving... Please Wait";
     saveBtn.style.backgroundColor = "#ffc107";
     saveBtn.disabled = true;
 
-    // 1. Pack Contact Details into JSON
-    const contactDetails = {
-        phone: hospPhone,
-        email: document.getElementById('hospEmail').value.trim()
-    };
+    try {
+        // --- File Upload Logic ---
+        const imgFile = document.getElementById('hospImg').files[0];
+        const docFile = document.getElementById('hospDoc').files[0];
+        const certFile = document.getElementById('hospCert').files[0];
 
-    // 2. Pack Room Charges into JSON
-    const roomCharges = {
-        generalWard: document.getElementById('hospGenWard').value,
-        privateRoom: document.getElementById('hospPrivate').value,
-        icuCharges: document.getElementById('hospIcu').value,
-        doctorConsultation: document.getElementById('hospDocConsult').value
-    };
+        let imgData = null, docData = null, certData = null;
+        if(imgFile) imgData = { base64: (await getBase64(imgFile)).split(',')[1], filename: userId + "_HospImg_" + imgFile.name, mimeType: imgFile.type };
+        if(docFile) docData = { base64: (await getBase64(docFile)).split(',')[1], filename: userId + "_HospDoc_" + docFile.name, mimeType: docFile.type };
+        if(certFile) certData = { base64: (await getBase64(certFile)).split(',')[1], filename: userId + "_HospCert_" + certFile.name, mimeType: certFile.type };
 
-    // 3. 🌟 NAYA: Dynamic Surgeries JSON Packing
-    let surgeriesPricing = {};
-    const surgeryRows = document.querySelectorAll('#dynamic-surgeries-container > div'); // Sabhi rows dhoondo
-    
-    surgeryRows.forEach(row => {
-        let name = row.querySelector('.dyn-surg-name').value.trim();
-        let normal = row.querySelector('.dyn-surg-normal').value;
-        let medium = row.querySelector('.dyn-surg-medium').value;
-        let vip = row.querySelector('.dyn-surg-vip').value;
+        // --- JSON Data Packing ---
+        const contactDetails = { phone: hospPhone, email: document.getElementById('hospEmail').value.trim() };
+        
+        const roomCharges = {
+            generalWard: document.getElementById('hospGenWard').value, privateRoom: document.getElementById('hospPrivate').value,
+            icuCharges: document.getElementById('hospIcu').value, doctorConsultation: document.getElementById('hospDocConsult').value
+        };
 
-        // Agar naam likha hai aur koi ek bhi price daala hai, tabhi save karo
-        if (name && (normal || medium || vip)) {
-            surgeriesPricing[name] = {
-                "Normal": normal,
-                "Medium": medium,
-                "VIP": vip
-            };
-        }
-    });
+        const insuranceRules = {
+            cashless: document.getElementById('hospCashless').value,
+            reimbursement: document.getElementById('hospReimbursement').value
+        };
 
-    // 4. Master Payload for Code.gs
-    const payload = {
-        action: "saveHospitalProfile",
-        user_id: userId,
-        hospital_name: hospName,
-        contact_details: JSON.stringify(contactDetails),
-        address_info: hospAddress,
-        basic_facilities: document.getElementById('hospNabh').value,
-        empanelment_tpa: insurancesTPA, // 🌟 Naya field
-        room_charges: JSON.stringify(roomCharges),
-        surgeries_pricing: JSON.stringify(surgeriesPricing)
-    };
+        let surgeriesPricing = {};
+        const surgeryRows = document.querySelectorAll('#dynamic-surgeries-container > div'); 
+        surgeryRows.forEach(row => {
+            let name = row.querySelector('.dyn-surg-name').value.trim();
+            let n = row.querySelector('.dyn-surg-normal').value, m = row.querySelector('.dyn-surg-medium').value, v = row.querySelector('.dyn-surg-vip').value;
+            if (name && (n || m || v)) { surgeriesPricing[name] = { "Normal": n, "Medium": m, "VIP": v }; }
+        });
 
-    // Send via JSON API Request
-    fetch(GOOGLE_SCRIPT_URL, { 
-        method: "POST", 
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-        body: JSON.stringify(payload) 
-    })
-    .then(response => response.json())
-    .then(data => {
+        const payload = {
+            action: "saveHospitalProfile",
+            user_id: userId,
+            hospital_name: hospName,
+            contact_details: JSON.stringify(contactDetails),
+            address_info: hospAddress,
+            basic_facilities: document.getElementById('hospFacilities').value.trim(), // 🌟 Facilities
+            empanelment_tpa: insurancesTPA,
+            insurance_rules: JSON.stringify(insuranceRules), // 🌟 Insurance Rules
+            room_charges: JSON.stringify(roomCharges),
+            surgeries_pricing: JSON.stringify(surgeriesPricing),
+            status: "Inactive", // 🌟 HARDCODED INACTIVE STATUS
+            imgData: imgData, docData: docData, certData: certData // 🌟 Files
+        };
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const data = await response.json();
+
         if (data.status === "success") {
-            alert("Hospital profile successfully added via Smart JSON!");
+            alert("Hospital profile successfully added! Waiting for Admin Approval.");
             localStorage.removeItem("bhavya_profile_skipped"); 
             checkProfileBanner();
             document.getElementById('hospital-profile-section').style.display = 'none';
         } else {
             alert("Server Error: " + data.message);
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error("Fetch Error:", error);
-        alert("Network Error! Please try again.");
-    })
-    .finally(() => {
+        alert("Network Error or File too large! Please try again.");
+    } finally {
         saveBtn.innerText = "Submit Hospital Details";
         saveBtn.style.backgroundColor = "#17a2b8";
         saveBtn.disabled = false;
-    });
+    }
 };
