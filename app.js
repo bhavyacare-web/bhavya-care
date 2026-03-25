@@ -21,7 +21,7 @@ firebase.auth().onAuthStateChanged(function(user) {
             localStorage.setItem("bhavya_mobile", user.phoneNumber);
         }
         checkLoginState();
-        checkProfileBanner(); // Banner check karo
+        checkProfileBanner(); 
     } else {
         localStorage.clear();
         checkLoginState();
@@ -77,7 +77,6 @@ function checkLoginState() {
     }
 }
 
-// 🌟 NAYA: Check Profile Banner Logic
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
@@ -90,11 +89,13 @@ function checkProfileBanner() {
     }
 }
 
-// 🌟 NAYA: Reopen Form from Banner
+// 🌟 UPDATE: Reopen Form (Hospital Added)
 function reopenProfileForm() {
     const role = localStorage.getItem("bhavya_role");
     if(role === 'doctor') {
         document.getElementById('doctor-profile-section').style.display = 'block';
+    } else if(role === 'hospital') {
+        document.getElementById('hospital-profile-section').style.display = 'block';
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
     }
@@ -144,6 +145,7 @@ function sendOTP() {
     }).catch((err) => { alert("Firebase Error: " + err.message); });
 }
 
+// 🌟 UPDATE: Verify OTP (Hospital Redirect Added)
 function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
     const selectedRole = isPartnerMode ? document.getElementById('partnerRole').value : 'patient';
@@ -169,10 +171,13 @@ function verifyOTP() {
 
         closeLoginPopup();
 
+        // Check Roles for Forms
         if (selectedRole === 'patient') {
             document.getElementById('profile-form-section').style.display = 'block';
         } else if (selectedRole === 'doctor') {
             document.getElementById('doctor-profile-section').style.display = 'block';
+        } else if (selectedRole === 'hospital') {
+            document.getElementById('hospital-profile-section').style.display = 'block';
         } else {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
@@ -194,12 +199,12 @@ function goToDashboard() {
     else alert("Role not found. Please log in again.");
 }
 
-// 🌟 NAYA: Handle Skipped Form
+// 🌟 UPDATE: Handle Skipped Form (Hospital Added)
 function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
+    if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
     
-    // Set skip flag
     localStorage.setItem("bhavya_profile_skipped", "true");
     checkProfileBanner();
     
@@ -240,7 +245,7 @@ function savePatientProfile() {
     .then(data => {
         alert("Profile saved successfully! You are ready to book tests.");
         saveBtn.innerText = "Save & Continue"; saveBtn.style.backgroundColor = "#28a745";
-        localStorage.removeItem("bhavya_profile_skipped"); // Clear skip flag
+        localStorage.removeItem("bhavya_profile_skipped"); 
         checkProfileBanner();
         document.getElementById('profile-form-section').style.display = 'none';
     })
@@ -250,14 +255,13 @@ function savePatientProfile() {
 }
 
 // ---------------- DOCTOR PROFILE LOGIC ---------------- //
-// 🌟 NAYA: Toggle Online Fields
 function toggleOnlineFields() {
     const val = document.getElementById('docOnlineConsult').value;
     const container = document.getElementById('online-fields-container');
     if(val === "Yes") {
-        container.style.display = "grid"; // Show
+        container.style.display = "grid"; 
     } else {
-        container.style.display = "none"; // Hide
+        container.style.display = "none"; 
     }
 }
 
@@ -293,7 +297,6 @@ async function saveDoctorProfile() {
         const docB64 = await getBase64(docFile);
         const imgB64 = await getBase64(docImage);
 
-        // NAYA: Handle Optional Online fields
         const isOnline = document.getElementById('docOnlineConsult').value;
         const onlineFee = isOnline === "Yes" ? document.getElementById('docOnlineFee').value.trim() : "";
         const onlineStart = isOnline === "Yes" ? document.getElementById('docOnlineStart').value : "";
@@ -306,7 +309,7 @@ async function saveDoctorProfile() {
             experience: document.getElementById('docExp').value.trim(), clinic_name: document.getElementById('docClinicName').value.trim(),
             clinic_address: document.getElementById('docClinicAddress').value.trim(), city: document.getElementById('docCity').value.trim(),
             pincode: document.getElementById('docPincode').value.trim(), clinic_fee: document.getElementById('docClinicFee').value.trim(),
-            service_type: document.getElementById('docServiceType').value, // Ab ye "Doctor" bhejega automatically
+            service_type: document.getElementById('docServiceType').value, 
             
             online_consultation: isOnline,
             online_fee: onlineFee, 
@@ -331,7 +334,7 @@ async function saveDoctorProfile() {
         
         if (data.status === "success") {
             alert("Your profile has been submitted successfully for verification!");
-            localStorage.removeItem("bhavya_profile_skipped"); // Clear skip flag
+            localStorage.removeItem("bhavya_profile_skipped"); 
             checkProfileBanner();
             document.getElementById('doctor-profile-section').style.display = 'none';
         } else {
@@ -343,4 +346,90 @@ async function saveDoctorProfile() {
     } finally {
         saveBtn.innerText = "Submit Profile"; saveBtn.style.backgroundColor = "#28a745"; saveBtn.disabled = false;
     }
+}
+
+// =======================================================
+// 🌟 NAYA: HOSPITAL PROFILE LOGIC (SMART JSON GROUPING)
+// =======================================================
+function saveHospitalProfile() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const saveBtn = document.getElementById('btn-save-hospital');
+    
+    const hospName = document.getElementById('hospName').value.trim();
+    const hospPhone = document.getElementById('hospPhone').value.trim();
+    const hospAddress = document.getElementById('hospAddress').value.trim();
+
+    if (!hospName || !hospPhone || !hospAddress) {
+        alert("Please fill Hospital Name, Contact Number, and Address!");
+        return;
+    }
+
+    saveBtn.innerText = "Packing & Saving... Please Wait";
+    saveBtn.style.backgroundColor = "#ffc107";
+    saveBtn.disabled = true;
+
+    // 1. Pack Contact Details into JSON
+    const contactDetails = {
+        phone: hospPhone,
+        email: document.getElementById('hospEmail').value.trim()
+    };
+
+    // 2. Pack Room Charges into JSON
+    const roomCharges = {
+        generalWard: document.getElementById('hospGenWard').value,
+        privateRoom: document.getElementById('hospPrivate').value,
+        icuCharges: document.getElementById('hospIcu').value,
+        doctorConsultation: document.getElementById('hospDocConsult').value
+    };
+
+    // 3. Dynamic Surgeries JSON Packing
+    let surgeriesPricing = {};
+    const surgeryInputs = document.querySelectorAll('.surg-input');
+    surgeryInputs.forEach(input => {
+        if (input.value) { 
+            let sName = input.getAttribute('data-surg');
+            let sType = input.getAttribute('data-type');
+            if (!surgeriesPricing[sName]) surgeriesPricing[sName] = {};
+            surgeriesPricing[sName][sType] = input.value;
+        }
+    });
+
+    // 4. Create Master Payload exactly for Code.gs JSON setup
+    const payload = {
+        action: "saveHospitalProfile", // Backend me ye action match karna hoga
+        user_id: userId,
+        hospital_name: hospName,
+        contact_details: JSON.stringify(contactDetails),
+        address_info: hospAddress,
+        basic_facilities: document.getElementById('hospNabh').value,
+        room_charges: JSON.stringify(roomCharges),
+        surgeries_pricing: JSON.stringify(surgeriesPricing)
+    };
+
+    // Send via JSON API Request
+    fetch(GOOGLE_SCRIPT_URL, { 
+        method: "POST", 
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+        body: JSON.stringify(payload) 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            alert("Hospital profile successfully added via Smart JSON!");
+            localStorage.removeItem("bhavya_profile_skipped"); 
+            checkProfileBanner();
+            document.getElementById('hospital-profile-section').style.display = 'none';
+        } else {
+            alert("Server Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Fetch Error:", error);
+        alert("Network Error! Please try again.");
+    })
+    .finally(() => {
+        saveBtn.innerText = "Submit Hospital Details";
+        saveBtn.style.backgroundColor = "#17a2b8";
+        saveBtn.disabled = false;
+    });
 }
