@@ -11,6 +11,7 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
+// YAHAN APNA LATEST GOOGLE SCRIPT URL DALNA
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuEFgK3hfPQsO0v18ozi0F_VkeeIn9wpDQDZZ3XATuEfEKqDAXZg2_Lv4_JjYB7kyq/exec";
 let isPartnerMode = false;
 
@@ -77,20 +78,19 @@ function checkLoginState() {
     }
 }
 
-// 🌟 SMART BANNER LOGIC (Hospital ke liye Banner Disable)
+// 🌟 SMART BANNER LOGIC 
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
     let banner = document.getElementById("profile-warning-banner");
     let bannerText = document.getElementById("banner-text"); 
     
-    // 💡 AGAR ROLE HOSPITAL HAI, TOH BANNER HAMESHA HIDE RAKHO
+    // Hospital ke liye banner hide rakhein
     if (role === 'hospital') {
         if(banner) banner.style.display = "none";
-        return; // Yahin se function stop ho jayega, aage ka warning code nahi chalega
+        return; 
     }
 
-    // Baaki Patient aur Doctor ke liye banner dikhao
     if(isSkipped === "true" && role) {
         if(banner) {
             banner.style.display = "block"; 
@@ -104,13 +104,13 @@ function checkProfileBanner() {
         if(banner) banner.style.display = "none"; 
     }
 }
+
 function reopenProfileForm() {
     const role = localStorage.getItem("bhavya_role");
     if(role === 'doctor') {
         document.getElementById('doctor-profile-section').style.display = 'block';
     } else if(role === 'hospital') {
         document.getElementById('hospital-profile-section').style.display = 'block';
-        generateSurgeriesUI(); // 🌟 Yahan UI generate hoga
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
     }
@@ -160,6 +160,7 @@ function sendOTP() {
     }).catch((err) => { alert("Firebase Error: " + err.message); });
 }
 
+// 🌟 FIXED OTP VERIFICATION LOGIC
 function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
     const selectedRole = isPartnerMode ? document.getElementById('partnerRole').value : 'patient';
@@ -185,19 +186,26 @@ function verifyOTP() {
 
         closeLoginPopup();
 
-        // Check Roles for Forms
+        // Forms Routing Check
         if (selectedRole === 'patient') {
             document.getElementById('profile-form-section').style.display = 'block';
         } else if (selectedRole === 'doctor') {
             document.getElementById('doctor-profile-section').style.display = 'block';
         } else if (selectedRole === 'hospital') {
             document.getElementById('hospital-profile-section').style.display = 'block';
-            generateSurgeriesUI(); // 🌟 Yahan UI generate hoga
         } else {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
         }
-    }).catch((error) => { alert("Invalid OTP! Please try again."); });
+    }).catch((error) => { 
+        // 🌟 NAYA: Proper Error Catching
+        console.error("OTP Error Details:", error);
+        if(error.code) { // Firebase errors have a code
+            alert("Invalid OTP! Please try again."); 
+        } else {
+            alert("System Error. Please check console logs.");
+        }
+    });
 }
 
 function logoutUser() {
@@ -219,6 +227,7 @@ function closeProfileForm(type) {
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
     
+    // Skip ka flag set karo aur banner update karo
     localStorage.setItem("bhavya_profile_skipped", "true");
     checkProfileBanner();
     
@@ -389,10 +398,10 @@ window.switchHospTab = function(evt, tabId) {
     evt.currentTarget.classList.add("active");
 };
 
-// 🌟 NAYA: Dynamic Add Surgery Row Function
+// Dynamic Add Surgery Row Function
 window.addSurgeryRow = function() {
     const container = document.getElementById('dynamic-surgeries-container');
-    const rowId = "surgRow_" + Math.floor(Math.random() * 10000); // Unique ID taaki delete kar sakein
+    const rowId = "surgRow_" + Math.floor(Math.random() * 10000); 
     
     const rowHtml = `
         <div id="${rowId}" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; margin-top: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; align-items: center;">
@@ -410,7 +419,7 @@ window.addSurgeryRow = function() {
 };
 
 // =======================================================
-// 🌟 UPDATED: HOSPITAL PROFILE LOGIC (WITH FILES & INACTIVE STATUS)
+// 🌟 HOSPITAL PROFILE LOGIC (SMART JSON & FILES)
 // =======================================================
 window.saveHospitalProfile = async function() {
     const userId = localStorage.getItem("bhavya_user_id");
@@ -468,13 +477,13 @@ window.saveHospitalProfile = async function() {
             hospital_name: hospName,
             contact_details: JSON.stringify(contactDetails),
             address_info: hospAddress,
-            basic_facilities: document.getElementById('hospFacilities').value.trim(), // 🌟 Facilities
+            basic_facilities: document.getElementById('hospFacilities').value.trim(), 
             empanelment_tpa: insurancesTPA,
-            insurance_rules: JSON.stringify(insuranceRules), // 🌟 Insurance Rules
+            insurance_rules: JSON.stringify(insuranceRules), 
             room_charges: JSON.stringify(roomCharges),
             surgeries_pricing: JSON.stringify(surgeriesPricing),
-            status: "Inactive", // 🌟 HARDCODED INACTIVE STATUS
-            imgData: imgData, docData: docData, certData: certData // 🌟 Files
+            status: "Inactive", 
+            imgData: imgData, docData: docData, certData: certData 
         };
 
         const response = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
@@ -492,7 +501,7 @@ window.saveHospitalProfile = async function() {
         console.error("Fetch Error:", error);
         alert("Network Error or File too large! Please try again.");
     } finally {
-        saveBtn.innerText = "Submit Hospital Details";
+        saveBtn.innerText = "Submit Hospital Details Online";
         saveBtn.style.backgroundColor = "#17a2b8";
         saveBtn.disabled = false;
     }
