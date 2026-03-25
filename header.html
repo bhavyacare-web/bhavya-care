@@ -278,37 +278,16 @@
                 <input type="file" id="hospCert" class="input-box"></div>
         </div>
 
-        <button type="button" id="btn-save-hospital" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #17a2b8;" onclick="saveHospitalProfile()">Submit Hospital Details</button>
+        <div style="background-color: #f8f9fa; border: 1px dashed #17a2b8; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;">
+            <p style="font-size: 14px; color: #333; margin-bottom: 10px; font-weight: bold;">Too busy to fill online?</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Download our offline registration form, fill it, and email it to <b>bhavyacare1@gmail.com</b></p>
+            
+            <a href="assets/hospital_form.pdf" download="BhavyaCare_Hospital_Registration_Form" class="btn" style="background-color: #343a40; text-decoration: none; display: inline-block;">
+                📥 Download Offline PDF Form
+            </a>
+        </div>
+
+        <button type="button" id="btn-save-hospital" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #17a2b8;" onclick="saveHospitalProfile()">Submit Hospital Details Online</button>
         <button type="button" class="btn-skip" onclick="closeProfileForm('hospital')">I'll do this later (Skip)</button>
     </form>
 </div>
-
-<script>
-    // Tab Switcher Logic for Hospital Form
-    function switchHospTab(evt, tabId) {
-        let contents = document.getElementsByClassName("hosp-tab-content");
-        for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
-        let btns = document.getElementsByClassName("hosp-tab-btn");
-        for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
-        document.getElementById(tabId).classList.add("active");
-        evt.currentTarget.classList.add("active");
-    }
-
-    // Auto Generate Surgeries UI (Lightweight HTML)
-    window.addEventListener('DOMContentLoaded', () => {
-        // 💡 Yahan tum aur surgeries ke naam add kar sakte ho!
-        const surgeries = ["Appendix", "Hernia", "Gallbladder", "Normal Delivery", "C-Section", "Knee Replacement", "Cataract"];
-        const container = document.getElementById('surgery-list-container');
-        if(container) {
-            surgeries.forEach(surg => {
-                let idBase = surg.replace(/\s+/g, '');
-                container.innerHTML += `
-                    <div class="full-width" style="margin-top: 10px; border-bottom: 1px solid #eee;"><strong style="color:#17a2b8;">${surg} Surgery</strong></div>
-                    <div><input type="number" id="surg_${idBase}_Normal" class="input-box surg-input" data-surg="${surg}" data-type="Normal" placeholder="Gen Ward ₹"></div>
-                    <div><input type="number" id="surg_${idBase}_Medium" class="input-box surg-input" data-surg="${surg}" data-type="Medium" placeholder="Private ₹"></div>
-                    <div><input type="number" id="surg_${idBase}_VIP" class="input-box surg-input" data-surg="${surg}" data-type="VIP" placeholder="VIP ₹"></div>
-                `;
-            });
-        }
-    });
-</script>
