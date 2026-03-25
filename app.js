@@ -11,8 +11,7 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-// YAHAN APNA LATEST GOOGLE SCRIPT URL DALNA
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuEFgK3hfPQsO0v18ozi0F_VkeeIn9wpDQDZZ3XATuEfEKqDAXZg2_Lv4_JjYB7kyq/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXLA_Y4ecF_jJn5oXHoHTDUdlhB983GrWARkc-0m37YlUxFOHOTRmT4dr28YJ4Lgw/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -78,30 +77,30 @@ function checkLoginState() {
     }
 }
 
-// 🌟 SMART BANNER LOGIC 
+// 🌟 BULLETPROOF BANNER LOGIC
 function checkProfileBanner() {
     const isSkipped = localStorage.getItem("bhavya_profile_skipped");
     const role = localStorage.getItem("bhavya_role");
     let banner = document.getElementById("profile-warning-banner");
     let bannerText = document.getElementById("banner-text"); 
     
-    // Hospital ke liye banner hide rakhein
-    if (role === 'hospital') {
-        if(banner) banner.style.display = "none";
-        return; 
-    }
+    // Agar banner element hi HTML mein nahi hai toh aage mat bado
+    if (!banner || !bannerText) return;
 
-    if(isSkipped === "true" && role) {
-        if(banner) {
-            banner.style.display = "block"; 
-            if (role === 'doctor' && bannerText) {
-                bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
-            } else if (bannerText) {
-                bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
-            }
+    if (role === 'hospital') {
+        // Hospital ke liye HAMESHA banner hide rahega, chahe wo form bhare ya skip kare
+        banner.style.display = "none";
+    } else if (isSkipped === "true" && role) {
+        // Patient ya Doctor ne skip kiya hai toh banner dikhao
+        banner.style.display = "block"; 
+        if (role === 'doctor') {
+            bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
+        } else {
+            bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
         }
     } else {
-        if(banner) banner.style.display = "none"; 
+        // Agar form bhar diya hai (isSkipped hat gaya hai) ya login nahi hai
+        banner.style.display = "none"; 
     }
 }
 
@@ -160,7 +159,6 @@ function sendOTP() {
     }).catch((err) => { alert("Firebase Error: " + err.message); });
 }
 
-// 🌟 FIXED OTP VERIFICATION LOGIC
 function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
     const selectedRole = isPartnerMode ? document.getElementById('partnerRole').value : 'patient';
@@ -186,7 +184,7 @@ function verifyOTP() {
 
         closeLoginPopup();
 
-        // Forms Routing Check
+        // Show appropriate form popup
         if (selectedRole === 'patient') {
             document.getElementById('profile-form-section').style.display = 'block';
         } else if (selectedRole === 'doctor') {
@@ -197,15 +195,7 @@ function verifyOTP() {
             alert("Login Successful! Welcome to BhavyaCare.");
             checkLoginState();
         }
-    }).catch((error) => { 
-        // 🌟 NAYA: Proper Error Catching
-        console.error("OTP Error Details:", error);
-        if(error.code) { // Firebase errors have a code
-            alert("Invalid OTP! Please try again."); 
-        } else {
-            alert("System Error. Please check console logs.");
-        }
-    });
+    }).catch((error) => { alert("Invalid OTP! Please try again."); });
 }
 
 function logoutUser() {
@@ -222,17 +212,24 @@ function goToDashboard() {
     else alert("Role not found. Please log in again.");
 }
 
+// 🌟 FIXED SKIP LOGIC
 function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
     
-    // Skip ka flag set karo aur banner update karo
+    // Yahan hum local storage mein mark kar rahe hain ki form skip hua
     localStorage.setItem("bhavya_profile_skipped", "true");
+    
+    // CheckLogin chalane se navbar set ho jayega, checkProfileBanner se top banner aa jayega
+    checkLoginState(); 
     checkProfileBanner();
     
-    alert("Welcome to BhavyaCare. Please complete your profile later from the banner above.");
-    checkLoginState(); 
+    if (type !== 'hospital') {
+        alert("Welcome to BhavyaCare. Please complete your profile later from the banner above.");
+    } else {
+        alert("Hospital Registration Skipped. Your account is offline pending.");
+    }
 }
 
 // ---------------- PATIENT PROFILE LOGIC ---------------- //
@@ -372,7 +369,7 @@ async function saveDoctorProfile() {
 }
 
 // =======================================================
-// 🌟 HOSPITAL TAB SWITCH & DYNAMIC SURGERY GENERATION
+// 🌟 HOSPITAL LOGIC
 // =======================================================
 window.switchHospTab = function(evt, tabId) {
     let contents = document.getElementsByClassName("hosp-tab-content");
@@ -398,7 +395,6 @@ window.switchHospTab = function(evt, tabId) {
     evt.currentTarget.classList.add("active");
 };
 
-// Dynamic Add Surgery Row Function
 window.addSurgeryRow = function() {
     const container = document.getElementById('dynamic-surgeries-container');
     const rowId = "surgRow_" + Math.floor(Math.random() * 10000); 
@@ -418,9 +414,6 @@ window.addSurgeryRow = function() {
     container.insertAdjacentHTML('beforeend', rowHtml);
 };
 
-// =======================================================
-// 🌟 HOSPITAL PROFILE LOGIC (SMART JSON & FILES)
-// =======================================================
 window.saveHospitalProfile = async function() {
     const userId = localStorage.getItem("bhavya_user_id");
     const saveBtn = document.getElementById('btn-save-hospital');
@@ -440,7 +433,6 @@ window.saveHospitalProfile = async function() {
     saveBtn.disabled = true;
 
     try {
-        // --- File Upload Logic ---
         const imgFile = document.getElementById('hospImg').files[0];
         const docFile = document.getElementById('hospDoc').files[0];
         const certFile = document.getElementById('hospCert').files[0];
@@ -450,7 +442,6 @@ window.saveHospitalProfile = async function() {
         if(docFile) docData = { base64: (await getBase64(docFile)).split(',')[1], filename: userId + "_HospDoc_" + docFile.name, mimeType: docFile.type };
         if(certFile) certData = { base64: (await getBase64(certFile)).split(',')[1], filename: userId + "_HospCert_" + certFile.name, mimeType: certFile.type };
 
-        // --- JSON Data Packing ---
         const contactDetails = { phone: hospPhone, email: document.getElementById('hospEmail').value.trim() };
         
         const roomCharges = {
