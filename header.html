@@ -65,6 +65,19 @@
     #profile-warning-banner button {
         background: #0056b3; color: white; border: none; padding: 5px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px;
     }
+
+    /* 🌟 NAYA: Hospital Profile Section CSS */
+    #hospital-profile-section {
+        width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+        border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); 
+        z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #17a2b8; max-height: 85vh; overflow-y: auto; max-width: 800px;
+    }
+    .hosp-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; gap: 5px; flex-wrap: wrap; }
+    .hosp-tab-btn { background: #f8f9fa; border: 1px solid #ccc; border-bottom: none; padding: 10px 15px; cursor: pointer; font-weight: bold; color: #555; border-radius: 8px 8px 0 0; transition: 0.3s; font-size: 14px; }
+    .hosp-tab-btn.active { background: #17a2b8; color: white; border-color: #17a2b8; }
+    .hosp-tab-content { display: none; }
+    .hosp-tab-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
 
 <div id="profile-warning-banner">
@@ -198,3 +211,80 @@
     <button id="btn-save-doctor" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px;" onclick="saveDoctorProfile()">Submit Profile</button>
     <button class="btn-skip" onclick="closeProfileForm('doctor')">I'll do this later (Skip)</button>
 </div>
+
+<div id="hospital-profile-section">
+    <button class="close-btn" onclick="closeProfileForm('hospital')">✖</button>
+    <h3 class="styled-headline" style="color: #17a2b8;">🏥 Hospital Registration</h3>
+    <p class="sub-text">Fill in your hospital details to list your packages on BhavyaCare.</p>
+
+    <div class="hosp-tabs">
+        <div class="hosp-tab-btn active" onclick="switchHospTab(event, 'tab-basic')">1. Basic Info</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-charges')">2. Room Charges</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-surgeries')">3. Surgeries Pricing</div>
+    </div>
+
+    <form id="hospitalForm">
+        <div id="tab-basic" class="hosp-tab-content active form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Hospital Name *</label>
+                <input type="text" id="hospName" class="input-box" placeholder="e.g. City Hospital"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Contact Number *</label>
+                <input type="tel" id="hospPhone" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID</label>
+                <input type="email" id="hospEmail" class="input-box"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Address *</label>
+                <input type="text" id="hospAddress" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">NABH Accredited?</label>
+                <select id="hospNabh" class="input-box"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+        </div>
+
+        <div id="tab-charges" class="hosp-tab-content form-grid">
+            <div><label style="font-size: 13px; font-weight: bold;">General Ward (₹/Day)</label>
+                <input type="number" id="hospGenWard" class="input-box" placeholder="₹"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Private Room (₹/Day)</label>
+                <input type="number" id="hospPrivate" class="input-box" placeholder="₹"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">ICU Charges (₹/Day)</label>
+                <input type="number" id="hospIcu" class="input-box" placeholder="₹"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Doctor Consultation (₹)</label>
+                <input type="number" id="hospDocConsult" class="input-box" placeholder="₹"></div>
+        </div>
+
+        <div id="tab-surgeries" class="hosp-tab-content">
+            <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Enter package pricing. Leave blank if not available.</p>
+            <div id="surgery-list-container" class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                </div>
+        </div>
+
+        <button type="button" id="btn-save-hospital" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #17a2b8;" onclick="saveHospitalProfile()">Submit Hospital Details</button>
+        <button type="button" class="btn-skip" onclick="closeProfileForm('hospital')">I'll do this later (Skip)</button>
+    </form>
+</div>
+
+<script>
+    // Tab Switcher Logic for Hospital Form
+    function switchHospTab(evt, tabId) {
+        let contents = document.getElementsByClassName("hosp-tab-content");
+        for (let i = 0; i < contents.length; i++) contents[i].classList.remove("active");
+        let btns = document.getElementsByClassName("hosp-tab-btn");
+        for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // Auto Generate Surgeries UI (Lightweight HTML)
+    window.addEventListener('DOMContentLoaded', () => {
+        // 💡 Yahan tum aur surgeries ke naam add kar sakte ho!
+        const surgeries = ["Appendix", "Hernia", "Gallbladder", "Normal Delivery", "C-Section", "Knee Replacement", "Cataract"];
+        const container = document.getElementById('surgery-list-container');
+        if(container) {
+            surgeries.forEach(surg => {
+                let idBase = surg.replace(/\s+/g, '');
+                container.innerHTML += `
+                    <div class="full-width" style="margin-top: 10px; border-bottom: 1px solid #eee;"><strong style="color:#17a2b8;">${surg} Surgery</strong></div>
+                    <div><input type="number" id="surg_${idBase}_Normal" class="input-box surg-input" data-surg="${surg}" data-type="Normal" placeholder="Gen Ward ₹"></div>
+                    <div><input type="number" id="surg_${idBase}_Medium" class="input-box surg-input" data-surg="${surg}" data-type="Medium" placeholder="Private ₹"></div>
+                    <div><input type="number" id="surg_${idBase}_VIP" class="input-box surg-input" data-surg="${surg}" data-type="VIP" placeholder="VIP ₹"></div>
+                `;
+            });
+        }
+    });
+</script>
