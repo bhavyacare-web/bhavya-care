@@ -12,7 +12,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 // 🌟 LATEST GOOGLE SCRIPT URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmuom2FixrNacF2UvsN6LqJySNs0RBe9wwB78aqyMu2qAq-rYO1mUt6wMwta091JJX/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeH4sVsZLDgP_AaaaoSstdH-0VCp5UU4emJqvs-q3W0CFO21UuBRKaqhRCA9KJuI-w/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
