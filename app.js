@@ -11,7 +11,7 @@ const firebaseConfig = {
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBF_VN217UCxXWLAvWBQGXzyTGF6QTK75qSteTZHRL-YTv1yYjeBn3Yr_kdjCqRuZX/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsJ1WSAqitq-1yfY9iisC4cn400ahgo1V3xS0NOvcIpeu5wi_rYBRDsDRgtH1YFs7R/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
