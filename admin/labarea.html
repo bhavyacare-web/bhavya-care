@@ -98,7 +98,7 @@
 
 <script>
     // 🌟 TUMHARA LATEST NAYA G-Script URL
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx63ClqQBQ6XXfVb7B-JRl2MG47H12zL_uYgYcgt1gY6fnrvlcoYFCMTUSsOL9ebEc4/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeH4sVsZLDgP_AaaaoSstdH-0VCp5UU4emJqvs-q3W0CFO21UuBRKaqhRCA9KJuI-w/exec";
     let globalLabs = [];
     let currentViewingUserId = null;
 
@@ -137,7 +137,7 @@
             else if (lab.status === "Rejected") statusBadge = "badge-rejected";
 
             let row = `<tr>
-                <td>${new Date(lab.Timestamp).toLocaleDateString()}</td>
+                <td>${lab.Timestamp ? new Date(lab.Timestamp).toLocaleDateString() : "N/A"}</td>
                 <td><strong>${lab.user_id}</strong></td>
                 <td>${lab.lab_name || "N/A"}</td>
                 <td>${lab.city || "N/A"}</td>
