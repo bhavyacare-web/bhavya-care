@@ -360,7 +360,7 @@ async function saveDoctorProfile() {
 }
 
 // =======================================================
-// 🌟 NAYA: HOSPITAL TAB SWITCH & SURGERY GENERATION
+// 🌟 HOSPITAL TAB SWITCH & DYNAMIC SURGERY GENERATION
 // =======================================================
 window.switchHospTab = function(evt, tabId) {
     let contents = document.getElementsByClassName("hosp-tab-content");
@@ -376,7 +376,6 @@ window.switchHospTab = function(evt, tabId) {
     
     let targetTab = document.getElementById(tabId);
     if (targetTab) {
-        // Fix for grid layout in Basic & Charges tab
         if(targetTab.classList.contains('form-grid')) {
             targetTab.style.display = "grid";
         } else {
@@ -387,34 +386,37 @@ window.switchHospTab = function(evt, tabId) {
     evt.currentTarget.classList.add("active");
 };
 
-window.generateSurgeriesUI = function() {
-    const surgeries = ["Appendix", "Hernia", "Gallbladder", "Normal Delivery", "C-Section", "Knee Replacement", "Cataract"];
-    const container = document.getElementById('surgery-list-container');
+// 🌟 NAYA: Dynamic Add Surgery Row Function
+window.addSurgeryRow = function() {
+    const container = document.getElementById('dynamic-surgeries-container');
+    const rowId = "surgRow_" + Math.floor(Math.random() * 10000); // Unique ID taaki delete kar sakein
     
-    // Check lagaya hai taaki baar-baar form kholne pe duplicate inputs na banein
-    if(container && container.innerHTML.trim() === "") {
-        surgeries.forEach(surg => {
-            let idBase = surg.replace(/\s+/g, '');
-            container.innerHTML += `
-                <div class="full-width" style="margin-top: 10px; border-bottom: 1px solid #eee;"><strong style="color:#17a2b8;">${surg} Surgery</strong></div>
-                <div><input type="number" id="surg_${idBase}_Normal" class="input-box surg-input" data-surg="${surg}" data-type="Normal" placeholder="Gen Ward ₹"></div>
-                <div><input type="number" id="surg_${idBase}_Medium" class="input-box surg-input" data-surg="${surg}" data-type="Medium" placeholder="Private ₹"></div>
-                <div><input type="number" id="surg_${idBase}_VIP" class="input-box surg-input" data-surg="${surg}" data-type="VIP" placeholder="VIP ₹"></div>
-            `;
-        });
-    }
+    const rowHtml = `
+        <div id="${rowId}" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; margin-top: 15px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; align-items: center;">
+            <div><input type="text" class="input-box dyn-surg-name" placeholder="Surgery Name (e.g. Appendix)"></div>
+            <div><input type="number" class="input-box dyn-surg-normal" placeholder="Gen Ward ₹"></div>
+            <div><input type="number" class="input-box dyn-surg-medium" placeholder="Private ₹"></div>
+            <div><input type="number" class="input-box dyn-surg-vip" placeholder="VIP ₹"></div>
+            
+            <div style="grid-column: span 4; text-align: right; margin-top: 5px;">
+                <span style="color: #dc3545; font-size: 12px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('${rowId}').remove()">❌ Remove this surgery</span>
+            </div>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', rowHtml);
 };
 
 // =======================================================
-// 🌟 NAYA: HOSPITAL PROFILE LOGIC (SMART JSON GROUPING)
+// 🌟 HOSPITAL PROFILE LOGIC (SMART JSON DATA EXTRACTION)
 // =======================================================
-function saveHospitalProfile() {
+window.saveHospitalProfile = function() {
     const userId = localStorage.getItem("bhavya_user_id");
     const saveBtn = document.getElementById('btn-save-hospital');
     
     const hospName = document.getElementById('hospName').value.trim();
     const hospPhone = document.getElementById('hospPhone').value.trim();
     const hospAddress = document.getElementById('hospAddress').value.trim();
+    const insurancesTPA = document.getElementById('hospInsurances').value.trim();
 
     if (!hospName || !hospPhone || !hospAddress) {
         alert("Please fill Hospital Name, Contact Number, and Address!");
@@ -439,19 +441,27 @@ function saveHospitalProfile() {
         doctorConsultation: document.getElementById('hospDocConsult').value
     };
 
-    // 3. Dynamic Surgeries JSON Packing
+    // 3. 🌟 NAYA: Dynamic Surgeries JSON Packing
     let surgeriesPricing = {};
-    const surgeryInputs = document.querySelectorAll('.surg-input');
-    surgeryInputs.forEach(input => {
-        if (input.value) { 
-            let sName = input.getAttribute('data-surg');
-            let sType = input.getAttribute('data-type');
-            if (!surgeriesPricing[sName]) surgeriesPricing[sName] = {};
-            surgeriesPricing[sName][sType] = input.value;
+    const surgeryRows = document.querySelectorAll('#dynamic-surgeries-container > div'); // Sabhi rows dhoondo
+    
+    surgeryRows.forEach(row => {
+        let name = row.querySelector('.dyn-surg-name').value.trim();
+        let normal = row.querySelector('.dyn-surg-normal').value;
+        let medium = row.querySelector('.dyn-surg-medium').value;
+        let vip = row.querySelector('.dyn-surg-vip').value;
+
+        // Agar naam likha hai aur koi ek bhi price daala hai, tabhi save karo
+        if (name && (normal || medium || vip)) {
+            surgeriesPricing[name] = {
+                "Normal": normal,
+                "Medium": medium,
+                "VIP": vip
+            };
         }
     });
 
-    // 4. Create Master Payload exactly for Code.gs JSON setup
+    // 4. Master Payload for Code.gs
     const payload = {
         action: "saveHospitalProfile",
         user_id: userId,
@@ -459,6 +469,7 @@ function saveHospitalProfile() {
         contact_details: JSON.stringify(contactDetails),
         address_info: hospAddress,
         basic_facilities: document.getElementById('hospNabh').value,
+        empanelment_tpa: insurancesTPA, // 🌟 Naya field
         room_charges: JSON.stringify(roomCharges),
         surgeries_pricing: JSON.stringify(surgeriesPricing)
     };
@@ -489,4 +500,4 @@ function saveHospitalProfile() {
         saveBtn.style.backgroundColor = "#17a2b8";
         saveBtn.disabled = false;
     });
-}
+};
