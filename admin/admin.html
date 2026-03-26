@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; }
+        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; position: relative; }
 
         /* Sidebar */
-        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; }
+        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; transition: left 0.3s ease; }
         .sidebar .logo { padding: 20px; font-size: 24px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sidebar .logo span { color: #28a745; }
         .sidebar .menu { flex: 1; padding: 20px 0; }
@@ -19,8 +19,9 @@
         .sidebar .menu a i { margin-right: 10px; width: 20px; text-align: center; }
 
         /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; width: 100%; }
         .header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
         .header h2 { color: #333; font-size: 22px; }
         .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; cursor: pointer; }
         .admin-profile i { font-size: 24px; color: #0056b3; }
@@ -34,11 +35,24 @@
         .stat-icon { font-size: 30px; color: #0056b3; background: #e6f0fa; padding: 15px; border-radius: 50%; }
         .stat-info h3 { font-size: 24px; color: #333; }
         .stat-info p { color: #888; font-size: 14px; font-weight: 600; }
+
+        /* 🌟 NAYA: Hamburger Icon & Mobile Responsiveness */
+        .menu-toggle { display: none; font-size: 24px; color: #0056b3; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; left: -250px; height: 100vh; z-index: 1000; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+            .sidebar.active { left: 0; }
+            .menu-toggle { display: block; }
+            .header { padding: 15px; }
+            .header h2 { font-size: 18px; }
+            .container { padding: 15px; }
+            .admin-profile span { display: none; } /* Mobile me 'Logout Admin' text hide kiya, sirf icon dikhega space bachane ke liye */
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
+    <div class="sidebar" id="adminSidebar">
         <div class="logo">Bhavya<span>Admin</span></div>
         <div class="menu">
             <a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
@@ -51,9 +65,12 @@
         </div>
     </div>
 
-    <div class="main-content">
+    <div class="main-content" onclick="closeSidebarOnClick(event)">
         <div class="header">
-            <h2>Dashboard Overview</h2>
+            <div class="header-left">
+                <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+                <h2>Dashboard Overview</h2>
+            </div>
             <div class="admin-profile" onclick="window.location.href='../index.html'">
                 <span>Logout Admin</span>
                 <i class="fas fa-sign-out-alt" style="color: #dc3545;"></i>
@@ -119,30 +136,29 @@
             .then(response => response.json())
             .then(result => {
                 if(result.status === "success") {
-                    // Update Patient Count
-                    if(result.data) {
-                        document.getElementById('dash-patient-count').innerText = result.data.length;
-                    }
-                    // Update Medicine Orders Count
-                    if(result.medicineOrders) {
-                        document.getElementById('dash-medicine-count').innerText = result.medicineOrders.length;
-                    }
-                    // Update Doctor Count
-                    if(result.doctors) {
-                        document.getElementById('dash-doctor-count').innerText = result.doctors.length;
-                    }
-                    // Update Hospital Count
-                    if(result.hospitals) {
-                        document.getElementById('dash-hospital-count').innerText = result.hospitals.length;
-                    }
-                    // 🌟 NAYA: Update Labs Count
-                    if(result.labs) {
-                        document.getElementById('dash-lab-count').innerText = result.labs.length;
-                    }
+                    if(result.data) document.getElementById('dash-patient-count').innerText = result.data.length;
+                    if(result.medicineOrders) document.getElementById('dash-medicine-count').innerText = result.medicineOrders.length;
+                    if(result.doctors) document.getElementById('dash-doctor-count').innerText = result.doctors.length;
+                    if(result.hospitals) document.getElementById('dash-hospital-count').innerText = result.hospitals.length;
+                    if(result.labs) document.getElementById('dash-lab-count').innerText = result.labs.length;
                 }
             })
             .catch(error => console.error('Error fetching dashboard counts:', error));
         };
+
+        // 🌟 NAYA: Sidebar toggle logic
+        function toggleSidebar() {
+            document.getElementById("adminSidebar").classList.toggle("active");
+        }
+
+        // 🌟 NAYA: Agar mobile me bahar click karein to menu band ho jaye
+        function closeSidebarOnClick(event) {
+            const sidebar = document.getElementById("adminSidebar");
+            const toggleIcon = document.querySelector(".menu-toggle");
+            if (window.innerWidth <= 768 && sidebar.classList.contains("active") && event.target !== toggleIcon) {
+                sidebar.classList.remove("active");
+            }
+        }
     </script>
 </body>
 </html>
