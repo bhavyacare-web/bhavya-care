@@ -4,14 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Lab Approvals | BhavyaCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .header h2 { margin: 0; color: #8e44ad; } /* Lab color theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
+        /* 🌟 NAYA: Body layout updated for sidebar */
+        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; position: relative; }
+
+        /* 🌟 NAYA: Sidebar CSS */
+        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; transition: left 0.3s ease; }
+        .sidebar .logo { padding: 20px; font-size: 24px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar .logo span { color: #28a745; }
+        .sidebar .menu { flex: 1; padding: 20px 0; }
+        .sidebar .menu a { display: block; padding: 15px 25px; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
+        .sidebar .menu a:hover, .sidebar .menu a.active { background-color: #004494; border-left: 4px solid #28a745; }
+        .sidebar .menu a i { margin-right: 10px; width: 20px; text-align: center; }
+
+        /* 🌟 NAYA: Main Content & Header CSS */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; width: 100%; }
+        .header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header h2 { color: #8e44ad; font-size: 22px; margin: 0; } /* Lab color theme */
+        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; cursor: pointer;}
+        .admin-profile i { font-size: 24px; color: #0056b3; }
+
+        .container { padding: 30px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+        /* Purana Table CSS */
         .table-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 900px; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px;}
         th { background-color: #f8f9fa; color: #333; }
         tr:hover { background-color: #f9f2fb; }
         
@@ -27,8 +49,8 @@
         .btn:hover { opacity: 0.8; }
 
         /* Modal CSS */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: #fff; margin: 3% auto; padding: 25px; border-radius: 10px; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fff; margin: auto; padding: 25px; border-radius: 10px; width: 90%; max-width: 850px; max-height: 85vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #aaa; }
         .close-modal:hover { color: red; }
         
@@ -41,42 +63,87 @@
         .services-grid label:hover { border-color: #8e44ad; }
         
         .action-bar { text-align: center; margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee; }
+
+        /* 🌟 NAYA: Mobile Responsiveness */
+        .menu-toggle { display: none; font-size: 24px; color: #0056b3; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .sidebar { position: absolute; left: -250px; height: 100vh; z-index: 1000; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+            .sidebar.active { left: 0; }
+            .menu-toggle { display: block; }
+            .header { padding: 15px; }
+            .header h2 { font-size: 18px; }
+            .container { padding: 15px; }
+            .admin-profile span { display: none; }
+            
+            /* Modal layout fixes for mobile */
+            .modal-content { padding: 15px; }
+            #modal-grid { grid-template-columns: 1fr !important; }
+            .services-grid { grid-template-columns: 1fr !important; } /* Checkboxes mobile par ek ke neeche ek aayenge */
+        }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h2>🔬 Diagnostic Lab Approvals</h2>
-    <a href="admin.html" style="text-decoration: none; color: #555; font-weight: bold;">⬅ Back to Dashboard</a>
+<div class="sidebar" id="adminSidebar">
+    <div class="logo">Bhavya<span>Admin</span></div>
+    <div class="menu">
+        <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="patientadmin.html"><i class="fas fa-user-injured"></i> Patients Center</a>
+        <a href="medicineadmin.html"><i class="fas fa-pills"></i> Medicine Center</a>
+        <a href="doctorarea.html"><i class="fas fa-user-md"></i> Doctors Center</a>
+        <a href="hospitalarea.html"><i class="fas fa-hospital"></i> Hospitals Center</a>
+        <a href="labarea.html" class="active"><i class="fas fa-flask"></i> Labs Center</a>
+        <a style="margin-top: 50px; color: #ffcccc;" href="../index.html"><i class="fas fa-home"></i> Back to Website</a>
+    </div>
 </div>
 
-<div class="table-container">
-    <table id="labTable">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Lab ID</th>
-                <th>Lab Name</th>
-                <th>City</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="labTableBody">
-            <tr><td colspan="6" style="text-align: center; padding: 20px;">Loading Labs...</td></tr>
-        </tbody>
-    </table>
+<div class="main-content" onclick="closeSidebarOnClick(event)">
+    <div class="header">
+        <div class="header-left">
+            <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+            <h2>🔬 Diagnostic Lab Approvals</h2>
+        </div>
+        <div class="admin-profile" onclick="window.location.href='../index.html'">
+            <span>Logout Admin</span>
+            <i class="fas fa-sign-out-alt" style="color: #dc3545;"></i>
+        </div>
+    </div>
+
+    <div class="container">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+            <button class="btn btn-view" onclick="fetchLabs()" style="padding: 10px 20px; font-size: 14px; background-color: #8e44ad;"><i class="fas fa-sync-alt"></i> Refresh List</button>
+        </div>
+
+        <div class="table-container">
+            <table id="labTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Lab ID</th>
+                        <th>Lab Name</th>
+                        <th>City</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="labTableBody">
+                    <tr><td colspan="6" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading Labs...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <div id="detailsModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h2 id="modal-lab-name" style="color: #8e44ad; margin-top: 0;">Lab Name</h2>
+        <h2 id="modal-lab-name" style="color: #8e44ad; margin-top: 0; margin-bottom: 15px;">Lab Name</h2>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div id="modal-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
             <div class="data-box">
                 <h4>Contact & Address</h4>
-                <p id="modal-contact"></p>
+                <p id="modal-contact" style="font-size: 14px; line-height: 1.5;"></p>
             </div>
             <div class="data-box">
                 <h4>Uploaded Documents</h4>
@@ -110,6 +177,9 @@
     ];
 
     function fetchLabs() {
+        const tbody = document.getElementById('labTableBody');
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Loading Labs...</td></tr>';
+        
         fetch(SCRIPT_URL)
             .then(res => res.json())
             .then(response => {
@@ -119,7 +189,10 @@
                 } else {
                     alert("Failed to load data.");
                 }
-            }).catch(err => console.log(err));
+            }).catch(err => {
+                console.log(err);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading data.</td></tr>';
+            });
     }
 
     function renderTable() {
@@ -142,7 +215,7 @@
                 <td>${lab.lab_name || "N/A"}</td>
                 <td>${lab.city || "N/A"}</td>
                 <td><span class="badge ${statusBadge}">${lab.status || "Inactive"}</span></td>
-                <td><button class="btn btn-view" onclick="viewDetails(${index})">👁️ Review Lab</button></td>
+                <td><button class="btn btn-view" onclick="viewDetails(${index})"><i class="fas fa-eye"></i> Review Lab</button></td>
             </tr>`;
             tbody.innerHTML += row;
         });
@@ -162,22 +235,18 @@
 
         // 2. Documents (Drive Links)
         let docHtml = "";
-        if(lab.lab_registration_docoment) docHtml += `<a href="${lab.lab_registration_docoment}" class="doc-link" target="_blank">📄 Reg. Document</a>`;
-        if(lab.lab_image1) docHtml += `<a href="${lab.lab_image1}" class="doc-link" target="_blank">🖼️ Image 1</a>`;
-        if(lab.lab_image2) docHtml += `<a href="${lab.lab_image2}" class="doc-link" target="_blank">🖼️ Image 2</a>`;
-        if(lab.lab_image3) docHtml += `<a href="${lab.lab_image3}" class="doc-link" target="_blank">🖼️ Image 3</a>`;
+        if(lab.lab_registration_docoment) docHtml += `<a href="${lab.lab_registration_docoment}" class="doc-link" target="_blank"><i class="fas fa-file-pdf"></i> Reg. Document</a>`;
+        if(lab.lab_image1) docHtml += `<a href="${lab.lab_image1}" class="doc-link" target="_blank"><i class="fas fa-image"></i> Image 1</a>`;
+        if(lab.lab_image2) docHtml += `<a href="${lab.lab_image2}" class="doc-link" target="_blank"><i class="fas fa-image"></i> Image 2</a>`;
+        if(lab.lab_image3) docHtml += `<a href="${lab.lab_image3}" class="doc-link" target="_blank"><i class="fas fa-image"></i> Image 3</a>`;
         document.getElementById('modal-docs').innerHTML = docHtml || "No documents uploaded.";
 
         // 3. Render Editable Services
         let srvHtml = "";
         ALL_SERVICES.forEach(key => {
-            // Lab ne form me jo Yes kiya hoga, usme checked aayega
             let isChecked = (lab[key] === "Yes") ? "checked" : "";
             let displayName = key.replace(/_lab/g, '').replace(/_/g, ' ').toUpperCase();
-            
-            // Only highlight the ones lab requested
             let bgColor = (lab[key] === "Yes") ? "background: #fdf5ff;" : ""; 
-
             srvHtml += `<label style="${bgColor}"><input type="checkbox" class="admin-srv-chk" value="${key}" ${isChecked}> ${displayName}</label>`;
         });
         document.getElementById('modal-services').innerHTML = srvHtml;
@@ -185,14 +254,15 @@
         // 4. Set Action Buttons based on status
         let actionHtml = "";
         if (lab.status !== "Active") {
-            actionHtml += `<button class="btn btn-approve" style="padding:12px 25px; font-size:16px;" onclick="approveLab()">✅ Save Services & Approve Lab</button>`;
+            actionHtml += `<button class="btn btn-approve" style="padding:12px 25px; font-size:16px;" onclick="approveLab()"><i class="fas fa-check-circle"></i> Save Services & Approve</button>`;
         }
         if (lab.status !== "Rejected") {
-            actionHtml += `<button class="btn btn-reject" style="padding:12px 25px; font-size:16px;" onclick="rejectLab()">❌ Reject Lab</button>`;
+            actionHtml += `<button class="btn btn-reject" style="padding:12px 25px; font-size:16px;" onclick="rejectLab()"><i class="fas fa-times-circle"></i> Reject Lab</button>`;
         }
         document.getElementById('modal-action-bar').innerHTML = actionHtml;
 
-        document.getElementById('detailsModal').style.display = "block";
+        // 🌟 Fixed: Modal display logic
+        document.getElementById('detailsModal').style.display = "flex";
     }
 
     function closeModal() { 
@@ -200,11 +270,10 @@
         currentViewingUserId = null;
     }
 
-    // 🌟 APPROVE LAB LOGIC (Sends checked services to backend)
+    // 🌟 APPROVE LAB LOGIC
     function approveLab() {
         if(!confirm("Are you sure? This will send an approval email to the lab with the TICKED services only.")) return;
         
-        // Gather current checkbox states
         let approvedServices = {};
         document.querySelectorAll('.admin-srv-chk').forEach(chk => {
             approvedServices[chk.value] = chk.checked ? "Yes" : "No";
@@ -214,7 +283,7 @@
             action: "updateLabStatus",
             user_id: currentViewingUserId,
             new_status: "Active",
-            approved_services: approvedServices // Sending updated services
+            approved_services: approvedServices
         };
 
         sendUpdateToBackend(payload);
@@ -226,7 +295,7 @@
     }
 
     function sendUpdateToBackend(payload) {
-        document.getElementById('modal-action-bar').innerHTML = "<b>Processing... Please wait...</b>";
+        document.getElementById('modal-action-bar').innerHTML = "<b><i class='fas fa-spinner fa-spin'></i> Processing... Please wait...</b>";
 
         fetch(SCRIPT_URL, {
             method: "POST",
@@ -243,7 +312,24 @@
                 alert("Error: " + data.message);
                 closeModal();
             }
+        }).catch(err => {
+            alert("Network Error!");
+            closeModal();
         });
+    }
+
+    // 🌟 NAYA: Sidebar toggle logic
+    function toggleSidebar() {
+        document.getElementById("adminSidebar").classList.toggle("active");
+    }
+
+    // 🌟 NAYA: Close sidebar clicking outside (Mobile)
+    function closeSidebarOnClick(event) {
+        const sidebar = document.getElementById("adminSidebar");
+        const toggleIcon = document.querySelector(".menu-toggle");
+        if (window.innerWidth <= 768 && sidebar.classList.contains("active") && event.target !== toggleIcon) {
+            sidebar.classList.remove("active");
+        }
     }
 
     // Load data on start
