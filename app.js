@@ -12,7 +12,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 // 🌟 LATEST GOOGLE SCRIPT URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz58Tznf7nj53bMdg5Iybm10c-f5OKk0m-JxXBqXAbOfymyoLPtvW4UP2fB4BMG6eGD/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh7-fNS60MzHDsOHP-NNBzOrewsCp_82yM_I7lmfQKK3ah-AaRuK41QOKi3D2CjyAl/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -91,10 +91,12 @@ function checkProfileBanner() {
         
         if (role === 'hospital') {
             bannerText.innerHTML = "🏥 <b>Action Required:</b> Please complete your Hospital Profile to activate your account.";
-        } else if (role === 'lab') { // 🌟 LAB ADDED
+        } else if (role === 'lab') { 
             bannerText.innerHTML = "🔬 <b>Action Required:</b> Please complete your Lab Profile to start receiving test bookings.";
         } else if (role === 'doctor') {
             bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
+        } else if (role === 'executive') { // 🌟 NAYA
+            bannerText.innerHTML = "🛵 <b>Action Required:</b> Please complete your Executive profile to get tasks.";
         } else {
             bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
         }
@@ -109,8 +111,10 @@ function reopenProfileForm() {
         document.getElementById('doctor-profile-section').style.display = 'block';
     } else if(role === 'hospital') {
         document.getElementById('hospital-profile-section').style.display = 'block';
-    } else if(role === 'lab') { // 🌟 LAB ADDED
+    } else if(role === 'lab') { 
         document.getElementById('lab-profile-section').style.display = 'block';
+    } else if(role === 'executive') { // 🌟 NAYA
+        document.getElementById('executive-profile-section').style.display = 'block';
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
     }
@@ -197,6 +201,7 @@ async function verifyOTP() {
             else if (finalRole === 'doctor') document.getElementById('doctor-profile-section').style.display = 'block';
             else if (finalRole === 'hospital') document.getElementById('hospital-profile-section').style.display = 'block';
             else if (finalRole === 'lab') document.getElementById('lab-profile-section').style.display = 'block';
+            else if (finalRole === 'executive') document.getElementById('executive-profile-section').style.display = 'block'; // 🌟 NAYA
         }
         
         checkLoginState();
@@ -235,7 +240,8 @@ function closeProfileForm(type) {
     if(type === 'patient') document.getElementById('profile-form-section').style.display = 'none';
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
-    if(type === 'lab') document.getElementById('lab-profile-section').style.display = 'none'; // 🌟 LAB ADDED
+    if(type === 'lab') document.getElementById('lab-profile-section').style.display = 'none'; 
+    if(type === 'executive') document.getElementById('executive-profile-section').style.display = 'none'; // 🌟 NAYA
     
     localStorage.setItem("bhavya_profile_skipped", "true");
     
@@ -613,6 +619,103 @@ window.saveLabProfile = async function() {
     } finally {
         saveBtn.innerText = "Submit Lab Profile";
         saveBtn.style.backgroundColor = "#8e44ad";
+        saveBtn.disabled = false;
+    }
+};
+
+// =======================================================
+// 🌟 EXECUTIVE PROFILE LOGIC
+// =======================================================
+window.switchExecTab = function(evt, tabId) {
+    let contents = document.querySelectorAll("#executive-profile-section .hosp-tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+    let btns = document.querySelectorAll("#executive-profile-section .hosp-tab-btn");
+    for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+    
+    let targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        if(targetTab.classList.contains('form-grid')) targetTab.style.display = "grid";
+        else targetTab.style.display = "block";
+        targetTab.classList.add("active");
+    }
+    evt.currentTarget.classList.add("active");
+};
+
+window.saveExecutiveProfile = async function() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const saveBtn = document.getElementById('btn-save-exec');
+    
+    const execName = document.getElementById('execName').value.trim();
+    const execEmail = document.getElementById('execEmail').value.trim();
+
+    if (!execName) {
+        alert("Please fill your Name!");
+        return;
+    }
+
+    saveBtn.innerText = "Uploading Files & Saving... Please Wait";
+    saveBtn.style.backgroundColor = "#ffc107";
+    saveBtn.disabled = true;
+
+    try {
+        const docFile = document.getElementById('execDoc').files[0];
+        const imgFile = document.getElementById('execImg').files[0];
+
+        if(!docFile || !imgFile) {
+            alert("Document and Photo are mandatory!");
+            throw new Error("Missing files");
+        }
+
+        let docData = { base64: (await getBase64(docFile)).split(',')[1], filename: userId + "_ExecDoc_" + docFile.name, mimeType: docFile.type };
+        let imgData = { base64: (await getBase64(imgFile)).split(',')[1], filename: userId + "_ExecImg_" + imgFile.name, mimeType: imgFile.type };
+
+        const workType = {
+            collection: document.getElementById('execCol').checked ? "Yes" : "No",
+            delivery: document.getElementById('execDel').checked ? "Yes" : "No",
+            sales: document.getElementById('execSales').checked ? "Yes" : "No"
+        };
+
+        const payload = {
+            action: "saveExecutiveProfile",
+            user_id: userId,
+            executive_name: execName, executive_email: execEmail,
+            qualification: document.getElementById('execQual').value.trim(),
+            experience: document.getElementById('execExp').value.trim(),
+            work_type: workType,
+            
+            // Timings
+            mon_open: document.getElementById('exec_monOpen').value, mon_close: document.getElementById('exec_monClose').value,
+            tue_open: document.getElementById('exec_tueOpen').value, tue_close: document.getElementById('exec_tueClose').value,
+            wed_open: document.getElementById('exec_wedOpen').value, wed_close: document.getElementById('exec_wedClose').value,
+            thu_open: document.getElementById('exec_thuOpen').value, thu_close: document.getElementById('exec_thuClose').value,
+            fri_open: document.getElementById('exec_friOpen').value, fri_close: document.getElementById('exec_friClose').value,
+            sat_open: document.getElementById('exec_satOpen').value, sat_close: document.getElementById('exec_satClose').value,
+            sun_open: document.getElementById('exec_sunOpen').value, sun_close: document.getElementById('exec_sunClose').value,
+            
+            files: { doc: docData, img: imgData },
+            status: "Inactive"
+        };
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            alert("Executive profile successfully submitted! Waiting for Admin Approval.");
+            localStorage.removeItem("bhavya_profile_skipped"); 
+            checkProfileBanner();
+            document.getElementById('executive-profile-section').style.display = 'none';
+        } else {
+            alert("Server Error: " + data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert(error.message === "Missing files" ? error.message : "Upload failed! Check your connection or file size (Max 2MB each).");
+    } finally {
+        saveBtn.innerText = "Submit Executive Profile";
+        saveBtn.style.backgroundColor = "#e67e22";
         saveBtn.disabled = false;
     }
 };
