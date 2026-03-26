@@ -160,51 +160,56 @@ function sendOTP() {
     }).catch((err) => { alert("Firebase Error: " + err.message); });
 }
 
-function verifyOTP() {
+// ==========================================
+// 🌟 ASYNC VERIFY OTP (Fixes the Role & Form Popup Issue)
+// ==========================================
+async function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
     const selectedRole = isPartnerMode ? document.getElementById('partnerRole').value : 'patient';
     if(code.length !== 6) { alert("Please enter a 6-digit OTP."); return; }
 
-    window.confirmationResult.confirm(code).then((result) => {
+    try {
+        const result = await window.confirmationResult.confirm(code);
         const user = result.user;
-        let prefix = "U"; 
-        if (selectedRole === 'patient') prefix = "P"; else if (selectedRole === 'doctor') prefix = "D";
-        else if (selectedRole === 'lab') prefix = "L"; else if (selectedRole === 'pharmacy') prefix = "PH";
-        else if (selectedRole === 'hospital') prefix = "H"; else if (selectedRole === 'executive') prefix = "E";
-        let userId = prefix + user.phoneNumber.slice(-6);
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+            body: JSON.stringify({ action: "login", uid: user.uid, mobile: user.phoneNumber, role: selectedRole })
+        });
+        const resData = await response.json();
+
+        const finalRole = resData.role;
+        const finalUserId = resData.user_id;
 
         localStorage.setItem("bhavya_uid", user.uid);
         localStorage.setItem("bhavya_mobile", user.phoneNumber);
-        localStorage.setItem("bhavya_role", selectedRole);
-        localStorage.setItem("bhavya_user_id", userId);
-
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-            body: JSON.stringify({ action: "login", uid: user.uid, mobile: user.phoneNumber, role: selectedRole })
-        }).catch(err => console.error("Backend warning:", err));
+        localStorage.setItem("bhavya_role", finalRole);
+        localStorage.setItem("bhavya_user_id", finalUserId);
 
         closeLoginPopup();
 
-        if (selectedRole === 'patient') {
-            document.getElementById('profile-form-section').style.display = 'block';
-        } else if (selectedRole === 'doctor') {
-            document.getElementById('doctor-profile-section').style.display = 'block';
-        } else if (selectedRole === 'hospital') {
-            document.getElementById('hospital-profile-section').style.display = 'block';
-        } else if (selectedRole === 'lab') { // 🌟 LAB ADDED
-            document.getElementById('lab-profile-section').style.display = 'block';
+        if (resData.profile_completed) {
+            localStorage.removeItem("bhavya_profile_skipped");
+            alert("Welcome back! Logged in as " + finalRole.toUpperCase());
         } else {
-            alert("Login Successful! Welcome to BhavyaCare.");
-            checkLoginState();
+            localStorage.setItem("bhavya_profile_skipped", "true");
+            if (finalRole === 'patient') document.getElementById('profile-form-section').style.display = 'block';
+            else if (finalRole === 'doctor') document.getElementById('doctor-profile-section').style.display = 'block';
+            else if (finalRole === 'hospital') document.getElementById('hospital-profile-section').style.display = 'block';
+            else if (finalRole === 'lab') document.getElementById('lab-profile-section').style.display = 'block';
         }
-    }).catch((error) => { 
+        
+        checkLoginState();
+        checkProfileBanner();
+
+    } catch (error) { 
         console.error("OTP Error Details:", error);
         if(error.code) { 
             alert("Invalid OTP! Please try again."); 
         } else {
             alert("System Error. Please check console logs.");
         }
-    });
+    }
 }
 
 function logoutUser() {
