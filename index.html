@@ -9,38 +9,24 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bhavyacare.com - Home</title>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f7f6; }
         
-        /* Main Body Content Styling */
-        .hero-section { text-align: center; padding: 80px 20px; background-color: #e6f0fa; }
-        .hero-section h1 { color: #0056b3; font-size: 36px; margin-bottom: 10px; }
-        .hero-section p { color: #555; font-size: 18px; max-width: 600px; margin: 0 auto; margin-bottom: 30px; }
-
         /* Dashboard & Login Buttons Styling */
+        .action-section { text-align: center; padding: 30px 20px; background-color: #e6f0fa; }
         .action-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
         
         .btn-dashboard {
             background-color: #007bff;
             color: white;
+            border: none;
             padding: 12px 25px;
-            text-decoration: none;
             border-radius: 25px;
             font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
             transition: 0.3s;
             display: none; /* Default hidden, JS se show hoga */
@@ -66,14 +52,11 @@
 
     <div id="header-container"></div>
 
-    <div class="hero-section">
-        <h1>Welcome to BhavyaCare</h1>
-        <p>Aapki health, humari zimmedari. Book tests, consult doctors, and get medicines easily.</p>
-        
+    <div class="action-section">
         <div class="action-buttons">
-            <a href="patient_dashboard.html" id="goToDashboardBtn" class="btn-dashboard">
+            <button id="goToDashboardBtn" class="btn-dashboard" onclick="window.location.href='patient_dashboard.html'">
                 <i class="fas fa-user-circle"></i> My Dashboard
-            </a>
+            </button>
             <button id="homeLoginBtn" class="btn-login" onclick="document.getElementById('loginModal').style.display='block'">
                 Login / Register
             </button>
@@ -81,69 +64,29 @@
     </div>
 
     <script>
-        // Step 1: header.html ko fetch karke id="header-container" ke andar daalna
+        // Step 1: header.html fetch karna
         fetch('header.html')
             .then(response => response.text())
             .then(data => {
                 document.getElementById('header-container').innerHTML = data;
                 
-                // Step 2: Header load hone ke BAAD app.js load karna 
+                // Step 2: Header load hone ke baad app.js load karna 
                 let script = document.createElement('script');
                 script.src = 'app.js';
                 document.body.appendChild(script);
 
-                // Step 3: Firebase Auth Listener (Dashboard button show/hide logic)
+                // Step 3: Firebase Auth Listener
                 script.onload = () => {
-                    // Ye check karta hai ki user login hai ya nahi
                     firebase.auth().onAuthStateChanged((user) => {
                         if (user) {
-                            // User logged in hai -> Dashboard button dikhao
                             document.getElementById('goToDashboardBtn').style.display = 'inline-block';
                             document.getElementById('homeLoginBtn').style.display = 'none';
                         } else {
-                            // User logged in NAHI hai -> Login button dikhao
                             document.getElementById('goToDashboardBtn').style.display = 'none';
                             document.getElementById('homeLoginBtn').style.display = 'inline-block';
                         }
                     });
                 };
-            })
-            .catch(error => console.error('Error loading header:', error));
-    </script>
-
-</body>
-</html>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f4f7f6; }
-        
-        /* Main Body Content Styling */
-        .hero-section { text-align: center; padding: 80px 20px; background-color: #e6f0fa; }
-        .hero-section h1 { color: #0056b3; font-size: 36px; margin-bottom: 10px; }
-        .hero-section p { color: #555; font-size: 18px; max-width: 600px; margin: 0 auto; }
-    </style>
-</head>
-<body>
-
-    <div id="header-container"></div>
-
-    <div class="hero-section">
-        <h1>Welcome to BhavyaCare</h1>
-        <p>Aapki health, humari zimmedari. Book tests, consult doctors, and get medicines easily.</p>
-    </div>
-
-    <script>
-        // Step 1: header.html ko fetch karke id="header-container" ke andar daalna
-        fetch('header.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('header-container').innerHTML = data;
-                
-                // Step 2: Header load hone ke BAAD app.js load karna 
-                // (Agar pehle load kar diya, toh app.js ko login button nahi milega aur error aayega)
-                let script = document.createElement('script');
-                script.src = 'app.js';
-                document.body.appendChild(script);
             })
             .catch(error => console.error('Error loading header:', error));
     </script>
