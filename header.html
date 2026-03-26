@@ -291,6 +291,7 @@
         <button type="button" class="btn-skip" onclick="closeProfileForm('hospital')">I'll do this later (Skip)</button>
     </form>
 </div>
+
 <div id="lab-profile-section" style="width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #8e44ad; max-height: 85vh; overflow-y: auto; max-width: 800px;">
     <button class="close-btn" onclick="closeProfileForm('lab')">✖</button>
     <h3 class="styled-headline" style="color: #8e44ad;">🔬 Diagnostic Lab Registration</h3>
@@ -368,5 +369,60 @@
 
         <button type="button" id="btn-save-lab" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #8e44ad;" onclick="saveLabProfile()">Submit Lab Profile</button>
         <button type="button" class="btn-skip" onclick="closeProfileForm('lab')">I'll do this later (Skip)</button>
+    </form>
+</div>
+
+<div id="executive-profile-section" style="width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #e67e22; max-height: 85vh; overflow-y: auto; max-width: 800px;">
+    <button class="close-btn" onclick="closeProfileForm('executive')">✖</button>
+    <h3 class="styled-headline" style="color: #e67e22;">🛵 Executive Registration</h3>
+    <p class="sub-text">Complete your profile to start Collection, Delivery, or Sales tasks.</p>
+
+    <div class="hosp-tabs">
+        <div class="hosp-tab-btn active" onclick="switchExecTab(event, 'exec-tab-basic')">1. Personal Info & Work</div>
+        <div class="hosp-tab-btn" onclick="switchExecTab(event, 'exec-tab-timing')">2. Working Hours</div>
+        <div class="hosp-tab-btn" onclick="switchExecTab(event, 'exec-tab-docs')">3. Docs & Photo</div>
+    </div>
+
+    <form id="executiveForm">
+        <div id="exec-tab-basic" class="hosp-tab-content active form-grid" style="display: grid;">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Name *</label>
+                <input type="text" id="execName" class="input-box" placeholder="e.g. Rahul Kumar"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID</label>
+                <input type="email" id="execEmail" class="input-box" placeholder="Optional"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Qualification</label>
+                <input type="text" id="execQual" class="input-box" placeholder="e.g. 12th Pass, Graduate"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Experience (Years)</label>
+                <input type="text" id="execExp" class="input-box" placeholder="e.g. 2 Years in Delivery"></div>
+            
+            <div class="full-width" style="margin-top: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                <label style="font-size: 14px; font-weight: bold; color: #e67e22; margin-bottom: 10px;">Select Work Type *</label>
+                <div style="display: flex; gap: 20px; font-size: 14px;">
+                    <label><input type="checkbox" id="execCol" value="Yes"> Collection</label>
+                    <label><input type="checkbox" id="execDel" value="Yes"> Delivery</label>
+                    <label><input type="checkbox" id="execSales" value="Yes"> Sales</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="exec-tab-timing" class="hosp-tab-content form-grid">
+            <h4 class="full-width section-title" style="color: #e67e22;">🕒 Shift Timings</h4>
+            <div><label style="font-size: 13px; font-weight: bold;">Monday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_monOpen" class="input-box"><input type="time" id="exec_monClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Tuesday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_tueOpen" class="input-box"><input type="time" id="exec_tueClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Wednesday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_wedOpen" class="input-box"><input type="time" id="exec_wedClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Thursday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_thuOpen" class="input-box"><input type="time" id="exec_thuClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Friday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_friOpen" class="input-box"><input type="time" id="exec_friClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Saturday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_satOpen" class="input-box"><input type="time" id="exec_satClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Sunday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_sunOpen" class="input-box"><input type="time" id="exec_sunClose" class="input-box"></div></div>
+        </div>
+
+        <div id="exec-tab-docs" class="hosp-tab-content form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">ID Proof / Aadhar (Max 2MB) *</label>
+                <input type="file" id="execDoc" class="input-box" accept=".pdf,image/*"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Passport Size Photo (Max 2MB) *</label>
+                <input type="file" id="execImg" class="input-box" accept="image/*"></div>
+        </div>
+
+        <button type="button" id="btn-save-exec" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #e67e22; width: 100%;" onclick="saveExecutiveProfile()">Submit Executive Profile</button>
+        <button type="button" class="btn-skip" onclick="closeProfileForm('executive')">I'll do this later (Skip)</button>
     </form>
 </div>
