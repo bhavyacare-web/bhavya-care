@@ -1,205 +1,478 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - BhavyaCare</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { display: flex; background-color: #f4f7f6; height: 100vh; overflow: hidden; position: relative; }
+<style>
+    .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; padding: 15px 40px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 1000; }
+    .logo h2 { color: #0056b3; font-size: 26px; font-weight: 800; margin: 0; }
+    .logo span { color: #28a745; }
 
-        /* Sidebar */
-        .sidebar { width: 250px; background-color: #0056b3; color: white; display: flex; flex-direction: column; transition: left 0.3s ease; }
-        .sidebar .logo { padding: 20px; font-size: 24px; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar .logo span { color: #28a745; }
-        .sidebar .menu { flex: 1; padding: 20px 0; }
-        .sidebar .menu a { display: block; padding: 15px 25px; color: white; text-decoration: none; font-size: 16px; transition: 0.3s; }
-        .sidebar .menu a:hover, .sidebar .menu a.active { background-color: #004494; border-left: 4px solid #28a745; }
-        .sidebar .menu a i { margin-right: 10px; width: 20px; text-align: center; }
+    .nav-actions { display: flex; align-items: center; gap: 15px; }
+    .cart-btn { text-decoration: none; color: #333; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    #cart-count { background-color: #e74c3c; color: white; padding: 2px 7px; border-radius: 50%; font-size: 12px; }
+    
+    .btn { border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; }
+    .login-btn { background-color: #0056b3; }
+    .login-btn:hover { background-color: #004494; }
 
-        /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; width: 100%; }
-        .header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header h2 { color: #333; font-size: 22px; }
-        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: bold; color: #555; cursor: pointer; }
-        .admin-profile i { font-size: 24px; color: #0056b3; }
+    #user-menu-container { display: none; }
+    .user-profile-btn { background: #f4f7f6; color: #0056b3; border: 1px solid #cce5ff; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+    .user-profile-btn:hover { background: #e6f0fa; }
+    .user-profile-btn i { font-size: 16px; }
 
-        .container { padding: 30px; max-width: 1100px; margin: 0 auto; width: 100%; }
+    .dropdown { position: relative; display: inline-block; }
+    .dropbtn { background-color: transparent; color: #333; font-size: 24px; border: none; cursor: pointer; padding: 0 5px; font-weight: bold; }
+    .dropbtn:hover { color: #0056b3; }
+    .dropdown-content { display: none; position: absolute; right: 0; background-color: #ffffff; min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.1); z-index: 1001; border-radius: 8px; overflow: hidden; border: 1px solid #eee; margin-top: 10px;}
+    .dropdown-content a { color: #333; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px; border-bottom: 1px solid #f4f4f4; font-weight: 500; }
+    .dropdown-content a:hover { background-color: #f9f9f9; color: #0056b3; }
+    .show-menu { display: block; }
 
-        /* Dashboard Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; border-left: 5px solid #0056b3; cursor: pointer; transition: 0.2s; text-decoration: none;}
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .stat-icon { font-size: 30px; color: #0056b3; background: #e6f0fa; padding: 15px; border-radius: 50%; }
-        .stat-info h3 { font-size: 24px; color: #333; }
-        .stat-info p { color: #888; font-size: 14px; font-weight: 600; }
+    #login-section { width: 90%; max-width: 400px; margin: 40px auto; padding: 30px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; text-align: center; display: none; position: absolute; top: 70px; right: 40px; z-index: 999; }
+    #login-section h3 { color: #333; margin-bottom: 20px; }
+    .input-box { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none; transition: 0.3s;}
+    .input-box:focus { border-color: #0056b3; box-shadow: 0 0 5px rgba(0,86,179,0.2); }
+    .action-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+    .action-btn:hover { background-color: #218838; }
+    .support-text { font-size: 12px; color: #888; margin-top: 15px; }
 
-        /* Hamburger Icon & Mobile Responsiveness */
-        .menu-toggle { display: none; font-size: 24px; color: #0056b3; cursor: pointer; }
+    #profile-form-section, #doctor-profile-section {
+        width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+        border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); 
+        z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #28a745; max-height: 85vh; overflow-y: auto;
+    }
+    #profile-form-section { max-width: 550px; border-top-color: #0056b3; }
+    #doctor-profile-section { max-width: 700px; }
 
-        @media (max-width: 768px) {
-            .sidebar { position: absolute; left: -250px; height: 100vh; z-index: 1000; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
-            .sidebar.active { left: 0; }
-            .menu-toggle { display: block; }
-            .header { padding: 15px; }
-            .header h2 { font-size: 18px; }
-            .container { padding: 15px; }
-            .admin-profile span { display: none; }
-        }
-    </style>
-</head>
-<body>
+    @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    
+    .form-header-logo { text-align: center; margin-bottom: 15px; }
+    .form-header-logo h2 { color: #0056b3; font-size: 28px; font-weight: 800; margin: 0; }
+    .form-header-logo h2 span { color: #28a745; }
+    
+    .styled-headline { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 5px; background: -webkit-linear-gradient(45deg, #0056b3, #28a745); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sub-text { color: #777; font-size: 14px; text-align: center; margin-bottom: 25px; font-weight: 500; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .full-width { grid-column: span 2; }
+    .section-title { border-bottom: 1px solid #eee; padding-bottom: 5px; color: #0056b3; margin-top: 15px; font-size: 16px; font-weight: bold;}
 
-    <div class="sidebar" id="adminSidebar">
-        <div class="logo">Bhavya<span>Admin</span></div>
-        <div class="menu">
-            <a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="patientadmin.html"><i class="fas fa-user-injured"></i> Patients Center</a>
-            <a href="medicineadmin.html"><i class="fas fa-pills"></i> Medicine Center</a>
-            <a href="doctorarea.html"><i class="fas fa-user-md"></i> Doctors Center</a>
-            <a href="hospitalarea.html"><i class="fas fa-hospital"></i> Hospitals Center</a>
-            <a href="labarea.html"><i class="fas fa-flask"></i> Labs Center</a>
-            <a href="executivearea.html"><i class="fas fa-motorcycle"></i> Executives Center</a>
-            <a href="pharmacyarea.html"><i class="fas fa-prescription-bottle-alt"></i> Pharmacy Center</a>
-            <a style="margin-top: 50px; color: #ffcccc;" href="../index.html"><i class="fas fa-home"></i> Back to Website</a>
-        </div>
-    </div>
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; border: none; background: none; transition: 0.2s; }
+    .close-btn:hover { color: #dc3545; transform: rotate(90deg); }
+    .btn-skip { background-color: transparent; color: #888; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; font-size: 14px; text-decoration: underline;}
+    .btn-skip:hover { color: #555; }
+    .referral-box { background-color: #f1f8ff; border: 1px dashed #0056b3; color: #0056b3; font-weight: bold; text-align: center; font-size: 18px; letter-spacing: 2px; cursor: not-allowed; }
 
-    <div class="main-content" onclick="closeSidebarOnClick(event)">
-        <div class="header">
-            <div class="header-left">
-                <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
-                <h2>Dashboard Overview</h2>
+    #profile-warning-banner {
+        display: none; background-color: #ffcc00; color: #333; text-align: center; padding: 10px; font-weight: bold; font-size: 15px;
+    }
+    #profile-warning-banner button {
+        background: #0056b3; color: white; border: none; padding: 5px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px;
+    }
+
+    #hospital-profile-section {
+        width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+        border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); 
+        z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #17a2b8; max-height: 85vh; overflow-y: auto; max-width: 800px;
+    }
+    .hosp-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 20px; gap: 5px; flex-wrap: wrap; }
+    .hosp-tab-btn { background: #f8f9fa; border: 1px solid #ccc; border-bottom: none; padding: 10px 15px; cursor: pointer; font-weight: bold; color: #555; border-radius: 8px 8px 0 0; transition: 0.3s; font-size: 14px; }
+    .hosp-tab-btn.active { background: #17a2b8; color: white; border-color: #17a2b8; }
+    .hosp-tab-content { display: none; }
+    .hosp-tab-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+
+<div id="profile-warning-banner">
+    <span id="banner-text">⚠️ Action Required: Please complete your profile to access all features.</span>
+    <button onclick="reopenProfileForm()">Complete Profile Now</button>
+</div>
+
+<header class="navbar">
+    <div class="logo"><h2>Bhavya<span>Care</span></h2></div>
+    <div class="nav-actions">
+        <a href="#" class="cart-btn">🛒 Cart <span id="cart-count">0</span></a>
+        <button id="nav-login-btn" class="btn login-btn" onclick="openPatientLogin()">Login</button>
+        <div class="dropdown">
+            <button id="main-menu-btn" class="dropbtn" onclick="toggleMenu()">⋮</button>
+            <div id="user-menu-container">
+                 <button class="user-profile-btn" onclick="toggleMenu()"><i class="fas fa-user-circle"></i> My Account</button>
             </div>
-            <div class="admin-profile" onclick="window.location.href='../index.html'">
-                <span>Logout Admin</span>
-                <i class="fas fa-sign-out-alt" style="color: #dc3545;"></i>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="stats-grid">
-                <a href="patientadmin.html" class="stat-card" style="text-decoration: none;">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-patient-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Patients</p>
-                    </div>
-                </a>
-                
-                <a href="medicineadmin.html" class="stat-card" style="border-left-color: #ffc107; text-decoration: none;">
-                    <div class="stat-icon" style="color: #ffc107; background: #fff8e1;"><i class="fas fa-pills"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-medicine-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Medicine Orders</p>
-                    </div>
-                </a>
-                
-                <a href="doctorarea.html" class="stat-card" style="border-left-color: #28a745; text-decoration: none;">
-                    <div class="stat-icon" style="color: #28a745; background: #e8f5e9;"><i class="fas fa-user-md"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-doctor-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Doctors</p>
-                    </div>
-                </a>
-
-                <a href="hospitalarea.html" class="stat-card" style="border-left-color: #17a2b8; text-decoration: none;">
-                    <div class="stat-icon" style="color: #17a2b8; background: #e0f2f4;"><i class="fas fa-hospital"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-hospital-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Hospitals</p>
-                    </div>
-                </a>
-
-                <a href="labarea.html" class="stat-card" style="border-left-color: #8e44ad; text-decoration: none;">
-                    <div class="stat-icon" style="color: #8e44ad; background: #f4e8fb;"><i class="fas fa-flask"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-lab-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Labs</p>
-                    </div>
-                </a>
-
-                <a href="executivearea.html" class="stat-card" style="border-left-color: #e67e22; text-decoration: none;">
-                    <div class="stat-icon" style="color: #e67e22; background: #fff3e6;"><i class="fas fa-motorcycle"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-exec-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Executives</p>
-                    </div>
-                </a>
-
-                <a href="pharmacyarea.html" class="stat-card" style="border-left-color: #d35400; text-decoration: none;">
-                    <div class="stat-icon" style="color: #d35400; background: #fff1e6;"><i class="fas fa-prescription-bottle-alt"></i></div>
-                    <div class="stat-info">
-                        <h3 id="dash-pharm-count"><i class="fas fa-spinner fa-spin"></i></h3>
-                        <p>Total Pharmacies</p>
-                    </div>
-                </a>
-            </div>
-
-            <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <h3 style="margin-bottom: 10px; color: #0056b3;">Welcome to Master Control</h3>
-                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu ya upar diye gaye cards par click karke specific center (jaise Patients, Medicine, Doctors, Hospitals, Labs, Executives ya Pharmacies) mein enter karein.</p>
+            <div id="myDropdown" class="dropdown-content">
+                <a href="#" id="menu-join" onclick="openPartnerLogin()">🤝 Join Us (Partner)</a>
+                <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;">📊 My Dashboard</a>
+                <a href="#" id="menu-orders" style="display: none;" onclick="alert('Your Orders page pending')">📦 My Orders</a>
+                <a href="#" id="menu-logout" onclick="logoutUser()" style="display: none; color: #e74c3c;">🚪 Logout</a>
+                <a href="admin/admin.html" id="menu-admin" style="color: #0056b3; border-top: 1px solid #eee;"><i class="fas fa-user-shield"></i> 🛡️ Admin Panel</a>
             </div>
         </div>
     </div>
+</header>
 
-    <script>
-        // 🌟 LATEST GOOGLE SCRIPT URL UPDATE KIYA HAI
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh5xaD_twrih6kShL6Cj8pjFuHLH6xlSvbl06rRr6ZebX1zAUuH0KtHeNUdEr3kHw/exec";
+<div id="login-section">
+    <h3 id="form-title">Login / Sign Up</h3>
+    <div id="phone-section">
+        <div id="partner-role-container" style="display: none; margin-bottom: 15px;">
+            <p style="text-align: left; font-size: 14px; color: #666;">Select Partner Type:</p>
+            <select id="partnerRole" class="input-box">
+                <option value="doctor" selected>Doctor</option>
+                <option value="lab">Lab</option>
+                <option value="pharmacy">Pharmacy</option>
+                <option value="hospital">Hospital</option>
+                <option value="executive">Executive</option>
+            </select>
+        </div>
+        <p style="text-align: left; font-size: 14px; color: #666;">Mobile Number:</p>
+        <input type="tel" id="phoneNumber" class="input-box" placeholder="e.g. 8950112467" maxlength="10">
+        <div id="recaptcha-container" style="margin-top: 10px;"></div>
+        <button id="send-otp-btn" class="action-btn" onclick="sendOTP()">Get OTP</button>
+    </div>
 
-        window.onload = function() {
-            fetch(GOOGLE_SCRIPT_URL)
-            .then(response => response.json())
-            .then(result => {
-                if(result.status === "success") {
-                    if(result.data) document.getElementById('dash-patient-count').innerText = result.data.length;
-                    else document.getElementById('dash-patient-count').innerText = "0";
+    <div id="otp-section" style="display: none;">
+        <p style="text-align: left; font-size: 14px; color: #666;">Enter OTP:</p>
+        <input type="tel" id="otpCode" class="input-box" placeholder="6-digit OTP" maxlength="6">
+        <button class="action-btn" style="background-color: #0056b3;" onclick="verifyOTP()">Verify Mobile</button>
+        <p style="margin-top: 15px; font-size: 13px; color: #0056b3; cursor: pointer; text-decoration: underline;" onclick="closeLoginPopup()">Cancel</p>
+    </div>
+    <p class="support-text">Need help? Email us at bhavyacare1@gmail.com</p>
+</div>
 
-                    if(result.medicineOrders) document.getElementById('dash-medicine-count').innerText = result.medicineOrders.length;
-                    else document.getElementById('dash-medicine-count').innerText = "0";
+<div id="profile-form-section">
+    <button class="close-btn" onclick="closeProfileForm('patient')">✖</button>
+    <div class="form-header-logo"><h2>Bhavya<span>Care</span></h2></div>
+    <h3 class="styled-headline">Welcome to BhavyaCare!</h3>
+    <p class="sub-text">Please complete your profile to book tests & get reports.</p>
+    
+    <div class="form-grid">
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Name *</label><input type="text" id="profName" class="input-box" placeholder="Enter your name" onkeyup="autoGenerateReferral()"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Date of Birth</label><input type="date" id="profDOB" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label><input type="email" id="profEmail" class="input-box" placeholder="mandatory@gmail.com"></div>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Address *</label><input type="text" id="profAddress" class="input-box" placeholder="House No, Street, Area"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">City *</label><input type="text" id="profCity" class="input-box" placeholder="e.g. Delhi"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label><input type="number" id="profPincode" class="input-box" placeholder="6 digits"></div>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Your Unique Referral Code</label><input type="text" id="profReferral" class="input-box referral-box" placeholder="Auto-generated" readonly></div>
+    </div>
+    <button id="btn-save-profile" class="action-btn" style="margin-top: 20px; font-size: 18px; padding: 15px;" onclick="savePatientProfile()">Save & Continue <i class="fas fa-arrow-right"></i></button>
+    <button class="btn-skip" onclick="closeProfileForm('patient')">I'll do this later (Skip)</button>
+</div>
 
-                    if(result.doctors) document.getElementById('dash-doctor-count').innerText = result.doctors.length;
-                    else document.getElementById('dash-doctor-count').innerText = "0";
+<div id="doctor-profile-section">
+    <button class="close-btn" onclick="closeProfileForm('doctor')">✖</button>
+    <h3 class="styled-headline" style="color: #28a745;">Doctor Registration Profile</h3>
+    <p class="sub-text">Please complete your details to get verified and start receiving patients.</p>
 
-                    if(result.hospitals) document.getElementById('dash-hospital-count').innerText = result.hospitals.length;
-                    else document.getElementById('dash-hospital-count').innerText = "0";
+    <div class="form-grid">
+        <h4 class="full-width section-title">👤 Basic Information</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Full Name *</label><input type="text" id="docName" class="input-box" placeholder="Dr. Full Name"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Email Address *</label><input type="email" id="docEmail" class="input-box" placeholder="Email"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Speciality *</label><input type="text" id="docSpeciality" class="input-box" placeholder="e.g. Cardiologist"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Qualification *</label><input type="text" id="docQual" class="input-box" placeholder="e.g. MBBS, MD"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Experience (Years) *</label><input type="number" id="docExp" class="input-box" placeholder="e.g. 5"></div>
+        
+        <div><label style="font-size: 13px; font-weight: bold;">Service Type *</label>
+            <input type="text" id="docServiceType" class="input-box" value="Doctor" readonly style="background-color: #e9ecef; cursor: not-allowed; color:#555; font-weight:bold;">
+        </div>
 
-                    if(result.labs) document.getElementById('dash-lab-count').innerText = result.labs.length;
-                    else document.getElementById('dash-lab-count').innerText = "0";
+        <h4 class="full-width section-title">🏥 Clinic Details</h4>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Clinic Name *</label><input type="text" id="docClinicName" class="input-box"></div>
+        <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Clinic Address *</label><input type="text" id="docClinicAddress" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">City *</label><input type="text" id="docCity" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label><input type="number" id="docPincode" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Clinic Fee (₹) *</label><input type="number" id="docClinicFee" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Slot Duration (Mins)</label>
+            <select id="docSlotDuration" class="input-box"><option value="15 Mins">15 Mins</option><option value="30 Mins">30 Mins</option></select>
+        </div>
 
-                    if(result.executives) document.getElementById('dash-exec-count').innerText = result.executives.length;
-                    else document.getElementById('dash-exec-count').innerText = "0";
+        <h4 class="full-width section-title">🌐 Online Consultation</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Provide Online Consultation?</label>
+            <select id="docOnlineConsult" class="input-box" onchange="toggleOnlineFields()">
+                <option value="No" selected>No</option>
+                <option value="Yes">Yes</option>
+            </select>
+        </div>
 
-                    // 🌟 NAYA: Set Pharmacy Count
-                    if(result.pharmacies) document.getElementById('dash-pharm-count').innerText = result.pharmacies.length;
-                    else document.getElementById('dash-pharm-count').innerText = "0";
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching dashboard counts:', error);
-                document.getElementById('dash-patient-count').innerText = "-";
-                document.getElementById('dash-medicine-count').innerText = "-";
-                document.getElementById('dash-doctor-count').innerText = "-";
-                document.getElementById('dash-hospital-count').innerText = "-";
-                document.getElementById('dash-lab-count').innerText = "-";
-                document.getElementById('dash-exec-count').innerText = "-"; 
-                document.getElementById('dash-pharm-count').innerText = "-"; // Fallback
-            });
-        };
+        <div id="online-fields-container" class="full-width" style="display: none; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Online Fee (₹)</label><input type="number" id="docOnlineFee" class="input-box" placeholder="Fee"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Online Start Time</label><input type="time" id="docOnlineStart" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Online End Time</label><input type="time" id="docOnlineEnd" class="input-box"></div>
+        </div>
 
-        function toggleSidebar() {
-            document.getElementById("adminSidebar").classList.toggle("active");
-        }
+        <h4 class="full-width section-title">🕒 Clinic Timings</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Monday</label><div style="display:flex; gap:5px;"><input type="time" id="monOpen" class="input-box"><input type="time" id="monClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Tuesday</label><div style="display:flex; gap:5px;"><input type="time" id="tueOpen" class="input-box"><input type="time" id="tueClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Wednesday</label><div style="display:flex; gap:5px;"><input type="time" id="wedOpen" class="input-box"><input type="time" id="wedClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Thursday</label><div style="display:flex; gap:5px;"><input type="time" id="thuOpen" class="input-box"><input type="time" id="thuClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Friday</label><div style="display:flex; gap:5px;"><input type="time" id="friOpen" class="input-box"><input type="time" id="friClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Saturday</label><div style="display:flex; gap:5px;"><input type="time" id="satOpen" class="input-box"><input type="time" id="satClose" class="input-box"></div></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Sunday</label><div style="display:flex; gap:5px;"><input type="time" id="sunOpen" class="input-box"><input type="time" id="sunClose" class="input-box"></div></div>
 
-        function closeSidebarOnClick(event) {
-            const sidebar = document.getElementById("adminSidebar");
-            const toggleIcon = document.querySelector(".menu-toggle");
-            if (window.innerWidth <= 768 && sidebar.classList.contains("active") && event.target !== toggleIcon) {
-                sidebar.classList.remove("active");
-            }
-        }
-    </script>
-</body>
-</html>
+        <h4 class="full-width section-title">📂 Document & Photo</h4>
+        <div><label style="font-size: 13px; font-weight: bold;">Upload Medical Doc (Max 2MB) *</label><input type="file" id="docFile" class="input-box"></div>
+        <div><label style="font-size: 13px; font-weight: bold;">Doctor Photo (Max 2MB) *</label><input type="file" id="docImage" class="input-box" accept="image/*"></div>
+    </div>
+
+    <button id="btn-save-doctor" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px;" onclick="saveDoctorProfile()">Submit Profile</button>
+    <button class="btn-skip" onclick="closeProfileForm('doctor')">I'll do this later (Skip)</button>
+</div>
+
+<div id="hospital-profile-section">
+    <button class="close-btn" onclick="closeProfileForm('hospital')">✖</button>
+    <h3 class="styled-headline" style="color: #17a2b8;">🏥 Hospital Registration</h3>
+    <p class="sub-text">Fill in your hospital details to list your packages on BhavyaCare.</p>
+
+    <div class="hosp-tabs">
+        <div class="hosp-tab-btn active" onclick="switchHospTab(event, 'tab-basic')">1. Basic Info</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-charges')">2. Room Charges</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-tpa')">3. Insurances</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-surgeries')">4. Surgeries</div>
+        <div class="hosp-tab-btn" onclick="switchHospTab(event, 'tab-docs')">5. Documents</div>
+    </div>
+
+    <form id="hospitalForm">
+        <div id="tab-basic" class="hosp-tab-content active form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Hospital Name *</label>
+                <input type="text" id="hospName" class="input-box" placeholder="e.g. City Hospital"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Contact Number *</label>
+                <input type="tel" id="hospPhone" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label>
+                <input type="email" id="hospEmail" class="input-box"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Address *</label>
+                <input type="text" id="hospAddress" class="input-box"></div>
+            
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Basic Facilities (Type comma separated)</label>
+                <textarea id="hospFacilities" class="input-box" rows="2" placeholder="e.g. 24x7 Emergency, Ambulance, Kitchen, Pharmacy..."></textarea>
+            </div>
+        </div>
+
+        <div id="tab-charges" class="hosp-tab-content form-grid">
+            <div><label style="font-size: 13px; font-weight: bold;">General Ward (₹/Day)</label>
+                <input type="number" id="hospGenWard" class="input-box" placeholder="₹"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Private Room (₹/Day)</label>
+                <input type="number" id="hospPrivate" class="input-box" placeholder="₹"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">ICU Charges (₹/Day)</label>
+                <input type="number" id="hospIcu" class="input-box" placeholder="₹"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Doctor Consultation (₹)</label>
+                <input type="number" id="hospDocConsult" class="input-box" placeholder="₹"></div>
+        </div>
+
+        <div id="tab-tpa" class="hosp-tab-content form-grid">
+            <div class="full-width">
+                <label style="font-size: 13px; font-weight: bold;">Empanelled Insurances, TPAs & Govt. Schemes</label>
+                <textarea id="hospInsurances" class="input-box" rows="2" placeholder="e.g. Ayushman Bharat, CGHS, Star Health..."></textarea>
+            </div>
+            <div><label style="font-size: 13px; font-weight: bold;">Cashless Facility?</label>
+                <select id="hospCashless" class="input-box"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Reimbursement Accepted?</label>
+                <select id="hospReimbursement" class="input-box"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+        </div>
+
+        <div id="tab-surgeries" class="hosp-tab-content">
+            <p style="font-size: 12px; color: #555; margin-bottom: 10px;">Type the surgery name and enter the package rates. Click '+ Add More' for another surgery.</p>
+            <div id="dynamic-surgeries-container"></div>
+            <button type="button" class="btn" style="background-color: #28a745; width: 100%; margin-top: 10px;" onclick="addSurgeryRow()">➕ Add Another Surgery Package</button>
+        </div>
+
+        <div id="tab-docs" class="hosp-tab-content form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Hospital Image / Photo (Max 2MB)</label>
+                <input type="file" id="hospImg" class="input-box" accept="image/*"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Hospital Reg. Document (Max 2MB)</label>
+                <input type="file" id="hospDoc" class="input-box"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">NABH / NABL Certificate (Optional)</label>
+                <input type="file" id="hospCert" class="input-box"></div>
+        </div>
+
+        <div style="background-color: #f8f9fa; border: 1px dashed #17a2b8; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;">
+            <p style="font-size: 14px; color: #333; margin-bottom: 10px; font-weight: bold;">Too busy to fill online?</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Download our offline registration form, fill it, and email it to <b>bhavyacare1@gmail.com</b></p>
+            
+            <a href="assets/hospital_form.pdf" download="BhavyaCare_Hospital_Registration_Form" class="btn" style="background-color: #343a40; text-decoration: none; display: inline-block;">
+                📥 Download Offline PDF Form
+            </a>
+        </div>
+
+        <button type="button" id="btn-save-hospital" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #17a2b8;" onclick="saveHospitalProfile()">Submit Hospital Details Online</button>
+        <button type="button" class="btn-skip" onclick="closeProfileForm('hospital')">I'll do this later (Skip)</button>
+    </form>
+</div>
+
+<div id="lab-profile-section" style="width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #8e44ad; max-height: 85vh; overflow-y: auto; max-width: 800px;">
+    <button class="close-btn" onclick="closeProfileForm('lab')">✖</button>
+    <h3 class="styled-headline" style="color: #8e44ad;">🔬 Diagnostic Lab Registration</h3>
+    <p class="sub-text">Complete your lab details to receive online test bookings.</p>
+
+    <div class="hosp-tabs">
+        <div class="hosp-tab-btn active" onclick="switchLabTab(event, 'lab-tab-basic')">1. Basic Info</div>
+        <div class="hosp-tab-btn" onclick="switchLabTab(event, 'lab-tab-services')">2. Lab Services</div>
+        <div class="hosp-tab-btn" onclick="switchLabTab(event, 'lab-tab-timing')">3. Timings</div>
+        <div class="hosp-tab-btn" onclick="switchLabTab(event, 'lab-tab-docs')">4. Docs & Photos</div>
+    </div>
+
+    <form id="labForm">
+        <div id="lab-tab-basic" class="hosp-tab-content active form-grid" style="display: grid;">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Lab Name *</label>
+                <input type="text" id="labName" class="input-box" placeholder="e.g. City Diagnostics"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label>
+                <input type="email" id="labEmail" class="input-box" placeholder="lab@gmail.com"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">City *</label>
+                <input type="text" id="labCity" class="input-box"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Address *</label>
+                <input type="text" id="labAddress" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label>
+                <input type="number" id="labPincode" class="input-box"></div>
+        </div>
+
+        <div id="lab-tab-services" class="hosp-tab-content">
+            <p style="font-size: 12px; color: #555; margin-bottom: 15px;">Tick (✔) the services available at your lab:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 14px; color: #333;">
+                <label><input type="checkbox" class="lab-srv" value="pathology_lab"> Pathology Lab</label>
+                <label><input type="checkbox" class="lab-srv" value="package_lab"> Health Packages</label>
+                <label><input type="checkbox" class="lab-srv" value="usg_lab"> USG (Ultrasound)</label>
+                <label><input type="checkbox" class="lab-srv" value="xray_lab"> X-Ray</label>
+                <label><input type="checkbox" class="lab-srv" value="ct__lab"> CT Scan</label>
+                <label><input type="checkbox" class="lab-srv" value="mri_lab"> MRI</label>
+                <label><input type="checkbox" class="lab-srv" value="ecg_lab"> ECG</label>
+                <label><input type="checkbox" class="lab-srv" value="echo_lab"> ECHO</label>
+                <label><input type="checkbox" class="lab-srv" value="tml_lab"> TMT</label>
+                <label><input type="checkbox" class="lab-srv" value="eeg_lab"> EEG</label>
+                <label><input type="checkbox" class="lab-srv" value="pft_lab"> PFT</label>
+                <label><input type="checkbox" class="lab-srv" value="holter_lab"> Holter</label>
+                <label><input type="checkbox" class="lab-srv" value="abp_lab"> ABP</label>
+                <label><input type="checkbox" class="lab-srv" value="ncv_emg_lab"> NCV/EMG</label>
+                <label><input type="checkbox" class="lab-srv" value="ssep_lab"> SSEP</label>
+                <label><input type="checkbox" class="lab-srv" value="evoked_potentiat_lab"> Evoked Potential</label>
+                <label><input type="checkbox" class="lab-srv" value="sleep_study_lab"> Sleep Study</label>
+                <label><input type="checkbox" class="lab-srv" value="mammography_lab"> Mammography</label>
+                <label><input type="checkbox" class="lab-srv" value="dlco_lab"> DLCO</label>
+                <label><input type="checkbox" class="lab-srv" value="endoscopy_lab"> Endoscopy</label>
+                <label><input type="checkbox" class="lab-srv" value="colonoscopy"> Colonoscopy</label>
+            </div>
+        </div>
+
+        <div id="lab-tab-timing" class="hosp-tab-content form-grid">
+            <h4 class="full-width section-title" style="color: #8e44ad;">🕒 Lab Operating Hours</h4>
+            <div><label style="font-size: 13px; font-weight: bold;">Monday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_monOpen" class="input-box"><input type="time" id="lab_monClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Tuesday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_tueOpen" class="input-box"><input type="time" id="lab_tueClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Wednesday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_wedOpen" class="input-box"><input type="time" id="lab_wedClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Thursday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_thuOpen" class="input-box"><input type="time" id="lab_thuClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Friday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_friOpen" class="input-box"><input type="time" id="lab_friClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Saturday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_satOpen" class="input-box"><input type="time" id="lab_satClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Sunday</label><div style="display:flex; gap:5px;"><input type="time" id="lab_sunOpen" class="input-box"><input type="time" id="lab_sunClose" class="input-box"></div></div>
+        </div>
+
+        <div id="lab-tab-docs" class="hosp-tab-content form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Lab Registration Document (Max 2MB) *</label>
+                <input type="file" id="labDoc" class="input-box" accept=".pdf,image/*"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Lab Image 1 (Front View) *</label>
+                <input type="file" id="labImg1" class="input-box" accept="image/*"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Lab Image 2</label>
+                <input type="file" id="labImg2" class="input-box" accept="image/*"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Lab Image 3</label>
+                <input type="file" id="labImg3" class="input-box" accept="image/*"></div>
+        </div>
+
+        <button type="button" id="btn-save-lab" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #8e44ad;" onclick="saveLabProfile()">Submit Lab Profile</button>
+        <button type="button" class="btn-skip" onclick="closeProfileForm('lab')">I'll do this later (Skip)</button>
+    </form>
+</div>
+
+<div id="executive-profile-section" style="width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #e67e22; max-height: 85vh; overflow-y: auto; max-width: 800px;">
+    <button class="close-btn" onclick="closeProfileForm('executive')">✖</button>
+    <h3 class="styled-headline" style="color: #e67e22;">🛵 Executive Registration</h3>
+    <p class="sub-text">Complete your profile to start Collection, Delivery, or Sales tasks.</p>
+
+    <div class="hosp-tabs">
+        <div class="hosp-tab-btn active" onclick="switchExecTab(event, 'exec-tab-basic')">1. Personal Info & Work</div>
+        <div class="hosp-tab-btn" onclick="switchExecTab(event, 'exec-tab-timing')">2. Working Hours</div>
+        <div class="hosp-tab-btn" onclick="switchExecTab(event, 'exec-tab-docs')">3. Docs & Photo</div>
+    </div>
+
+    <form id="executiveForm">
+        <div id="exec-tab-basic" class="hosp-tab-content active form-grid" style="display: grid;">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Name *</label>
+                <input type="text" id="execName" class="input-box" placeholder="e.g. Rahul Kumar"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label>
+                <input type="email" id="execEmail" class="input-box" placeholder="mandatory"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Qualification</label>
+                <input type="text" id="execQual" class="input-box" placeholder="e.g. 12th Pass, Graduate"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Experience (Years)</label>
+                <input type="text" id="execExp" class="input-box" placeholder="e.g. 2 Years in Delivery"></div>
+            
+            <div class="full-width" style="margin-top: 10px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                <label style="font-size: 14px; font-weight: bold; color: #e67e22; margin-bottom: 10px;">Select Work Type *</label>
+                <div style="display: flex; gap: 20px; font-size: 14px;">
+                    <label><input type="checkbox" id="execCol" value="Yes"> Collection</label>
+                    <label><input type="checkbox" id="execDel" value="Yes"> Delivery</label>
+                    <label><input type="checkbox" id="execSales" value="Yes"> Sales</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="exec-tab-timing" class="hosp-tab-content form-grid">
+            <h4 class="full-width section-title" style="color: #e67e22;">🕒 Shift Timings</h4>
+            <div><label style="font-size: 13px; font-weight: bold;">Monday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_monOpen" class="input-box"><input type="time" id="exec_monClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Tuesday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_tueOpen" class="input-box"><input type="time" id="exec_tueClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Wednesday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_wedOpen" class="input-box"><input type="time" id="exec_wedClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Thursday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_thuOpen" class="input-box"><input type="time" id="exec_thuClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Friday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_friOpen" class="input-box"><input type="time" id="exec_friClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Saturday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_satOpen" class="input-box"><input type="time" id="exec_satClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Sunday</label><div style="display:flex; gap:5px;"><input type="time" id="exec_sunOpen" class="input-box"><input type="time" id="exec_sunClose" class="input-box"></div></div>
+        </div>
+
+        <div id="exec-tab-docs" class="hosp-tab-content form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">ID Proof / Aadhar (Max 2MB) *</label>
+                <input type="file" id="execDoc" class="input-box" accept=".pdf,image/*"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Passport Size Photo (Max 2MB) *</label>
+                <input type="file" id="execImg" class="input-box" accept="image/*"></div>
+        </div>
+
+        <button type="button" id="btn-save-exec" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #e67e22; width: 100%;" onclick="saveExecutiveProfile()">Submit Executive Profile</button>
+        <button type="button" class="btn-skip" onclick="closeProfileForm('executive')">I'll do this later (Skip)</button>
+    </form>
+</div>
+
+<div id="pharmacy-profile-section" style="width: 95%; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 15px; text-align: left; display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); z-index: 1003; animation: slideDown 0.4s ease-out; border-top: 5px solid #d35400; max-height: 85vh; overflow-y: auto; max-width: 800px;">
+    <button class="close-btn" onclick="closeProfileForm('pharmacy')">✖</button>
+    <h3 class="styled-headline" style="color: #d35400;">💊 Pharmacy Registration</h3>
+    <p class="sub-text">Complete your pharmacy details to receive medicine orders.</p>
+
+    <div class="hosp-tabs">
+        <div class="hosp-tab-btn active" onclick="switchPharmTab(event, 'pharm-tab-basic')">1. Basic Info</div>
+        <div class="hosp-tab-btn" onclick="switchPharmTab(event, 'pharm-tab-timing')">2. Timings</div>
+        <div class="hosp-tab-btn" onclick="switchPharmTab(event, 'pharm-tab-docs')">3. Docs & Photos</div>
+    </div>
+
+    <form id="pharmacyForm">
+        <div id="pharm-tab-basic" class="hosp-tab-content active form-grid" style="display: grid;">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Pharmacy Name *</label>
+                <input type="text" id="pharmName" class="input-box" placeholder="e.g. Apollo Pharmacy"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label>
+                <input type="email" id="pharmEmail" class="input-box" placeholder="pharmacy@gmail.com"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">City *</label>
+                <input type="text" id="pharmCity" class="input-box"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Address *</label>
+                <input type="text" id="pharmAddress" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label>
+                <input type="number" id="pharmPincode" class="input-box"></div>
+        </div>
+
+        <div id="pharm-tab-timing" class="hosp-tab-content form-grid">
+            <h4 class="full-width section-title" style="color: #d35400;">🕒 Pharmacy Operating Hours</h4>
+            <div><label style="font-size: 13px; font-weight: bold;">Monday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_monOpen" class="input-box"><input type="time" id="pharm_monClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Tuesday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_tueOpen" class="input-box"><input type="time" id="pharm_tueClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Wednesday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_wedOpen" class="input-box"><input type="time" id="pharm_wedClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Thursday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_thuOpen" class="input-box"><input type="time" id="pharm_thuClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Friday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_friOpen" class="input-box"><input type="time" id="pharm_friClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Saturday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_satOpen" class="input-box"><input type="time" id="pharm_satClose" class="input-box"></div></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Sunday</label><div style="display:flex; gap:5px;"><input type="time" id="pharm_sunOpen" class="input-box"><input type="time" id="pharm_sunClose" class="input-box"></div></div>
+        </div>
+
+        <div id="pharm-tab-docs" class="hosp-tab-content form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Pharmacy Reg. Document (Max 2MB) *</label>
+                <input type="file" id="pharmDoc" class="input-box" accept=".pdf,image/*"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Pharmacy Image 1 (Front View) *</label>
+                <input type="file" id="pharmImg1" class="input-box" accept="image/*"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Pharmacy Image 2</label>
+                <input type="file" id="pharmImg2" class="input-box" accept="image/*"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Pharmacy Image 3</label>
+                <input type="file" id="pharmImg3" class="input-box" accept="image/*"></div>
+        </div>
+
+        <button type="button" id="btn-save-pharm" class="action-btn" style="margin-top: 25px; padding: 15px; font-size:18px; background-color: #d35400;" onclick="savePharmacyProfile()">Submit Pharmacy Profile</button>
+        <button type="button" class="btn-skip" onclick="closeProfileForm('pharmacy')">I'll do this later (Skip)</button>
+    </form>
+</div>
