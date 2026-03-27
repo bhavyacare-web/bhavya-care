@@ -97,7 +97,7 @@ function checkProfileBanner() {
             bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
         } else if (role === 'executive') { 
             bannerText.innerHTML = "🛵 <b>Action Required:</b> Please complete your Executive profile to get tasks.";
-        } else if (role === 'pharmacy') {
+        } else if (role === 'pharmacy') { // 🌟 NAYA
             bannerText.innerHTML = "💊 <b>Action Required:</b> Please complete your Pharmacy profile to receive medicine orders.";
         } else {
             bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
@@ -117,7 +117,7 @@ function reopenProfileForm() {
         document.getElementById('lab-profile-section').style.display = 'block';
     } else if(role === 'executive') { 
         document.getElementById('executive-profile-section').style.display = 'block';
-    } else if(role === 'pharmacy') { 
+    } else if(role === 'pharmacy') { // 🌟 NAYA
         document.getElementById('pharmacy-profile-section').style.display = 'block';
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
@@ -206,7 +206,7 @@ async function verifyOTP() {
             else if (finalRole === 'hospital') document.getElementById('hospital-profile-section').style.display = 'block';
             else if (finalRole === 'lab') document.getElementById('lab-profile-section').style.display = 'block';
             else if (finalRole === 'executive') document.getElementById('executive-profile-section').style.display = 'block'; 
-            else if (finalRole === 'pharmacy') document.getElementById('pharmacy-profile-section').style.display = 'block';
+            else if (finalRole === 'pharmacy') document.getElementById('pharmacy-profile-section').style.display = 'block'; // 🌟 NAYA
         }
         
         checkLoginState();
@@ -247,7 +247,7 @@ function closeProfileForm(type) {
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
     if(type === 'lab') document.getElementById('lab-profile-section').style.display = 'none'; 
     if(type === 'executive') document.getElementById('executive-profile-section').style.display = 'none'; 
-    if(type === 'pharmacy') document.getElementById('pharmacy-profile-section').style.display = 'none'; 
+    if(type === 'pharmacy') document.getElementById('pharmacy-profile-section').style.display = 'none'; // 🌟 NAYA
     
     localStorage.setItem("bhavya_profile_skipped", "true");
     
@@ -269,15 +269,11 @@ function autoGenerateReferral() {
 
 function savePatientProfile() {
     const name = document.getElementById('profName').value.trim();
-    const email = document.getElementById('profEmail').value.trim(); // 🌟 Email add kiya
     const address = document.getElementById('profAddress').value.trim();
     const city = document.getElementById('profCity').value.trim();
     const pincode = document.getElementById('profPincode').value.trim();
 
-    // 🌟 Validating Email as well
-    if(!name || !email || !address || !city || !pincode) { 
-        alert("Please fill all the required (*) fields including Email!"); return; 
-    }
+    if(!name || !address || !city || !pincode) { alert("Please fill all the required (*) fields!"); return; }
 
     const saveBtn = document.getElementById('btn-save-profile');
     saveBtn.innerText = "Saving Please Wait...";
@@ -285,7 +281,7 @@ function savePatientProfile() {
 
     const payload = {
         action: "saveProfile", user_id: localStorage.getItem("bhavya_user_id"),
-        name: name, dob: document.getElementById('profDOB').value, email: email,
+        name: name, dob: document.getElementById('profDOB').value, email: document.getElementById('profEmail').value.trim(),
         address: address, city: city, pincode: pincode, referral: document.getElementById('profReferral').value.trim()
     };
 
@@ -326,17 +322,11 @@ async function saveDoctorProfile() {
     const saveBtn = document.getElementById('btn-save-doctor');
 
     const name = document.getElementById('docName').value.trim();
-    const docEmail = document.getElementById('docEmail').value.trim(); // 🌟 New Fetch
-    const docClinicAddress = document.getElementById('docClinicAddress').value.trim(); // 🌟 New Fetch
-    const docCity = document.getElementById('docCity').value.trim(); // 🌟 New Fetch
-    const docPincode = document.getElementById('docPincode').value.trim(); // 🌟 New Fetch
-    
     const docFile = document.getElementById('docFile').files[0];
     const docImage = document.getElementById('docImage').files[0];
 
-    // 🌟 Updated Validation
-    if (!name || !docEmail || !docClinicAddress || !docCity || !docPincode || !docFile || !docImage) {
-        alert("Please fill all required (*) fields and select both Document and Image files."); return;
+    if (!name || !docFile || !docImage) {
+        alert("Please fill all required fields and select both Document and Image files."); return;
     }
 
     const maxSize = 2 * 1024 * 1024; // 2MB
@@ -359,11 +349,11 @@ async function saveDoctorProfile() {
 
         const payload = {
             action: "saveDoctorProfile",
-            user_id: userId, doctor_name: name, doctor_email: docEmail,
+            user_id: userId, doctor_name: name, doctor_email: document.getElementById('docEmail').value.trim(),
             speciality: document.getElementById('docSpeciality').value.trim(), qualification: document.getElementById('docQual').value.trim(),
             experience: document.getElementById('docExp').value.trim(), clinic_name: document.getElementById('docClinicName').value.trim(),
-            clinic_address: docClinicAddress, city: docCity,
-            pincode: docPincode, clinic_fee: document.getElementById('docClinicFee').value.trim(),
+            clinic_address: document.getElementById('docClinicAddress').value.trim(), city: document.getElementById('docCity').value.trim(),
+            pincode: document.getElementById('docPincode').value.trim(), clinic_fee: document.getElementById('docClinicFee').value.trim(),
             service_type: document.getElementById('docServiceType').value, 
             
             online_consultation: isOnline,
@@ -455,13 +445,11 @@ window.saveHospitalProfile = async function() {
     
     const hospName = document.getElementById('hospName').value.trim();
     const hospPhone = document.getElementById('hospPhone').value.trim();
-    const hospEmail = document.getElementById('hospEmail').value.trim(); // 🌟 New Fetch
     const hospAddress = document.getElementById('hospAddress').value.trim();
     const insurancesTPA = document.getElementById('hospInsurances').value.trim();
 
-    // 🌟 Updated Validation
-    if (!hospName || !hospPhone || !hospEmail || !hospAddress) {
-        alert("Please fill Hospital Name, Contact Number, Email, and Full Address!");
+    if (!hospName || !hospPhone || !hospAddress) {
+        alert("Please fill Hospital Name, Contact Number, and Address!");
         return;
     }
 
@@ -479,7 +467,7 @@ window.saveHospitalProfile = async function() {
         if(docFile) docData = { base64: (await getBase64(docFile)).split(',')[1], filename: userId + "_HospDoc_" + docFile.name, mimeType: docFile.type };
         if(certFile) certData = { base64: (await getBase64(certFile)).split(',')[1], filename: userId + "_HospCert_" + certFile.name, mimeType: certFile.type };
 
-        const contactDetails = { phone: hospPhone, email: hospEmail };
+        const contactDetails = { phone: hospPhone, email: document.getElementById('hospEmail').value.trim() };
         
         const roomCharges = {
             generalWard: document.getElementById('hospGenWard').value, privateRoom: document.getElementById('hospPrivate').value,
@@ -564,11 +552,9 @@ window.saveLabProfile = async function() {
     const labEmail = document.getElementById('labEmail').value.trim();
     const labCity = document.getElementById('labCity').value.trim();
     const labAddress = document.getElementById('labAddress').value.trim();
-    const labPincode = document.getElementById('labPincode').value.trim(); // 🌟 New Fetch
 
-    // 🌟 Updated Validation
-    if (!labName || !labEmail || !labCity || !labAddress || !labPincode) {
-        alert("Please fill Lab Name, Email, City, Full Address, and Pincode!");
+    if (!labName || !labCity || !labAddress) {
+        alert("Please fill Lab Name, City, and Address!");
         return;
     }
 
@@ -577,10 +563,12 @@ window.saveLabProfile = async function() {
     saveBtn.disabled = true;
 
     try {
+        // --- Gather Checked Services ---
         const services = {};
         const checkboxes = document.querySelectorAll('.lab-srv');
         checkboxes.forEach(cb => { services[cb.value] = cb.checked ? "Yes" : "No"; });
 
+        // --- File Upload Logic ---
         const docFile = document.getElementById('labDoc').files[0];
         const img1 = document.getElementById('labImg1').files[0];
         const img2 = document.getElementById('labImg2').files[0];
@@ -604,9 +592,10 @@ window.saveLabProfile = async function() {
             lab_email: labEmail,
             lab_address: labAddress,
             city: labCity,
-            pincode: labPincode,
-            services: services, 
+            pincode: document.getElementById('labPincode').value.trim(),
+            services: services, // JSON object of Yes/No
             
+            // Timings
             mon_open: document.getElementById('lab_monOpen').value, mon_close: document.getElementById('lab_monClose').value,
             tue_open: document.getElementById('lab_tueOpen').value, tue_close: document.getElementById('lab_tueClose').value,
             wed_open: document.getElementById('lab_wedOpen').value, wed_close: document.getElementById('lab_wedClose').value,
@@ -668,9 +657,8 @@ window.saveExecutiveProfile = async function() {
     const execName = document.getElementById('execName').value.trim();
     const execEmail = document.getElementById('execEmail').value.trim();
 
-    // 🌟 Updated Validation
-    if (!execName || !execEmail) {
-        alert("Please fill your Full Name and Email ID!");
+    if (!execName) {
+        alert("Please fill your Name!");
         return;
     }
 
@@ -704,6 +692,7 @@ window.saveExecutiveProfile = async function() {
             experience: document.getElementById('execExp').value.trim(),
             work_type: workType,
             
+            // Timings
             mon_open: document.getElementById('exec_monOpen').value, mon_close: document.getElementById('exec_monClose').value,
             tue_open: document.getElementById('exec_tueOpen').value, tue_close: document.getElementById('exec_tueClose').value,
             wed_open: document.getElementById('exec_wedOpen').value, wed_close: document.getElementById('exec_wedClose').value,
@@ -738,7 +727,7 @@ window.saveExecutiveProfile = async function() {
 };
 
 // =======================================================
-// 🌟 PHARMACY PROFILE LOGIC
+// 🌟 NAYA: PHARMACY PROFILE LOGIC
 // =======================================================
 window.switchPharmTab = function(evt, tabId) {
     let contents = document.querySelectorAll("#pharmacy-profile-section .hosp-tab-content");
@@ -766,11 +755,9 @@ window.savePharmacyProfile = async function() {
     const pharmEmail = document.getElementById('pharmEmail').value.trim();
     const pharmCity = document.getElementById('pharmCity').value.trim();
     const pharmAddress = document.getElementById('pharmAddress').value.trim();
-    const pharmPincode = document.getElementById('pharmPincode').value.trim(); // 🌟 New Fetch
 
-    // 🌟 Updated Validation
-    if (!pharmName || !pharmEmail || !pharmCity || !pharmAddress || !pharmPincode) {
-        alert("Please fill Pharmacy Name, Email, City, Full Address, and Pincode!");
+    if (!pharmName || !pharmCity || !pharmAddress) {
+        alert("Please fill Pharmacy Name, City, and Address!");
         return;
     }
 
@@ -802,8 +789,9 @@ window.savePharmacyProfile = async function() {
             pharmacy_email: pharmEmail,
             pharmacy_address: pharmAddress,
             city: pharmCity,
-            pincode: pharmPincode,
+            pincode: document.getElementById('pharmPincode').value.trim(),
             
+            // Timings
             mon_open: document.getElementById('pharm_monOpen').value, mon_close: document.getElementById('pharm_monClose').value,
             tue_open: document.getElementById('pharm_tueOpen').value, tue_close: document.getElementById('pharm_tueClose').value,
             wed_open: document.getElementById('pharm_wedOpen').value, wed_close: document.getElementById('pharm_wedClose').value,
