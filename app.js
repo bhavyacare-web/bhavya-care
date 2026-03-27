@@ -255,7 +255,13 @@ function logoutUser() {
 
 function goToDashboard() {
     const role = localStorage.getItem("bhavya_role");
-    if(role === "hospital") {
+    
+    // 🌟 NAYA: Agar user PATIENT hai, toh sidha naye Dashboard par bhej do
+    if (role === "patient") {
+        window.location.href = "dashboard/Dashboard.html";
+    } 
+    // Baaki partners ke liye abhi Coming Soon rakha hai
+    else if (role === "hospital") {
         alert("Redirecting to HOSPITAL Dashboard... (Coming Soon)");
     } else if (role) {
         alert("Redirecting to " + role.toUpperCase() + " Dashboard... (Coming Soon)");
