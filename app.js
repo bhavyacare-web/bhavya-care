@@ -258,7 +258,7 @@ function goToDashboard() {
     
     // 🌟 NAYA: Agar user PATIENT hai, toh sidha naye Dashboard par bhej do
     if (role === "patient") {
-        window.location.href = "dashboard/Dashboard.html";
+        window.location.href = "dashboard/dashboard.html";
     } 
     // Baaki partners ke liye abhi Coming Soon rakha hai
     else if (role === "hospital") {
