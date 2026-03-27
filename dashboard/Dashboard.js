@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
 });
 
-// --- Fetch Data Logic ---
+// --- Fetch Data Logic (UPDATED for Profile & Wallet History) ---
 async function fetchDashboardData() {
     // LocalStorage se User ID nikalna
     const userId = localStorage.getItem("bhavya_user_id");
@@ -39,19 +39,46 @@ async function fetchDashboardData() {
 
         // Success hone par UI update karna
         if (data.status === "success") {
-            // Sirf First Name nikalne ka logic
-            const firstName = data.name ? data.name.split(" ")[0] : "Patient";
+            // 1. SET PROFILE DATA (Now coming under data.profile)
+            const firstName = data.profile.name ? data.profile.name.split(" ")[0] : "Patient";
 
             document.getElementById("userNameDisplay").innerText = firstName;
-            document.getElementById("walletBal").innerText = data.wallet_balance || 0;
-            document.getElementById("vipStatus").innerText = data.vip_status || "Basic";
-            document.getElementById("refCode").innerText = data.referral_code || "N/A";
+            document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
+            document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
+            document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
 
             // Highlight VIP Status
-            if(data.vip_status && data.vip_status !== "Basic") {
+            if(data.profile.vip_status && data.profile.vip_status !== "Basic") {
                 document.getElementById("vipStatus").style.color = "#d35400";
                 document.getElementById("vipStatus").style.fontWeight = "bold";
             }
+
+            // 2. AUTO-POPULATE WALLET PASSBOOK
+            const tbody = document.querySelector("#wallet tbody");
+            tbody.innerHTML = ""; // Clear dummy data
+
+            if (data.wallet_history && data.wallet_history.length > 0) {
+                data.wallet_history.forEach(tx => {
+                    // Date formatting safely
+                    let txDate = new Date(tx.date).toLocaleDateString('en-GB');
+                    if(txDate === "Invalid Date") txDate = tx.date; 
+                    
+                    let color = tx.type === "Credit" ? "green" : "red";
+                    let sign = tx.type === "Credit" ? "+" : "-";
+                    let statusHtml = tx.status === "Pending" ? `<span class="status-badge status-pending">Pending</span>` : "";
+
+                    let row = `<tr>
+                        <td>${txDate}</td>
+                        <td>${tx.reason} ${statusHtml}</td>
+                        <td style="color: ${color}; font-weight: bold;">${sign} ₹${tx.amount}</td>
+                        <td>${tx.type}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:#888;">No transactions found yet.</td></tr>`;
+            }
+
         } else {
             alert("System Error: " + data.message);
             document.getElementById("userNameDisplay").innerText = "Error Loading Profile";
@@ -62,7 +89,45 @@ async function fetchDashboardData() {
     }
 }
 
-// --- Tab Switching Logic (Moved from HTML to JS for cleaner code) ---
+// --- NAYA: Request Withdraw Function ---
+window.requestWithdraw = async function() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const amount = prompt("Enter amount to withdraw (Min ₹500):");
+    
+    // Check basic validation
+    if (amount && !isNaN(amount) && Number(amount) >= 500) {
+        
+        // Extra validation: Check if user has enough balance (from the UI text)
+        const currentBal = Number(document.getElementById("walletBal").innerText);
+        if(Number(amount) > currentBal) {
+            alert("Insufficient Wallet Balance!");
+            return;
+        }
+
+        const payload = { action: "requestWithdraw", user_id: userId, amount: Number(amount) };
+        
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
+            });
+            const res = await response.json();
+            
+            if(res.status === "success") {
+                alert("Withdrawal request sent! Admin will approve it shortly.");
+                fetchDashboardData(); // Refresh passbook to show Pending status
+            } else {
+                alert("Server Error: " + res.message);
+            }
+        } catch(e) {
+            alert("Network Error while sending request.");
+            console.error(e);
+        }
+    } else if (amount) {
+        alert("Please enter a valid amount (Minimum ₹500).");
+    }
+}
+
+// --- Tab Switching Logic ---
 window.switchTab = function(tabId) {
     let contents = document.querySelectorAll('.tab-content');
     contents.forEach(content => content.classList.remove('active'));
