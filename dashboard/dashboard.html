@@ -81,7 +81,7 @@
             <li><a href="#" onclick="switchTab('wallet')"><i class="fas fa-wallet"></i> Wallet History</a></li>
             <li><a href="#" onclick="switchTab('profile')"><i class="fas fa-user-edit"></i> Profile Settings</a></li>
         </ul>
-        <div class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        <div class="logout-btn" onclick="logoutDashboard()"><i class="fas fa-sign-out-alt"></i> Logout</div>
     </div>
 
     <div class="main-content">
@@ -89,7 +89,7 @@
             <i class="fas fa-bars mobile-toggle" onclick="toggleSidebar()"></i>
             <h3>Welcome back, <span id="userNameDisplay">Patient</span>!</h3>
             <div class="user-profile">
-                <span style="font-size: 14px; font-weight: bold; color: #333;" id="userIdDisplay">PAT-0001</span>
+                <span style="font-size: 14px; font-weight: bold; color: #333;" id="userIdDisplay">Loading...</span>
                 <img src="https://via.placeholder.com/35" alt="Profile">
             </div>
         </div>
@@ -111,7 +111,7 @@
                 <div class="dash-card referral">
                     <i class="fas fa-share-alt"></i>
                     <h4>My Referral Code</h4>
-                    <div class="value" id="refCode" style="font-size: 22px; letter-spacing: 2px;">BHA0000</div>
+                    <div class="value" id="refCode" style="font-size: 22px; letter-spacing: 2px;">-----</div>
                     <button class="card-btn" onclick="alert('Code Copied!')">Copy & Earn ₹50</button>
                 </div>
             </div>
@@ -152,14 +152,14 @@
                     <button class="card-btn" style="background: #0056b3; color: white;">+ Book New</button>
                 </div>
                 <p style="color: #666; font-size: 14px;">Your complete history of tests, doctor visits, and hospital bookings will appear here.</p>
-                </div>
+            </div>
         </div>
 
         <div id="reports" class="tab-content">
             <div class="data-box">
                 <h4>My Medical Records</h4>
                 <p style="color: #666; font-size: 14px;">Download your lab reports and doctor prescriptions.</p>
-                </div>
+            </div>
         </div>
 
         <div id="wallet" class="tab-content">
@@ -196,43 +196,12 @@
             <div class="data-box">
                 <h4>Edit Profile Details</h4>
                 <p style="color: #666; font-size: 14px;">Update your address, email, or family members here.</p>
-                </div>
+            </div>
         </div>
 
     </div>
 
-    <script>
-        // --- Logic to switch between tabs ---
-        function switchTab(tabId) {
-            // Hide all tabs
-            let contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.remove('active'));
-            
-            // Remove active class from all links
-            let links = document.querySelectorAll('.nav-links a');
-            links.forEach(link => link.classList.remove('active'));
-            
-            // Show selected tab and highlight link
-            document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+    <script src="Dashboard.js"></script>
 
-            // Close sidebar on mobile after clicking
-            if(window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('show');
-            }
-        }
-
-        // --- Mobile Sidebar Toggle ---
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('show');
-        }
-
-        // --- Future Backend Integration Note ---
-        /*
-            Yahan par hum window.onload par apna Google Apps Script ka function call karenge.
-            Wo function `localStorage.getItem("bhavya_user_id")` ko bhej kar `patientform` sheet se
-            Name, Wallet Balance, aur VIP Status layega aur idhar HTML IDs (#walletBal, #vipStatus) mein set karega.
-        */
-    </script>
 </body>
 </html>
