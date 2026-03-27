@@ -12,7 +12,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 // 🌟 LATEST GOOGLE SCRIPT URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh7-fNS60MzHDsOHP-NNBzOrewsCp_82yM_I7lmfQKK3ah-AaRuK41QOKi3D2CjyAl/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh5xaD_twrih6kShL6Cj8pjFuHLH6xlSvbl06rRr6ZebX1zAUuH0KtHeNUdEr3kHw/exec";
 let isPartnerMode = false;
 
 firebase.auth().onAuthStateChanged(function(user) {
@@ -95,8 +95,10 @@ function checkProfileBanner() {
             bannerText.innerHTML = "🔬 <b>Action Required:</b> Please complete your Lab Profile to start receiving test bookings.";
         } else if (role === 'doctor') {
             bannerText.innerHTML = "👨‍⚕️ <b>Action Required:</b> Please complete your Doctor profile to get verified.";
-        } else if (role === 'executive') { // 🌟 NAYA
+        } else if (role === 'executive') { 
             bannerText.innerHTML = "🛵 <b>Action Required:</b> Please complete your Executive profile to get tasks.";
+        } else if (role === 'pharmacy') { // 🌟 NAYA
+            bannerText.innerHTML = "💊 <b>Action Required:</b> Please complete your Pharmacy profile to receive medicine orders.";
         } else {
             bannerText.innerHTML = "⚠️ <b>Welcome Patient:</b> Please complete your profile to book tests and consults.";
         }
@@ -113,8 +115,10 @@ function reopenProfileForm() {
         document.getElementById('hospital-profile-section').style.display = 'block';
     } else if(role === 'lab') { 
         document.getElementById('lab-profile-section').style.display = 'block';
-    } else if(role === 'executive') { // 🌟 NAYA
+    } else if(role === 'executive') { 
         document.getElementById('executive-profile-section').style.display = 'block';
+    } else if(role === 'pharmacy') { // 🌟 NAYA
+        document.getElementById('pharmacy-profile-section').style.display = 'block';
     } else {
         document.getElementById('profile-form-section').style.display = 'block';
     }
@@ -165,7 +169,7 @@ function sendOTP() {
 }
 
 // ==========================================
-// 🌟 ASYNC VERIFY OTP (Fixes the Role & Form Popup Issue)
+// 🌟 ASYNC VERIFY OTP
 // ==========================================
 async function verifyOTP() {
     const code = document.getElementById('otpCode').value.trim();
@@ -201,7 +205,8 @@ async function verifyOTP() {
             else if (finalRole === 'doctor') document.getElementById('doctor-profile-section').style.display = 'block';
             else if (finalRole === 'hospital') document.getElementById('hospital-profile-section').style.display = 'block';
             else if (finalRole === 'lab') document.getElementById('lab-profile-section').style.display = 'block';
-            else if (finalRole === 'executive') document.getElementById('executive-profile-section').style.display = 'block'; // 🌟 NAYA
+            else if (finalRole === 'executive') document.getElementById('executive-profile-section').style.display = 'block'; 
+            else if (finalRole === 'pharmacy') document.getElementById('pharmacy-profile-section').style.display = 'block'; // 🌟 NAYA
         }
         
         checkLoginState();
@@ -241,7 +246,8 @@ function closeProfileForm(type) {
     if(type === 'doctor') document.getElementById('doctor-profile-section').style.display = 'none';
     if(type === 'hospital') document.getElementById('hospital-profile-section').style.display = 'none';
     if(type === 'lab') document.getElementById('lab-profile-section').style.display = 'none'; 
-    if(type === 'executive') document.getElementById('executive-profile-section').style.display = 'none'; // 🌟 NAYA
+    if(type === 'executive') document.getElementById('executive-profile-section').style.display = 'none'; 
+    if(type === 'pharmacy') document.getElementById('pharmacy-profile-section').style.display = 'none'; // 🌟 NAYA
     
     localStorage.setItem("bhavya_profile_skipped", "true");
     
@@ -716,6 +722,105 @@ window.saveExecutiveProfile = async function() {
     } finally {
         saveBtn.innerText = "Submit Executive Profile";
         saveBtn.style.backgroundColor = "#e67e22";
+        saveBtn.disabled = false;
+    }
+};
+
+// =======================================================
+// 🌟 NAYA: PHARMACY PROFILE LOGIC
+// =======================================================
+window.switchPharmTab = function(evt, tabId) {
+    let contents = document.querySelectorAll("#pharmacy-profile-section .hosp-tab-content");
+    for (let i = 0; i < contents.length; i++) {
+        contents[i].style.display = "none";
+        contents[i].classList.remove("active");
+    }
+    let btns = document.querySelectorAll("#pharmacy-profile-section .hosp-tab-btn");
+    for (let i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+    
+    let targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        if(targetTab.classList.contains('form-grid')) targetTab.style.display = "grid";
+        else targetTab.style.display = "block";
+        targetTab.classList.add("active");
+    }
+    evt.currentTarget.classList.add("active");
+};
+
+window.savePharmacyProfile = async function() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const saveBtn = document.getElementById('btn-save-pharm');
+    
+    const pharmName = document.getElementById('pharmName').value.trim();
+    const pharmEmail = document.getElementById('pharmEmail').value.trim();
+    const pharmCity = document.getElementById('pharmCity').value.trim();
+    const pharmAddress = document.getElementById('pharmAddress').value.trim();
+
+    if (!pharmName || !pharmCity || !pharmAddress) {
+        alert("Please fill Pharmacy Name, City, and Address!");
+        return;
+    }
+
+    saveBtn.innerText = "Uploading Files & Saving... Please Wait";
+    saveBtn.style.backgroundColor = "#ffc107";
+    saveBtn.disabled = true;
+
+    try {
+        const docFile = document.getElementById('pharmDoc').files[0];
+        const img1 = document.getElementById('pharmImg1').files[0];
+        const img2 = document.getElementById('pharmImg2').files[0];
+        const img3 = document.getElementById('pharmImg3').files[0];
+
+        if(!docFile || !img1) {
+            alert("Pharmacy Registration Document and Image 1 are mandatory!");
+            throw new Error("Missing mandatory files");
+        }
+
+        let docData = null, img1Data = null, img2Data = null, img3Data = null;
+        if(docFile) docData = { base64: (await getBase64(docFile)).split(',')[1], filename: userId + "_PharmDoc_" + docFile.name, mimeType: docFile.type };
+        if(img1) img1Data = { base64: (await getBase64(img1)).split(',')[1], filename: userId + "_PharmImg1_" + img1.name, mimeType: img1.type };
+        if(img2) img2Data = { base64: (await getBase64(img2)).split(',')[1], filename: userId + "_PharmImg2_" + img2.name, mimeType: img2.type };
+        if(img3) img3Data = { base64: (await getBase64(img3)).split(',')[1], filename: userId + "_PharmImg3_" + img3.name, mimeType: img3.type };
+
+        const payload = {
+            action: "savePharmacyProfile",
+            user_id: userId,
+            pharmacy_name: pharmName,
+            pharmacy_email: pharmEmail,
+            pharmacy_address: pharmAddress,
+            city: pharmCity,
+            pincode: document.getElementById('pharmPincode').value.trim(),
+            
+            // Timings
+            mon_open: document.getElementById('pharm_monOpen').value, mon_close: document.getElementById('pharm_monClose').value,
+            tue_open: document.getElementById('pharm_tueOpen').value, tue_close: document.getElementById('pharm_tueClose').value,
+            wed_open: document.getElementById('pharm_wedOpen').value, wed_close: document.getElementById('pharm_wedClose').value,
+            thu_open: document.getElementById('pharm_thuOpen').value, thu_close: document.getElementById('pharm_thuClose').value,
+            fri_open: document.getElementById('pharm_friOpen').value, fri_close: document.getElementById('pharm_friClose').value,
+            sat_open: document.getElementById('pharm_satOpen').value, sat_close: document.getElementById('pharm_satClose').value,
+            sun_open: document.getElementById('pharm_sunOpen').value, sun_close: document.getElementById('pharm_sunClose').value,
+            
+            files: { doc: docData, img1: img1Data, img2: img2Data, img3: img3Data },
+            status: "Inactive"
+        };
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            alert("Pharmacy profile successfully submitted! Waiting for Admin Approval.");
+            localStorage.removeItem("bhavya_profile_skipped"); 
+            checkProfileBanner();
+            document.getElementById('pharmacy-profile-section').style.display = 'none';
+        } else {
+            alert("Server Error: " + data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        alert(error.message === "Missing mandatory files" ? error.message : "Upload failed! Check your connection or file size (Max 2MB each).");
+    } finally {
+        saveBtn.innerText = "Submit Pharmacy Profile";
+        saveBtn.style.backgroundColor = "#d35400";
         saveBtn.disabled = false;
     }
 };
