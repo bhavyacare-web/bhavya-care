@@ -62,6 +62,7 @@
             <a href="hospitalarea.html"><i class="fas fa-hospital"></i> Hospitals Center</a>
             <a href="labarea.html"><i class="fas fa-flask"></i> Labs Center</a>
             <a href="executivearea.html"><i class="fas fa-motorcycle"></i> Executives Center</a>
+            <a href="pharmacyarea.html"><i class="fas fa-prescription-bottle-alt"></i> Pharmacy Center</a>
             <a style="margin-top: 50px; color: #ffcccc;" href="../index.html"><i class="fas fa-home"></i> Back to Website</a>
         </div>
     </div>
@@ -127,18 +128,26 @@
                         <p>Total Executives</p>
                     </div>
                 </a>
+
+                <a href="pharmacyarea.html" class="stat-card" style="border-left-color: #d35400; text-decoration: none;">
+                    <div class="stat-icon" style="color: #d35400; background: #fff1e6;"><i class="fas fa-prescription-bottle-alt"></i></div>
+                    <div class="stat-info">
+                        <h3 id="dash-pharm-count"><i class="fas fa-spinner fa-spin"></i></h3>
+                        <p>Total Pharmacies</p>
+                    </div>
+                </a>
             </div>
 
             <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
                 <h3 style="margin-bottom: 10px; color: #0056b3;">Welcome to Master Control</h3>
-                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu ya upar diye gaye cards par click karke specific center (jaise Patients, Medicine, Doctors, Hospitals, Labs ya Executives) mein enter karein.</p>
+                <p style="color: #666; line-height: 1.6;">Yahan se aap BhavyaCare ke sabhi modules ko manage kar sakte hain. Left menu ya upar diye gaye cards par click karke specific center (jaise Patients, Medicine, Doctors, Hospitals, Labs, Executives ya Pharmacies) mein enter karein.</p>
             </div>
         </div>
     </div>
 
     <script>
-        // 🌟 TUMHARA LATEST GOOGLE SCRIPT URL
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjrKj7GmgU4hb_xFuvZBXHL1ngXr2WcJoDmDoIKrAndgYwJFnzzZa4BBBit4pd4Onz/exec";
+        // 🌟 LATEST GOOGLE SCRIPT URL UPDATE KIYA HAI
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh5xaD_twrih6kShL6Cj8pjFuHLH6xlSvbl06rRr6ZebX1zAUuH0KtHeNUdEr3kHw/exec";
 
         window.onload = function() {
             fetch(GOOGLE_SCRIPT_URL)
@@ -160,9 +169,12 @@
                     if(result.labs) document.getElementById('dash-lab-count').innerText = result.labs.length;
                     else document.getElementById('dash-lab-count').innerText = "0";
 
-                    // 🌟 NAYA: Set Executive Count
                     if(result.executives) document.getElementById('dash-exec-count').innerText = result.executives.length;
                     else document.getElementById('dash-exec-count').innerText = "0";
+
+                    // 🌟 NAYA: Set Pharmacy Count
+                    if(result.pharmacies) document.getElementById('dash-pharm-count').innerText = result.pharmacies.length;
+                    else document.getElementById('dash-pharm-count').innerText = "0";
                 }
             })
             .catch(error => {
@@ -172,7 +184,8 @@
                 document.getElementById('dash-doctor-count').innerText = "-";
                 document.getElementById('dash-hospital-count').innerText = "-";
                 document.getElementById('dash-lab-count').innerText = "-";
-                document.getElementById('dash-exec-count').innerText = "-"; // Fallback for error
+                document.getElementById('dash-exec-count').innerText = "-"; 
+                document.getElementById('dash-pharm-count').innerText = "-"; // Fallback
             });
         };
 
