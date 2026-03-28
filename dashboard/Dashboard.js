@@ -1,65 +1,49 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-VtrqaNvLo7y4wQx-ciTJp89Q5ncGTdZa1aCf8KGbJJVhkvllBl3duFEBZO2YB5IL/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_nXMu8P2SFuxEEgva-qtgKx8DWiIBdweFf0FFmvswaqpPd5glerFDsO1L0-h14tY/exec";
 
 // --- Page Load Event ---
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
 });
 
-// --- Fetch Data Logic (UPDATED for Profile & Wallet History) ---
+// --- Fetch Dashboard Data ---
 async function fetchDashboardData() {
-    // LocalStorage se User ID nikalna
     const userId = localStorage.getItem("bhavya_user_id");
 
-    // Agar ID nahi mili toh Home par bhej do
     if (!userId) {
         alert("Please login to access your Dashboard!");
-        window.location.href = "../index.html"; // Make sure path is correct
+        window.location.href = "../index.html"; 
         return;
     }
 
-    // Shuruwat me ID dikhao aur Name me Loading likho
     document.getElementById("userIdDisplay").innerText = userId;
     document.getElementById("userNameDisplay").innerText = "Loading...";
 
     try {
-        const payload = {
-            action: "getDashboardData",
-            user_id: userId
-        };
-
-        // Fetch request to your deployed Apps Script URL
+        const payload = { action: "getDashboardData", user_id: userId };
         const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
-        // Success hone par UI update karna
         if (data.status === "success") {
-            // 1. SET PROFILE DATA (Now coming under data.profile)
             const firstName = data.profile.name ? data.profile.name.split(" ")[0] : "Patient";
-
             document.getElementById("userNameDisplay").innerText = firstName;
             document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
             document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
 
-            // Highlight VIP Status
             if(data.profile.vip_status && data.profile.vip_status !== "Basic") {
                 document.getElementById("vipStatus").style.color = "#d35400";
                 document.getElementById("vipStatus").style.fontWeight = "bold";
             }
 
-            // 2. AUTO-POPULATE WALLET PASSBOOK
-            const tbody = document.querySelector("#wallet tbody");
-            tbody.innerHTML = ""; // Clear dummy data
+            const tbody = document.querySelector("#walletTable tbody");
+            tbody.innerHTML = ""; 
 
             if (data.wallet_history && data.wallet_history.length > 0) {
                 data.wallet_history.forEach(tx => {
-                    // Date formatting safely
                     let txDate = new Date(tx.date).toLocaleDateString('en-GB');
                     if(txDate === "Invalid Date") txDate = tx.date; 
                     
@@ -89,15 +73,12 @@ async function fetchDashboardData() {
     }
 }
 
-// --- NAYA: Request Withdraw Function ---
+// --- Request Withdraw Function ---
 window.requestWithdraw = async function() {
     const userId = localStorage.getItem("bhavya_user_id");
     const amount = prompt("Enter amount to withdraw (Min ₹500):");
     
-    // Check basic validation
     if (amount && !isNaN(amount) && Number(amount) >= 500) {
-        
-        // Extra validation: Check if user has enough balance (from the UI text)
         const currentBal = Number(document.getElementById("walletBal").innerText);
         if(Number(amount) > currentBal) {
             alert("Insufficient Wallet Balance!");
@@ -114,16 +95,24 @@ window.requestWithdraw = async function() {
             
             if(res.status === "success") {
                 alert("Withdrawal request sent! Admin will approve it shortly.");
-                fetchDashboardData(); // Refresh passbook to show Pending status
+                fetchDashboardData(); 
             } else {
                 alert("Server Error: " + res.message);
             }
         } catch(e) {
             alert("Network Error while sending request.");
-            console.error(e);
         }
     } else if (amount) {
         alert("Please enter a valid amount (Minimum ₹500).");
+    }
+}
+
+// --- Copy Referral Code ---
+window.copyMyReferral = function() {
+    const code = document.getElementById("refCode").innerText;
+    if(code && code !== "-----" && code !== "N/A") {
+        navigator.clipboard.writeText(code);
+        alert("Referral Code Copied! Share it with friends to earn cashback.");
     }
 }
 
@@ -143,16 +132,14 @@ window.switchTab = function(tabId) {
     }
 }
 
-// --- Mobile Sidebar Toggle ---
 window.toggleSidebar = function() {
     document.getElementById('sidebar').classList.toggle('show');
 }
 
-// --- Logout Logic ---
 window.logoutDashboard = function() {
     if(confirm("Are you sure you want to logout?")) {
         localStorage.clear();
         alert("Logged out successfully.");
-        window.location.href = "../index.html"; // Redirect to home page
+        window.location.href = "../index.html"; 
     }
 }
