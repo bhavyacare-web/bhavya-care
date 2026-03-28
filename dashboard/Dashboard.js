@@ -34,6 +34,16 @@ async function fetchDashboardData() {
             document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
 
+            // 🌟 NAYA LOGIC: Agar naya profile hai, toh banner dikhao
+            const banner = document.getElementById("profile-warning-banner");
+            if (banner) {
+                if (data.profile.name === "New Profile") {
+                    banner.style.display = "block";
+                } else {
+                    banner.style.display = "none";
+                }
+            }
+
             if(data.profile.vip_status && data.profile.vip_status !== "Basic") {
                 document.getElementById("vipStatus").style.color = "#d35400";
                 document.getElementById("vipStatus").style.fontWeight = "bold";
@@ -125,7 +135,11 @@ window.switchTab = function(tabId) {
     links.forEach(link => link.classList.remove('active'));
     
     document.getElementById(tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
+    
+    // Safety check for event (in case it's called directly from a function like the banner button)
+    if(event && event.currentTarget) {
+         event.currentTarget.classList.add('active');
+    }
 
     if(window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('show');
