@@ -1,15 +1,12 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx2jQ7dh3d2S-ZQOtwd4NTpfsIGfCBnYsdPbTrT2vwBN-srGVjU9GpTHEhtVbrh8mb9/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh5xaD_twrih6kShL6Cj8pjFuHLH6xlSvbl06rRr6ZebX1zAUuH0KtHeNUdEr3kHw/exec";
 
-// --- Page Load Event ---
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
 });
 
-// --- Fetch Dashboard Data ---
 async function fetchDashboardData() {
     const userId = localStorage.getItem("bhavya_user_id");
-
     if (!userId) {
         alert("Please login to access your Dashboard!");
         window.location.href = "../index.html"; 
@@ -34,7 +31,6 @@ async function fetchDashboardData() {
             document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
 
-            // 🌟 NAYA LOGIC: Agar naya profile hai, toh banner dikhao
             const banner = document.getElementById("profile-warning-banner");
             if (banner) {
                 if (data.profile.name === "New Profile") {
@@ -72,18 +68,14 @@ async function fetchDashboardData() {
             } else {
                 tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:#888;">No transactions found yet.</td></tr>`;
             }
-
         } else {
             alert("System Error: " + data.message);
-            document.getElementById("userNameDisplay").innerText = "Error Loading Profile";
         }
     } catch (error) {
         console.error("Dashboard Fetch Error:", error);
-        document.getElementById("userNameDisplay").innerText = "Connection Error";
     }
 }
 
-// --- Request Withdraw Function ---
 window.requestWithdraw = async function() {
     const userId = localStorage.getItem("bhavya_user_id");
     const amount = prompt("Enter amount to withdraw (Min ₹500):");
@@ -96,28 +88,19 @@ window.requestWithdraw = async function() {
         }
 
         const payload = { action: "requestWithdraw", user_id: userId, amount: Number(amount) };
-        
         try {
             const response = await fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
             });
             const res = await response.json();
-            
             if(res.status === "success") {
                 alert("Withdrawal request sent! Admin will approve it shortly.");
                 fetchDashboardData(); 
-            } else {
-                alert("Server Error: " + res.message);
-            }
-        } catch(e) {
-            alert("Network Error while sending request.");
-        }
-    } else if (amount) {
-        alert("Please enter a valid amount (Minimum ₹500).");
-    }
+            } else alert("Server Error: " + res.message);
+        } catch(e) { alert("Network Error while sending request."); }
+    } else if (amount) alert("Please enter a valid amount (Minimum ₹500).");
 }
 
-// --- Copy Referral Code ---
 window.copyMyReferral = function() {
     const code = document.getElementById("refCode").innerText;
     if(code && code !== "-----" && code !== "N/A") {
@@ -126,54 +109,34 @@ window.copyMyReferral = function() {
     }
 }
 
-// --- Tab Switching Logic ---
 window.switchTab = function(tabId) {
     let contents = document.querySelectorAll('.tab-content');
     contents.forEach(content => content.classList.remove('active'));
-    
     let links = document.querySelectorAll('.nav-links a');
     links.forEach(link => link.classList.remove('active'));
-    
     document.getElementById(tabId).classList.add('active');
-    
-    // Safety check for event (in case it's called directly from a function like the banner button)
-    if(event && event.currentTarget) {
-         event.currentTarget.classList.add('active');
-    }
-
-    if(window.innerWidth <= 768) {
-        document.getElementById('sidebar').classList.remove('show');
-    }
+    if(event && event.currentTarget) event.currentTarget.classList.add('active');
+    if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
 }
 
-window.toggleSidebar = function() {
-    document.getElementById('sidebar').classList.toggle('show');
-}
-
+window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('show'); }
 window.logoutDashboard = function() {
     if(confirm("Are you sure you want to logout?")) {
         localStorage.clear();
-        alert("Logged out successfully.");
         window.location.href = "../index.html"; 
     }
 }
-// ==========================================
-// 🌟 SAVE PATIENT PROFILE LOGIC
-// ==========================================
-async function savePatientProfile() {
-    const userId = localStorage.getItem("bhavya_user_id");
-    if (!userId) return alert("Session expired. Please login again!");
 
-    // Form se data uthana
+// 🌟 SAVE PROFILE FROM DASHBOARD
+window.savePatientProfileFromDash = async function() {
+    const userId = localStorage.getItem("bhavya_user_id");
     const name = document.getElementById("profName").value.trim();
     const dob = document.getElementById("profDOB").value;
     const email = document.getElementById("profEmail").value.trim();
     const address = document.getElementById("profAddress").value.trim();
     const city = document.getElementById("profCity").value.trim();
     const pincode = document.getElementById("profPincode").value.trim();
-    const referral = document.getElementById("profReferral").value.trim();
 
-    // Validation (Zaroori fields check karna)
     if (!name || !email || !address || !city || !pincode) {
         return alert("Please fill all the mandatory (*) fields!");
     }
@@ -183,40 +146,26 @@ async function savePatientProfile() {
     btn.disabled = true;
 
     const payload = {
-        action: "savePatientProfile",
-        user_id: userId,
-        name: name,
-        dob: dob,
-        email: email,
-        address: address,
-        city: city,
-        pincode: pincode,
-        referral_code: referral
+        action: "saveProfile", // Calling the existing app.js route
+        user_id: userId, name: name, dob: dob, email: email, address: address, city: city, pincode: pincode, referral: "" 
     };
 
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
         });
         const data = await response.json();
-
         if (data.status === "success") {
             alert("Profile Saved Successfully! 🎉");
-            document.getElementById("profile-form-section").style.display = "none"; // Popup band karo
-            
-            // Dashboard ko refresh karo taaki warning banner hat jaye aur naya naam dikhe
-            if (typeof fetchDashboardData === "function") {
-                fetchDashboardData(); 
-            }
+            document.getElementById("profile-form-section").style.display = "none";
+            fetchDashboardData(); // Refresh to update name
         } else {
             alert("Error: " + data.message);
         }
     } catch (error) {
-        alert("Network Error! Please try again.");
+        alert("Network Error!");
     } finally {
-        btn.innerHTML = 'Save & Continue <i class="fas fa-arrow-right"></i>';
+        btn.innerText = "Save Profile";
         btn.disabled = false;
     }
 }
