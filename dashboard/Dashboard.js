@@ -157,3 +157,66 @@ window.logoutDashboard = function() {
         window.location.href = "../index.html"; 
     }
 }
+// ==========================================
+// 🌟 SAVE PATIENT PROFILE LOGIC
+// ==========================================
+async function savePatientProfile() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    if (!userId) return alert("Session expired. Please login again!");
+
+    // Form se data uthana
+    const name = document.getElementById("profName").value.trim();
+    const dob = document.getElementById("profDOB").value;
+    const email = document.getElementById("profEmail").value.trim();
+    const address = document.getElementById("profAddress").value.trim();
+    const city = document.getElementById("profCity").value.trim();
+    const pincode = document.getElementById("profPincode").value.trim();
+    const referral = document.getElementById("profReferral").value.trim();
+
+    // Validation (Zaroori fields check karna)
+    if (!name || !email || !address || !city || !pincode) {
+        return alert("Please fill all the mandatory (*) fields!");
+    }
+
+    const btn = document.getElementById("btn-save-profile");
+    btn.innerText = "Saving Profile...";
+    btn.disabled = true;
+
+    const payload = {
+        action: "savePatientProfile",
+        user_id: userId,
+        name: name,
+        dob: dob,
+        email: email,
+        address: address,
+        city: city,
+        pincode: pincode,
+        referral_code: referral
+    };
+
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            alert("Profile Saved Successfully! 🎉");
+            document.getElementById("profile-form-section").style.display = "none"; // Popup band karo
+            
+            // Dashboard ko refresh karo taaki warning banner hat jaye aur naya naam dikhe
+            if (typeof fetchDashboardData === "function") {
+                fetchDashboardData(); 
+            }
+        } else {
+            alert("Error: " + data.message);
+        }
+    } catch (error) {
+        alert("Network Error! Please try again.");
+    } finally {
+        btn.innerHTML = 'Save & Continue <i class="fas fa-arrow-right"></i>';
+        btn.disabled = false;
+    }
+}
