@@ -1,7 +1,8 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyK5KjB9Cs1mTMqvdmOIhoFxS8KDPXfUajzXaxXrYCD6gw3_tQmnciFCKnfJoJAedSw/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbysiOoplJzg_gtmU9Jra-98_-4So8M8Nc6qEBELVanm8Rw7d4IHy5oaJghK5gGzA7_y/exec";
 
 let userEmailForVIP = ""; 
+let currentProfileStatus = ""; // Sheet se aane wala status yahan save hoga
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
@@ -32,6 +33,10 @@ async function fetchDashboardData() {
             document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
             
+            // 🌟 Save Profile Status
+            currentProfileStatus = data.profile.profile_status || "";
+            if(data.profile.email) userEmailForVIP = data.profile.email;
+            
             // Set VIP Status Text
             const vipStatusDisplay = document.getElementById("vipStatus");
             const vipUpgradeBtn = document.getElementById("upgradeVipBtn");
@@ -39,23 +44,15 @@ async function fetchDashboardData() {
             
             vipStatusDisplay.innerText = currentVipStatus;
 
-            // 🌟 LOGIC: Hide Upgrade button if user is already VIP or Pending
+            // Hide Upgrade button if user is already VIP or Pending
             if(currentVipStatus.toLowerCase() !== "basic") {
                 vipStatusDisplay.style.color = "#d35400";
                 vipStatusDisplay.style.fontWeight = "bold";
-                if(vipUpgradeBtn) vipUpgradeBtn.style.display = "none"; // Hide Button
+                if(vipUpgradeBtn) vipUpgradeBtn.style.display = "none";
             } else {
                 vipStatusDisplay.style.color = "#333";
                 vipStatusDisplay.style.fontWeight = "normal";
-                if(vipUpgradeBtn) vipUpgradeBtn.style.display = "inline-block"; // Show Button
-            }
-
-            if(data.profile.email) userEmailForVIP = data.profile.email;
-
-            const banner = document.getElementById("profile-warning-banner");
-            if (banner) {
-                if (data.profile.name === "New Profile") banner.style.display = "block";
-                else banner.style.display = "none";
+                if(vipUpgradeBtn) vipUpgradeBtn.style.display = "inline-block";
             }
 
             const tbody = document.querySelector("#walletTable tbody");
@@ -140,49 +137,18 @@ window.logoutDashboard = function() {
     }
 }
 
-// 🌟 SAVE PROFILE FROM DASHBOARD
-window.savePatientProfileFromDash = async function() {
-    const userId = localStorage.getItem("bhavya_user_id");
-    const name = document.getElementById("profName").value.trim();
-    const dob = document.getElementById("profDOB").value;
-    const email = document.getElementById("profEmail").value.trim();
-    const address = document.getElementById("profAddress").value.trim();
-    const city = document.getElementById("profCity").value.trim();
-    const pincode = document.getElementById("profPincode").value.trim();
-
-    if (!name || !email || !address || !city || !pincode) return alert("Please fill all the mandatory (*) fields!");
-
-    const btn = document.getElementById("btn-save-profile");
-    btn.innerText = "Saving Profile...";
-    btn.disabled = true;
-
-    const payload = { action: "saveProfile", user_id: userId, name: name, dob: dob, email: email, address: address, city: city, pincode: pincode, referral: "" };
-
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        if (data.status === "success") {
-            alert("Profile Saved Successfully! 🎉");
-            document.getElementById("profile-form-section").style.display = "none";
-            fetchDashboardData(); 
-        } else alert("Error: " + data.message);
-    } catch (error) { alert("Network Error!"); } 
-    finally { btn.innerText = "Save Profile"; btn.disabled = false; }
-}
-
 // 🌟 VIP PLAN LOGIC
 let currentVipPrice = 3000;
 let appliedRefCode = "";
 
 window.openVIPModal = function() {
-    const currentName = document.getElementById("userNameDisplay").innerText;
-    if(currentName === "Patient" || currentName === "Loading..." || document.getElementById("profile-warning-banner").style.display === "block") {
-        alert("Please complete your profile form first before purchasing the VIP Plan!");
-        document.getElementById("profile-form-section").style.display = "block";
+    // 🌟 Check profile status exactly from Google Sheet
+    if(currentProfileStatus !== "Profile Complete") {
+        alert("VIP Plan lene ke liye pehle apni Profile complete karein! Hum aapko Home Page par bhej rahe hain.");
+        window.location.href = "../index.html";
         return;
     }
+
     document.getElementById("vipMem1").value = document.getElementById("userNameDisplay").innerText;
     document.getElementById("vip-upgrade-modal").style.display = "block";
     updateUPIIntent();
