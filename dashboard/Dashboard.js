@@ -156,3 +156,128 @@ window.logoutDashboard = function() {
         window.location.href = "../index.html"; // Redirect to home page
     }
 }
+// ==========================================
+// VIP UPGRADE LOGIC
+// ==========================================
+
+function openVipModal() {
+    document.getElementById("vip-modal").style.display = "flex";
+}
+
+function closeVipModal() {
+    document.getElementById("vip-modal").style.display = "none";
+    // Form reset kar do
+    document.getElementById("vipPayMode").value = "";
+    document.getElementById("vipMem1").value = "";
+    document.getElementById("vipMem2").value = "";
+    document.getElementById("vipMem3").value = "";
+    document.getElementById("vipUtr").value = "";
+    document.getElementById("vipScreenshot").value = "";
+    toggleVipPaymentFields(); 
+}
+
+// Online aur Cash option ke hisaab se fields show/hide karna
+function toggleVipPaymentFields() {
+    const payMode = document.getElementById("vipPayMode").value;
+    const onlineSec = document.getElementById("vip-online-section");
+    const cashSec = document.getElementById("vip-cash-section");
+
+    if (payMode === "Online") {
+        onlineSec.style.display = "block";
+        cashSec.style.display = "none";
+    } else if (payMode === "Cash") {
+        onlineSec.style.display = "none";
+        cashSec.style.display = "block";
+    } else {
+        onlineSec.style.display = "none";
+        cashSec.style.display = "none";
+    }
+}
+
+// Form Submit Karna aur Image ko convert karna
+async function submitVipRequest() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const payMode = document.getElementById("vipPayMode").value;
+    const mem1 = document.getElementById("vipMem1").value.trim();
+    const mem2 = document.getElementById("vipMem2").value.trim();
+    const mem3 = document.getElementById("vipMem3").value.trim();
+
+    // 1. Basic Validation
+    if (!payMode) { alert("Please select a Payment Mode."); return; }
+
+    let payload = {
+        action: "submitVipRequest",
+        user_id: userId,
+        amount_paid: 999,
+        payment_mode: payMode,
+        members: [mem1, mem2, mem3],
+        payment_id: "Cash on Visit", // Default for cash
+        screenshot_data: "",
+        screenshot_name: ""
+    };
+
+    // 2. Online Mode Validation & Image Conversion
+    if (payMode === "Online") {
+        const utr = document.getElementById("vipUtr").value.trim();
+        const fileInput = document.getElementById("vipScreenshot");
+
+        if (utr.length < 10) { alert("Please enter a valid UTR / Reference Number."); return; }
+        if (fileInput.files.length === 0) { alert("Please upload a payment screenshot."); return; }
+
+        const file = fileInput.files[0];
+        if (file.size > 2 * 1024 * 1024) { alert("Image size must be less than 2MB."); return; }
+
+        payload.payment_id = utr;
+
+        // Button ko Loading state me dalo
+        const btn = document.getElementById("btn-submit-vip");
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        // Image ko Base64 String me convert karo taaki Apps Script padh sake
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            // Data URL format: "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+            // Humein sirf base64 part chahiye, isliye split kar rahe hain
+            payload.screenshot_data = e.target.result.split(",")[1];
+            payload.screenshot_name = file.name;
+            
+            // Backend ko bhejo
+            await sendVipDataToBackend(payload, btn);
+        };
+        reader.readAsDataURL(file);
+    } 
+    // 3. Cash Mode (Direct Submit)
+    else {
+        const btn = document.getElementById("btn-submit-vip");
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+        await sendVipDataToBackend(payload, btn);
+    }
+}
+
+// Final API Call to Apps Script
+async function sendVipDataToBackend(payload, btn) {
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === "success") {
+            alert("Application Submitted! Your VIP Plan will be activated after Admin verification.");
+            closeVipModal();
+        } else {
+            alert("Error: " + data.message);
+        }
+    } catch (error) {
+        alert("Connection Failed. Please try again.");
+        console.error(error);
+    } finally {
+        btn.innerText = "Submit Application";
+        btn.disabled = false;
+    }
+}
