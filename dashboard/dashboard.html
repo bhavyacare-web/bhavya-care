@@ -65,6 +65,19 @@
             .dashboard-grid { grid-template-columns: 1fr; }
             table { display: block; overflow-x: auto; white-space: nowrap; }
         }
+
+        /* 🌟 VIP Modal Styles */
+        #vip-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
+        .vip-modal-content { background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative; animation: slideDown 0.3s; }
+        .vip-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; margin-bottom: 20px; }
+        .vip-modal-header h3 { margin: 0; color: #d35400; display: flex; align-items: center; gap: 10px; }
+        .vip-close-btn { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; }
+        .vip-close-btn:hover { color: #d32f2f; }
+        .price-tag { font-size: 24px; font-weight: bold; color: #28a745; text-align: center; margin-bottom: 15px; }
+        .info-msg { background: #e6f0fa; color: #0056b3; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: 500;}
+        .input-box { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none; }
+        .action-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -100,19 +113,19 @@
                     <i class="fas fa-rupee-sign"></i>
                     <h4>Wallet Balance</h4>
                     <div class="value">₹ <span id="walletBal">0</span></div>
-                    <button class="card-btn" style="color: #28a745; border-color: #28a745;">+ Add Money / Withdraw</button>
+                    <button class="card-btn" style="color: #28a745; border-color: #28a745;" onclick="requestWithdraw()">+ Add Money / Withdraw</button>
                 </div>
                 <div class="dash-card vip">
                     <i class="fas fa-crown"></i>
                     <h4>Current Plan</h4>
                     <div class="value" id="vipStatus">Basic</div>
-                    <button class="card-btn" style="background: #ffc107; color: #333; border: none;">Upgrade to VIP Family Plan</button>
+                    <button class="card-btn" style="background: #ffc107; color: #333; border: none;" onclick="openVipModal()">Upgrade to VIP Family Plan</button>
                 </div>
                 <div class="dash-card referral">
                     <i class="fas fa-share-alt"></i>
                     <h4>My Referral Code</h4>
                     <div class="value" id="refCode" style="font-size: 22px; letter-spacing: 2px;">-----</div>
-                    <button class="card-btn" onclick="alert('Code Copied!')">Copy & Earn ₹50</button>
+                    <button class="card-btn" onclick="copyMyReferral()">Copy & Earn ₹50</button>
                 </div>
             </div>
 
@@ -165,7 +178,7 @@
         <div id="wallet" class="tab-content">
             <div class="data-box">
                 <h4>Wallet Passbook</h4>
-                <table>
+                <table id="walletTable">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -175,19 +188,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>10 Mar 2026</td>
-                            <td>Cashback from Blood Test</td>
-                            <td style="color: green; font-weight: bold;">+ ₹50</td>
-                            <td>Credit</td>
-                        </tr>
-                        <tr>
-                            <td>08 Mar 2026</td>
-                            <td>Used in Doctor Booking</td>
-                            <td style="color: red; font-weight: bold;">- ₹100</td>
-                            <td>Debit</td>
-                        </tr>
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -198,75 +199,250 @@
                 <p style="color: #666; font-size: 14px;">Update your address, email, or family members here.</p>
             </div>
         </div>
+    </div>
 
+    <div id="vip-modal">
+        <div class="vip-modal-content">
+            <div class="vip-modal-header">
+                <h3><i class="fas fa-crown"></i> VIP Family Plan</h3>
+                <button class="vip-close-btn" onclick="closeVipModal()">✖</button>
+            </div>
+            
+            <div class="price-tag" style="display: flex; flex-direction: column; align-items: center;">
+                <span>Pay: <span style="color: #28a745;">₹<span id="vipFinalPrice">999</span></span></span>
+                <span id="originalPriceText" style="font-size: 14px; text-decoration: line-through; color: #888; display: none;">₹999</span>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                
+                <div style="background: #e6f0fa; padding: 15px; border-radius: 8px; border: 1px dashed #0056b3;">
+                    <label style="font-size: 13px; font-weight: bold; color: #0056b3;">Have a Referral / Promo Code?</label>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <input type="text" id="vipPromoCode" class="input-box" placeholder="Enter Code" style="margin: 0; text-transform: uppercase;">
+                        <button type="button" id="btn-apply-promo" onclick="applyPromoCode()" style="background: #0056b3; color: white; border: none; padding: 0 15px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s;">Apply</button>
+                    </div>
+                    <p id="promo-msg" style="font-size: 13px; margin-top: 8px; font-weight: bold; display: none;"></p>
+                </div>
+
+                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">Add Family Members (Max 3 - Optional)</label>
+                    <input type="text" id="vipMem1" class="input-box" placeholder="Member 1 Name" style="margin-top: 8px;">
+                    <input type="text" id="vipMem2" class="input-box" placeholder="Member 2 Name">
+                    <input type="text" id="vipMem3" class="input-box" placeholder="Member 3 Name">
+                </div>
+
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">Select Payment Mode *</label>
+                    <select id="vipPayMode" class="input-box" onchange="toggleVipPaymentFields()" style="margin-top: 5px;">
+                        <option value="" disabled selected>-- Choose Option --</option>
+                        <option value="Online">Online (UPI)</option>
+                        <option value="Cash">Cash on Lab Visit</option>
+                    </select>
+                </div>
+
+                <div id="vip-online-section" style="display: none;">
+                    <div style="background: #fdfdfd; padding: 15px; border: 1px dashed #0056b3; border-radius: 8px; margin-bottom: 15px; text-align: center;">
+                        <p style="font-size: 14px; color: #555; margin-bottom: 8px;">Pay via UPI to this ID:</p>
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <span id="bhavyaUpiId" style="font-size: 18px; font-weight: bold; color: #d35400; letter-spacing: 1px;">bhavyacare@ybl</span>
+                            <button type="button" onclick="copyUpiId()" style="background: #e6f0fa; border: 1px solid #0056b3; color: #0056b3; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold;"><i class="fas fa-copy"></i> Copy</button>
+                        </div>
+                        <p id="copy-msg" style="color: #28a745; font-size: 12px; display: none; margin-top: 8px; font-weight: bold;">✔ Copied to clipboard!</p>
+                    </div>
+                    
+                    <label style="font-size: 13px; font-weight: bold; color: #333;">12-Digit UTR / Reference No. *</label>
+                    <input type="number" id="vipUtr" class="input-box" placeholder="e.g. 301234567890" style="margin-top: 5px;">
+                    
+                    <label style="font-size: 13px; font-weight: bold; color: #333; margin-top: 10px; display: block;">Upload Payment Screenshot (Max 2MB) *</label>
+                    <input type="file" id="vipScreenshot" class="input-box" accept="image/*" style="margin-top: 5px;">
+                </div>
+
+                <div id="vip-cash-section" style="display: none;">
+                    <div class="info-msg">
+                        <i class="fas fa-info-circle"></i> No payment required right now.<br>
+                        Please pay the amount in cash during your first Lab Visit or Home Collection. Your VIP benefits will be activated by the Admin upon cash receipt.
+                    </div>
+                </div>
+
+                <button id="btn-submit-vip" class="action-btn" style="background-color: #d35400; padding: 12px; font-size: 16px;" onclick="submitVipRequest()">Submit Application</button>
+            </div>
+        </div>
     </div>
 
     <script src="Dashboard.js"></script>
-    <style>
-    /* VIP Modal Styles */
-    #vip-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
-    .vip-modal-content { background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative; animation: slideDown 0.3s; }
-    .vip-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; margin-bottom: 20px; }
-    .vip-modal-header h3 { margin: 0; color: #d35400; display: flex; align-items: center; gap: 10px; }
-    .vip-close-btn { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; }
-    .vip-close-btn:hover { color: #d32f2f; }
     
-    .qr-container { text-align: center; background: #fdfdfd; padding: 15px; border: 1px dashed #ccc; border-radius: 8px; margin-bottom: 15px; }
-    .qr-container img { width: 150px; height: 150px; margin-bottom: 10px; }
-    .price-tag { font-size: 24px; font-weight: bold; color: #28a745; text-align: center; margin-bottom: 15px; }
-    .info-msg { background: #e6f0fa; color: #0056b3; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: 500;}
-</style>
+    <script>
+        let finalVipAmount = 999;
+        let appliedPromo = "";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-VtrqaNvLo7y4wQx-ciTJp89Q5ncGTdZa1aCf8KGbJJVhkvllBl3duFEBZO2YB5IL/exec";
 
-<div id="vip-modal">
-    <div class="vip-modal-content">
-        <div class="vip-modal-header">
-            <h3><i class="fas fa-crown"></i> VIP Family Plan</h3>
-            <button class="vip-close-btn" onclick="closeVipModal()">✖</button>
-        </div>
-        
-        <div class="price-tag">₹999 / Year</div>
-        
-        <div class="form-grid" style="display: flex; flex-direction: column; gap: 15px;">
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
-                <label style="font-size: 13px; font-weight: bold; color: #333;">Add Family Members (Max 3 - Optional)</label>
-                <input type="text" id="vipMem1" class="input-box" placeholder="Member 1 Name" style="margin-top: 8px;">
-                <input type="text" id="vipMem2" class="input-box" placeholder="Member 2 Name">
-                <input type="text" id="vipMem3" class="input-box" placeholder="Member 3 Name">
-            </div>
+        // Referral Copy
+        function copyMyReferral() {
+            const code = document.getElementById("refCode").innerText;
+            if(code && code !== "-----") {
+                navigator.clipboard.writeText(code);
+                alert("Referral Code Copied! Share it with friends.");
+            }
+        }
 
-            <div>
-                <label style="font-size: 13px; font-weight: bold; color: #333;">Select Payment Mode *</label>
-                <select id="vipPayMode" class="input-box" onchange="toggleVipPaymentFields()" style="margin-top: 5px;">
-                    <option value="" disabled selected>-- Choose Option --</option>
-                    <option value="Online">Online (UPI / QR)</option>
-                    <option value="Cash">Cash on Lab Visit</option>
-                </select>
-            </div>
+        function openVipModal() {
+            document.getElementById("vip-modal").style.display = "flex";
+        }
 
-            <div id="vip-online-section" style="display: none;">
-                <div class="qr-container">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=YOUR_UPI_ID@bank&pn=BhavyaCare&am=999" alt="Scan to Pay">
-                    <p style="margin: 0; font-size: 13px; font-weight: bold;">Scan to pay ₹999</p>
-                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">UPI ID: bhavyacare@ybl</p>
-                </div>
+        function closeVipModal() {
+            document.getElementById("vip-modal").style.display = "none";
+            // Reset Form
+            document.getElementById("vipPayMode").value = "";
+            document.getElementById("vipMem1").value = "";
+            document.getElementById("vipMem2").value = "";
+            document.getElementById("vipMem3").value = "";
+            document.getElementById("vipUtr").value = "";
+            document.getElementById("vipScreenshot").value = "";
+            document.getElementById("vipPromoCode").value = "";
+            document.getElementById("vipPromoCode").disabled = false;
+            document.getElementById("btn-apply-promo").disabled = false;
+            document.getElementById("promo-msg").style.display = "none";
+            
+            finalVipAmount = 999;
+            appliedPromo = "";
+            document.getElementById("vipFinalPrice").innerText = finalVipAmount;
+            document.getElementById("originalPriceText").style.display = "none";
+            
+            toggleVipPaymentFields(); 
+        }
+
+        function toggleVipPaymentFields() {
+            const payMode = document.getElementById("vipPayMode").value;
+            const onlineSec = document.getElementById("vip-online-section");
+            const cashSec = document.getElementById("vip-cash-section");
+            
+            if (payMode === "Online") { onlineSec.style.display = "block"; cashSec.style.display = "none"; } 
+            else if (payMode === "Cash") { onlineSec.style.display = "none"; cashSec.style.display = "block"; } 
+            else { onlineSec.style.display = "none"; cashSec.style.display = "none"; }
+        }
+
+        function copyUpiId() {
+            const upiId = document.getElementById("bhavyaUpiId").innerText;
+            navigator.clipboard.writeText(upiId).then(() => {
+                const msg = document.getElementById("copy-msg");
+                msg.style.display = "block";
+                setTimeout(() => { msg.style.display = "none"; }, 2500); 
+            });
+        }
+
+        async function applyPromoCode() {
+            const codeInput = document.getElementById("vipPromoCode").value.trim().toUpperCase();
+            const msgBox = document.getElementById("promo-msg");
+            
+            if (!codeInput) { msgBox.style.display = "block"; msgBox.style.color = "red"; msgBox.innerText = "Please enter a code!"; return; }
+
+            msgBox.style.display = "block";
+            msgBox.style.color = "#0056b3";
+            msgBox.innerText = "Checking code...";
+
+            try {
+                const payload = { action: "checkPromoCode", promo_code: codeInput };
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    let discount = Number(data.discount_amount);
+                    finalVipAmount = 999 - discount;
+                    appliedPromo = codeInput;
+
+                    document.getElementById("vipFinalPrice").innerText = finalVipAmount;
+                    document.getElementById("originalPriceText").style.display = "inline"; 
+                    
+                    msgBox.style.color = "green";
+                    msgBox.innerText = `🎉 Code Applied! You got ₹${discount} off.`;
+                    document.getElementById("vipPromoCode").disabled = true; 
+                    document.getElementById("btn-apply-promo").disabled = true; 
+                } else {
+                    msgBox.style.color = "red";
+                    msgBox.innerText = "❌ Invalid or Expired Code.";
+                }
+            } catch (error) {
+                msgBox.style.color = "red";
+                msgBox.innerText = "Network error. Try again.";
+            }
+        }
+
+        async function submitVipRequest() {
+            const userId = localStorage.getItem("bhavya_user_id");
+            if(!userId) { alert("Session expired. Please login again."); return; }
+
+            const payMode = document.getElementById("vipPayMode").value;
+            const mem1 = document.getElementById("vipMem1").value.trim();
+            const mem2 = document.getElementById("vipMem2").value.trim();
+            const mem3 = document.getElementById("vipMem3").value.trim();
+
+            if (!payMode) { alert("Please select a Payment Mode."); return; }
+
+            let payload = {
+                action: "submitVipRequest",
+                user_id: userId,
+                amount_paid: finalVipAmount,
+                applied_promo: appliedPromo,
+                payment_mode: payMode,
+                members: [mem1, mem2, mem3],
+                payment_id: "Cash on Visit", 
+                screenshot_data: "",
+                screenshot_name: ""
+            };
+
+            const btn = document.getElementById("btn-submit-vip");
+
+            if (payMode === "Online") {
+                const utr = document.getElementById("vipUtr").value.trim();
+                const fileInput = document.getElementById("vipScreenshot");
+
+                if (utr.length < 5) { alert("Please enter a valid UTR / Reference Number."); return; } 
+                if (fileInput.files.length === 0) { alert("Please upload a payment screenshot."); return; }
+
+                const file = fileInput.files[0];
+                if (file.size > 2 * 1024 * 1024) { alert("Image size must be less than 2MB."); return; }
+
+                payload.payment_id = utr;
+                btn.innerText = "Uploading & Processing...";
+                btn.disabled = true;
+
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    payload.screenshot_data = e.target.result.split(",")[1];
+                    payload.screenshot_name = file.name;
+                    await sendVipDataToBackend(payload, btn);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                btn.innerText = "Processing...";
+                btn.disabled = true;
+                await sendVipDataToBackend(payload, btn);
+            }
+        }
+
+        async function sendVipDataToBackend(payload, btn) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
+                });
+                const data = await response.json();
                 
-                <label style="font-size: 13px; font-weight: bold; color: #333;">12-Digit UTR / Reference No. *</label>
-                <input type="number" id="vipUtr" class="input-box" placeholder="e.g. 301234567890" style="margin-top: 5px;">
-                
-                <label style="font-size: 13px; font-weight: bold; color: #333; margin-top: 10px; display: block;">Upload Payment Screenshot (Max 2MB) *</label>
-                <input type="file" id="vipScreenshot" class="input-box" accept="image/*" style="margin-top: 5px;">
-            </div>
-
-            <div id="vip-cash-section" style="display: none;">
-                <div class="info-msg">
-                    <i class="fas fa-info-circle"></i> No payment required right now.<br>
-                    Please pay <b>₹999 in cash</b> during your first Lab Visit or Home Collection. Your VIP benefits will be activated by the Admin upon cash receipt.
-                </div>
-            </div>
-
-            <button id="btn-submit-vip" class="action-btn" style="background-color: #d35400; padding: 12px; font-size: 16px;" onclick="submitVipRequest()">Submit Application</button>
-        </div>
-    </div>
-</div>
+                if (data.status === "success") {
+                    alert("Application Submitted! Your plan will be activated after Admin verification.");
+                    closeVipModal();
+                } else {
+                    alert("Server Error: " + data.message);
+                }
+            } catch (error) {
+                alert("Connection Failed. Please try again.");
+                console.error(error);
+            } finally {
+                btn.innerText = "Submit Application";
+                btn.disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>
