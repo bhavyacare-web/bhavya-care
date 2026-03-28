@@ -1,5 +1,7 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsMBVUq-jK-kdGt2LZbiVb9MtZzplo2orxMPn3lZugwVMJ4XbTBLLt5m-J5FK8-SHX/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzb6ofWkC-btJ_6mNRIIuddO06I9KyYmoTH7UCwN1b4nWU9eJ5vjSJxCOwM2PWpYcn8/exec";
+
+let userEmailForVIP = ""; // Storing email temporarily to pass for mail alerts
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
@@ -30,6 +32,9 @@ async function fetchDashboardData() {
             document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
             document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
+
+            // Saving email if available for VIP mail logic later
+            if(data.profile.email) userEmailForVIP = data.profile.email;
 
             const banner = document.getElementById("profile-warning-banner");
             if (banner) {
@@ -146,7 +151,7 @@ window.savePatientProfileFromDash = async function() {
     btn.disabled = true;
 
     const payload = {
-        action: "saveProfile", // Calling the existing app.js route
+        action: "saveProfile",
         user_id: userId, name: name, dob: dob, email: email, address: address, city: city, pincode: pincode, referral: "" 
     };
 
@@ -158,7 +163,7 @@ window.savePatientProfileFromDash = async function() {
         if (data.status === "success") {
             alert("Profile Saved Successfully! 🎉");
             document.getElementById("profile-form-section").style.display = "none";
-            fetchDashboardData(); // Refresh to update name
+            fetchDashboardData(); 
         } else {
             alert("Error: " + data.message);
         }
@@ -166,6 +171,113 @@ window.savePatientProfileFromDash = async function() {
         alert("Network Error!");
     } finally {
         btn.innerText = "Save Profile";
+        btn.disabled = false;
+    }
+}
+
+// 🌟 VIP PLAN LOGIC
+let currentVipPrice = 3000;
+let appliedRefCode = "";
+
+window.openVIPModal = function() {
+    const currentName = document.getElementById("userNameDisplay").innerText;
+    if(currentName === "Patient" || currentName === "Loading..." || document.getElementById("profile-warning-banner").style.display === "block") {
+        alert("Please complete your profile form first before purchasing the VIP Plan!");
+        document.getElementById("profile-form-section").style.display = "block";
+        return;
+    }
+
+    document.getElementById("vipMem1").value = document.getElementById("userNameDisplay").innerText;
+    document.getElementById("vip-upgrade-modal").style.display = "block";
+    updateUPIIntent();
+}
+
+window.togglePaymentSection = function() {
+    const isOnline = document.querySelector('input[name="payMode"]:checked').value === "Online";
+    document.getElementById("onlinePaymentSection").style.display = isOnline ? "block" : "none";
+}
+
+window.applyReferralDiscount = function() {
+    const code = document.getElementById("vipRefCode").value.trim();
+    if(code === "") return alert("Please enter a referral code.");
+    
+    currentVipPrice = 2500; // Rs 500 Discount
+    appliedRefCode = code;
+    document.getElementById("finalVipAmount").innerText = currentVipPrice;
+    document.getElementById("refMsg").style.display = "block";
+    document.getElementById("vipRefCode").disabled = true;
+    updateUPIIntent();
+}
+
+function updateUPIIntent() {
+    const upiLink = `upi://pay?pa=8950112467@ptsbi&pn=BhavyaCare&am=${currentVipPrice}&cu=INR`;
+    document.getElementById("upiPayBtn").href = upiLink;
+}
+
+window.submitVIPForm = async function() {
+    const userId = localStorage.getItem("bhavya_user_id");
+    const m1 = document.getElementById("vipMem1").value.trim();
+    const m2 = document.getElementById("vipMem2").value.trim();
+    const m3 = document.getElementById("vipMem3").value.trim();
+    const payMode = document.querySelector('input[name="payMode"]:checked').value;
+    const txnId = document.getElementById("vipTxnId").value.trim();
+    const fileInput = document.getElementById("vipScreenshot");
+    
+    if(payMode === "Online" && txnId === "" && fileInput.files.length === 0) {
+        return alert("Please provide either a Payment ID or upload a screenshot for Online Payment.");
+    }
+
+    const btn = document.getElementById("btn-submit-vip");
+    btn.innerText = "Uploading & Submitting...";
+    btn.disabled = true;
+
+    let payload = {
+        action: "buyVIPPlan",
+        user_id: userId,
+        user_email: userEmailForVIP, // Sending email for alert
+        m1_name: m1, m2_name: m2, m3_name: m3,
+        referral_code: appliedRefCode,
+        payment_mode: payMode,
+        payment_id: txnId,
+        amount_paid: currentVipPrice,
+        screenshotBase64: "",
+        screenshotMimeType: "",
+        screenshotName: ""
+    };
+
+    const getBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    try {
+        if(payMode === "Online" && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const base64Data = await getBase64(file);
+            payload.screenshotBase64 = base64Data.split(',')[1];
+            payload.screenshotMimeType = file.type;
+            payload.screenshotName = userId + "_VIP_Payment_" + file.name;
+        }
+
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
+        });
+        const res = await response.json();
+        
+        if(res.status === "success") {
+            alert("VIP Plan Request Submitted! Details sent to your Email. Admin will activate your plan shortly.");
+            document.getElementById("vip-upgrade-modal").style.display = "none";
+            fetchDashboardData(); 
+        } else {
+            alert("Submission Failed: " + res.message);
+        }
+    } catch(e) {
+        console.error(e);
+        alert("Network Error! Please try again.");
+    } finally {
+        btn.innerText = "Submit Request";
         btn.disabled = false;
     }
 }
