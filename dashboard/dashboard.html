@@ -65,19 +65,6 @@
             .dashboard-grid { grid-template-columns: 1fr; }
             table { display: block; overflow-x: auto; white-space: nowrap; }
         }
-
-        /* 🌟 VIP Modal Styles */
-        #vip-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
-        .vip-modal-content { background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative; animation: slideDown 0.3s; }
-        .vip-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; margin-bottom: 20px; }
-        .vip-modal-header h3 { margin: 0; color: #d35400; display: flex; align-items: center; gap: 10px; }
-        .vip-close-btn { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; }
-        .vip-close-btn:hover { color: #d32f2f; }
-        .price-tag { font-size: 24px; font-weight: bold; color: #28a745; text-align: center; margin-bottom: 15px; }
-        .info-msg { background: #e6f0fa; color: #0056b3; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: 500;}
-        .input-box { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; outline: none; }
-        .action-btn { width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -113,19 +100,19 @@
                     <i class="fas fa-rupee-sign"></i>
                     <h4>Wallet Balance</h4>
                     <div class="value">₹ <span id="walletBal">0</span></div>
-                    <button class="card-btn" style="color: #28a745; border-color: #28a745;" onclick="requestWithdraw()">+ Add Money / Withdraw</button>
+                    <button class="card-btn" style="color: #28a745; border-color: #28a745;">+ Add Money / Withdraw</button>
                 </div>
                 <div class="dash-card vip">
                     <i class="fas fa-crown"></i>
                     <h4>Current Plan</h4>
                     <div class="value" id="vipStatus">Basic</div>
-                    <button class="card-btn" style="background: #ffc107; color: #333; border: none;" onclick="openVipModal()">Upgrade to VIP Family Plan</button>
+                    <button class="card-btn" style="background: #ffc107; color: #333; border: none;">Upgrade to VIP Family Plan</button>
                 </div>
                 <div class="dash-card referral">
                     <i class="fas fa-share-alt"></i>
                     <h4>My Referral Code</h4>
                     <div class="value" id="refCode" style="font-size: 22px; letter-spacing: 2px;">-----</div>
-                    <button class="card-btn" onclick="copyMyReferral()">Copy & Earn ₹50</button>
+                    <button class="card-btn" onclick="alert('Code Copied!')">Copy & Earn ₹50</button>
                 </div>
             </div>
 
@@ -178,7 +165,7 @@
         <div id="wallet" class="tab-content">
             <div class="data-box">
                 <h4>Wallet Passbook</h4>
-                <table id="walletTable">
+                <table>
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -188,7 +175,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        </tbody>
+                        <tr>
+                            <td>10 Mar 2026</td>
+                            <td>Cashback from Blood Test</td>
+                            <td style="color: green; font-weight: bold;">+ ₹50</td>
+                            <td>Credit</td>
+                        </tr>
+                        <tr>
+                            <td>08 Mar 2026</td>
+                            <td>Used in Doctor Booking</td>
+                            <td style="color: red; font-weight: bold;">- ₹100</td>
+                            <td>Debit</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -199,74 +198,7 @@
                 <p style="color: #666; font-size: 14px;">Update your address, email, or family members here.</p>
             </div>
         </div>
-    </div>
 
-    <div id="vip-modal">
-        <div class="vip-modal-content">
-            <div class="vip-modal-header">
-                <h3><i class="fas fa-crown"></i> VIP Family Plan</h3>
-                <button class="vip-close-btn" onclick="closeVipModal()">✖</button>
-            </div>
-            
-            <div class="price-tag" style="display: flex; flex-direction: column; align-items: center;">
-                <span>Pay: <span style="color: #28a745;">₹<span id="vipFinalPrice">999</span></span></span>
-                <span id="originalPriceText" style="font-size: 14px; text-decoration: line-through; color: #888; display: none;">₹999</span>
-            </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                
-                <div style="background: #e6f0fa; padding: 15px; border-radius: 8px; border: 1px dashed #0056b3;">
-                    <label style="font-size: 13px; font-weight: bold; color: #0056b3;">Have a Referral / Promo Code?</label>
-                    <div style="display: flex; gap: 10px; margin-top: 5px;">
-                        <input type="text" id="vipPromoCode" class="input-box" placeholder="Enter Code" style="margin: 0; text-transform: uppercase;">
-                        <button type="button" id="btn-apply-promo" onclick="applyPromoCode()" style="background: #0056b3; color: white; border: none; padding: 0 15px; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s;">Apply</button>
-                    </div>
-                    <p id="promo-msg" style="font-size: 13px; margin-top: 8px; font-weight: bold; display: none;"></p>
-                </div>
-
-                <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
-                    <label style="font-size: 13px; font-weight: bold; color: #333;">Add Family Members (Max 3 - Optional)</label>
-                    <input type="text" id="vipMem1" class="input-box" placeholder="Member 1 Name" style="margin-top: 8px;">
-                    <input type="text" id="vipMem2" class="input-box" placeholder="Member 2 Name">
-                    <input type="text" id="vipMem3" class="input-box" placeholder="Member 3 Name">
-                </div>
-
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; color: #333;">Select Payment Mode *</label>
-                    <select id="vipPayMode" class="input-box" onchange="toggleVipPaymentFields()" style="margin-top: 5px;">
-                        <option value="" disabled selected>-- Choose Option --</option>
-                        <option value="Online">Online (UPI)</option>
-                        <option value="Cash">Cash on Lab Visit</option>
-                    </select>
-                </div>
-
-                <div id="vip-online-section" style="display: none;">
-                    <div style="background: #fdfdfd; padding: 15px; border: 1px dashed #0056b3; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-                        <p style="font-size: 14px; color: #555; margin-bottom: 8px;">Pay via UPI to this ID:</p>
-                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                            <span id="bhavyaUpiId" style="font-size: 18px; font-weight: bold; color: #d35400; letter-spacing: 1px;">bhavyacare@ybl</span>
-                            <button type="button" onclick="copyUpiId()" style="background: #e6f0fa; border: 1px solid #0056b3; color: #0056b3; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: bold;"><i class="fas fa-copy"></i> Copy</button>
-                        </div>
-                        <p id="copy-msg" style="color: #28a745; font-size: 12px; display: none; margin-top: 8px; font-weight: bold;">✔ Copied to clipboard!</p>
-                    </div>
-                    
-                    <label style="font-size: 13px; font-weight: bold; color: #333;">12-Digit UTR / Reference No. *</label>
-                    <input type="number" id="vipUtr" class="input-box" placeholder="e.g. 301234567890" style="margin-top: 5px;">
-                    
-                    <label style="font-size: 13px; font-weight: bold; color: #333; margin-top: 10px; display: block;">Upload Payment Screenshot (Max 2MB) *</label>
-                    <input type="file" id="vipScreenshot" class="input-box" accept="image/*" style="margin-top: 5px;">
-                </div>
-
-                <div id="vip-cash-section" style="display: none;">
-                    <div class="info-msg">
-                        <i class="fas fa-info-circle"></i> No payment required right now.<br>
-                        Please pay the amount in cash during your first Lab Visit or Home Collection. Your VIP benefits will be activated by the Admin upon cash receipt.
-                    </div>
-                </div>
-
-                <button id="btn-submit-vip" class="action-btn" style="background-color: #d35400; padding: 12px; font-size: 16px;" onclick="submitVipRequest()">Submit Application</button>
-            </div>
-        </div>
     </div>
 
     <script src="Dashboard.js"></script>
