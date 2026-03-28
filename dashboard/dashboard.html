@@ -96,7 +96,7 @@
         
         <div id="profile-warning-banner">
             ⚠️ Action Required: Please complete your profile to access all features.
-            <button onclick="switchTab('profile')">Complete Profile Now</button>
+            <button onclick="document.getElementById('profile-form-section').style.display = 'block';">Complete Profile Now</button>
         </div>
 
         <div class="header-bar">
@@ -194,42 +194,13 @@
             </div>
         </div>
 
-        <div id="profile" class="tab-content">
-            <div class="data-box" style="max-width: 600px;">
-                <h4 style="margin-bottom: 20px;">Update Profile Details</h4>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="grid-column: span 2;">
-                        <label style="font-size: 13px; font-weight: bold;">Full Name *</label>
-                        <input type="text" id="profName" class="input-box" placeholder="Enter your name">
-                    </div>
-                    <div>
-                        <label style="font-size: 13px; font-weight: bold;">Date of Birth</label>
-                        <input type="date" id="profDOB" class="input-box">
-                    </div>
-                    <div>
-                        <label style="font-size: 13px; font-weight: bold;">Email ID *</label>
-                        <input type="email" id="profEmail" class="input-box" placeholder="example@gmail.com">
-                    </div>
-                    <div style="grid-column: span 2;">
-                        <label style="font-size: 13px; font-weight: bold;">Address *</label>
-                        <input type="text" id="profAddress" class="input-box" placeholder="House No, Street, Area">
-                    </div>
-                    <div>
-                        <label style="font-size: 13px; font-weight: bold;">City *</label>
-                        <input type="text" id="profCity" class="input-box" placeholder="e.g. Delhi">
-                    </div>
-                    <div>
-                        <label style="font-size: 13px; font-weight: bold;">Pincode *</label>
-                        <input type="number" id="profPincode" class="input-box" placeholder="6 digits">
-                    </div>
-                </div>
-                
-                <button id="btn-save-profile" class="card-btn" style="background: #28a745; color: white; width: 100%; padding: 12px; margin-top: 25px; font-size: 16px; border: none;" onclick="alert('Save function coming next!')">Save Profile</button>
-            </div>
-        </div>
-
-    </div>
+       <div id="profile" class="tab-content">
+         <div class="data-box" style="text-align: center; padding: 40px;">
+             <h4 style="margin-bottom: 15px;">Your Profile Details</h4>
+             <p style="color: #666; margin-bottom: 20px;">Click the button below to view or edit your personal information.</p>
+             <button class="action-btn" style="width: auto; padding: 10px 25px; background: #0056b3;" onclick="document.getElementById('profile-form-section').style.display = 'block';">✏️ Edit Profile</button>
+         </div>
+     </div>
 
     <script src="Dashboard.js"></script>
 
