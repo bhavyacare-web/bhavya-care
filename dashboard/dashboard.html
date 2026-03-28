@@ -203,6 +203,47 @@
      </div>
 
     <script src="Dashboard.js"></script>
+<style>
+        #profile-form-section {
+            width: 95%; max-width: 550px; margin: 20px auto; padding: 25px 30px; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+            border-radius: 15px; text-align: left; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            z-index: 2000; animation: slideDown 0.4s ease-out; border-top: 5px solid #0056b3; max-height: 85vh; overflow-y: auto;
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+        
+        .form-header-logo { text-align: center; margin-bottom: 15px; }
+        .form-header-logo h2 { color: #0056b3; font-size: 28px; font-weight: 800; margin: 0; }
+        .form-header-logo h2 span { color: #28a745; }
+        
+        .styled-headline { text-align: center; font-size: 22px; font-weight: 800; margin-bottom: 5px; color: #333; }
+        .sub-text { color: #777; font-size: 14px; text-align: center; margin-bottom: 25px; font-weight: 500; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .full-width { grid-column: span 2; }
 
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; border: none; background: none; transition: 0.2s; }
+        .close-btn:hover { color: #dc3545; }
+        .btn-skip { background-color: transparent; color: #888; border: none; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; font-size: 14px; text-decoration: underline;}
+        .btn-skip:hover { color: #555; }
+        .referral-box { background-color: #f1f8ff; border: 1px dashed #0056b3; color: #0056b3; font-weight: bold; text-align: center; font-size: 18px; letter-spacing: 2px; cursor: not-allowed; }
+    </style>
+
+    <div id="profile-form-section">
+        <button class="close-btn" onclick="document.getElementById('profile-form-section').style.display='none'">✖</button>
+        <div class="form-header-logo"><h2>Bhavya<span>Care</span></h2></div>
+        <h3 class="styled-headline">Welcome to BhavyaCare!</h3>
+        <p class="sub-text">Please complete your profile to book tests & get reports.</p>
+        
+        <div class="form-grid">
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Name *</label><input type="text" id="profName" class="input-box" placeholder="Enter your name"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Date of Birth</label><input type="date" id="profDOB" class="input-box"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label><input type="email" id="profEmail" class="input-box" placeholder="mandatory@gmail.com"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Address *</label><input type="text" id="profAddress" class="input-box" placeholder="House No, Street, Area"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">City *</label><input type="text" id="profCity" class="input-box" placeholder="e.g. Delhi"></div>
+            <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label><input type="number" id="profPincode" class="input-box" placeholder="6 digits"></div>
+            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Your Unique Referral Code</label><input type="text" id="profReferral" class="input-box referral-box" placeholder="Auto-generated after save" readonly></div>
+        </div>
+        <button id="btn-save-profile" class="action-btn" style="background:#28a745; width:100%; color:white; border:none; margin-top: 20px; font-size: 18px; padding: 15px; border-radius:5px; font-weight:bold; cursor:pointer;" onclick="savePatientProfile()">Save & Continue <i class="fas fa-arrow-right"></i></button>
+        <button class="btn-skip" onclick="document.getElementById('profile-form-section').style.display='none'">I'll do this later (Skip)</button>
+    </div>
 </body>
 </html>
