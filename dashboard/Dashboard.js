@@ -1,7 +1,7 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzb6ofWkC-btJ_6mNRIIuddO06I9KyYmoTH7UCwN1b4nWU9eJ5vjSJxCOwM2PWpYcn8/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyK5KjB9Cs1mTMqvdmOIhoFxS8KDPXfUajzXaxXrYCD6gw3_tQmnciFCKnfJoJAedSw/exec";
 
-let userEmailForVIP = ""; // Storing email temporarily to pass for mail alerts
+let userEmailForVIP = ""; 
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
@@ -30,24 +30,32 @@ async function fetchDashboardData() {
             const firstName = data.profile.name ? data.profile.name.split(" ")[0] : "Patient";
             document.getElementById("userNameDisplay").innerText = firstName;
             document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
-            document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
+            
+            // Set VIP Status Text
+            const vipStatusDisplay = document.getElementById("vipStatus");
+            const vipUpgradeBtn = document.getElementById("upgradeVipBtn");
+            const currentVipStatus = data.profile.vip_status || "Basic";
+            
+            vipStatusDisplay.innerText = currentVipStatus;
 
-            // Saving email if available for VIP mail logic later
+            // 🌟 LOGIC: Hide Upgrade button if user is already VIP or Pending
+            if(currentVipStatus.toLowerCase() !== "basic") {
+                vipStatusDisplay.style.color = "#d35400";
+                vipStatusDisplay.style.fontWeight = "bold";
+                if(vipUpgradeBtn) vipUpgradeBtn.style.display = "none"; // Hide Button
+            } else {
+                vipStatusDisplay.style.color = "#333";
+                vipStatusDisplay.style.fontWeight = "normal";
+                if(vipUpgradeBtn) vipUpgradeBtn.style.display = "inline-block"; // Show Button
+            }
+
             if(data.profile.email) userEmailForVIP = data.profile.email;
 
             const banner = document.getElementById("profile-warning-banner");
             if (banner) {
-                if (data.profile.name === "New Profile") {
-                    banner.style.display = "block";
-                } else {
-                    banner.style.display = "none";
-                }
-            }
-
-            if(data.profile.vip_status && data.profile.vip_status !== "Basic") {
-                document.getElementById("vipStatus").style.color = "#d35400";
-                document.getElementById("vipStatus").style.fontWeight = "bold";
+                if (data.profile.name === "New Profile") banner.style.display = "block";
+                else banner.style.display = "none";
             }
 
             const tbody = document.querySelector("#walletTable tbody");
@@ -142,18 +150,13 @@ window.savePatientProfileFromDash = async function() {
     const city = document.getElementById("profCity").value.trim();
     const pincode = document.getElementById("profPincode").value.trim();
 
-    if (!name || !email || !address || !city || !pincode) {
-        return alert("Please fill all the mandatory (*) fields!");
-    }
+    if (!name || !email || !address || !city || !pincode) return alert("Please fill all the mandatory (*) fields!");
 
     const btn = document.getElementById("btn-save-profile");
     btn.innerText = "Saving Profile...";
     btn.disabled = true;
 
-    const payload = {
-        action: "saveProfile",
-        user_id: userId, name: name, dob: dob, email: email, address: address, city: city, pincode: pincode, referral: "" 
-    };
+    const payload = { action: "saveProfile", user_id: userId, name: name, dob: dob, email: email, address: address, city: city, pincode: pincode, referral: "" };
 
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -164,15 +167,9 @@ window.savePatientProfileFromDash = async function() {
             alert("Profile Saved Successfully! 🎉");
             document.getElementById("profile-form-section").style.display = "none";
             fetchDashboardData(); 
-        } else {
-            alert("Error: " + data.message);
-        }
-    } catch (error) {
-        alert("Network Error!");
-    } finally {
-        btn.innerText = "Save Profile";
-        btn.disabled = false;
-    }
+        } else alert("Error: " + data.message);
+    } catch (error) { alert("Network Error!"); } 
+    finally { btn.innerText = "Save Profile"; btn.disabled = false; }
 }
 
 // 🌟 VIP PLAN LOGIC
@@ -186,7 +183,6 @@ window.openVIPModal = function() {
         document.getElementById("profile-form-section").style.display = "block";
         return;
     }
-
     document.getElementById("vipMem1").value = document.getElementById("userNameDisplay").innerText;
     document.getElementById("vip-upgrade-modal").style.display = "block";
     updateUPIIntent();
@@ -232,24 +228,15 @@ window.submitVIPForm = async function() {
     btn.disabled = true;
 
     let payload = {
-        action: "buyVIPPlan",
-        user_id: userId,
-        user_email: userEmailForVIP, // Sending email for alert
-        m1_name: m1, m2_name: m2, m3_name: m3,
-        referral_code: appliedRefCode,
-        payment_mode: payMode,
-        payment_id: txnId,
-        amount_paid: currentVipPrice,
-        screenshotBase64: "",
-        screenshotMimeType: "",
-        screenshotName: ""
+        action: "buyVIPPlan", user_id: userId, user_email: userEmailForVIP, 
+        m1_name: m1, m2_name: m2, m3_name: m3, referral_code: appliedRefCode,
+        payment_mode: payMode, payment_id: txnId, amount_paid: currentVipPrice,
+        screenshotBase64: "", screenshotMimeType: "", screenshotName: ""
     };
 
     const getBase64 = (file) => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        const reader = new FileReader(); reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error);
     });
 
     try {
@@ -267,17 +254,10 @@ window.submitVIPForm = async function() {
         const res = await response.json();
         
         if(res.status === "success") {
-            alert("VIP Plan Request Submitted! Details sent to your Email. Admin will activate your plan shortly.");
+            alert("VIP Plan Request Submitted! Admin will activate your plan shortly.");
             document.getElementById("vip-upgrade-modal").style.display = "none";
             fetchDashboardData(); 
-        } else {
-            alert("Submission Failed: " + res.message);
-        }
-    } catch(e) {
-        console.error(e);
-        alert("Network Error! Please try again.");
-    } finally {
-        btn.innerText = "Submit Request";
-        btn.disabled = false;
-    }
+        } else alert("Submission Failed: " + res.message);
+    } catch(e) { alert("Network Error! Please try again."); } 
+    finally { btn.innerText = "Submit Request"; btn.disabled = false; }
 }
