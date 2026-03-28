@@ -1,5 +1,5 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4ivH0ttJmyKq7Civ6i0TFkCqsyBoM1zCYBos0WXCxMAoRFwOAK3s1IgD8eWM1y3Wd/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_nXMu8P2SFuxEEgva-qtgKx8DWiIBdweFf0FFmvswaqpPd5glerFDsO1L0-h14tY/exec";
 
 // --- Page Load Event ---
 document.addEventListener("DOMContentLoaded", () => {
