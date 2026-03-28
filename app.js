@@ -19,7 +19,7 @@ try {
 }
 
 // 🌟 LATEST GOOGLE SCRIPT URL
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh5xaD_twrih6kShL6Cj8pjFuHLH6xlSvbl06rRr6ZebX1zAUuH0KtHeNUdEr3kHw/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFB2qCIQUcJcT3S9Uu_mf0lwzVINSfO1ZZx-arR2Adq82DegSjqfTqOFCmpViePWxE/exec";
 let isPartnerMode = false;
 
 // 🌟 NAYA (Crash Fix)
