@@ -1,53 +1,65 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw26yqYEJ-zDBDMGovdu-OVuK1RndF5iggDrRpdpKz2wqyNiDnFIIpExKjSdWWeDAYi/exec";
-
-// Global variables for VIP logic
-let finalVipAmount = 999;
-let appliedPromo = "";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-VtrqaNvLo7y4wQx-ciTJp89Q5ncGTdZa1aCf8KGbJJVhkvllBl3duFEBZO2YB5IL/exec";
 
 // --- Page Load Event ---
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
 });
 
-// --- Fetch Dashboard Data ---
+// --- Fetch Data Logic (UPDATED for Profile & Wallet History) ---
 async function fetchDashboardData() {
+    // LocalStorage se User ID nikalna
     const userId = localStorage.getItem("bhavya_user_id");
 
+    // Agar ID nahi mili toh Home par bhej do
     if (!userId) {
         alert("Please login to access your Dashboard!");
-        window.location.href = "../index.html"; 
+        window.location.href = "../index.html"; // Make sure path is correct
         return;
     }
 
+    // Shuruwat me ID dikhao aur Name me Loading likho
     document.getElementById("userIdDisplay").innerText = userId;
     document.getElementById("userNameDisplay").innerText = "Loading...";
 
     try {
-        const payload = { action: "getDashboardData", user_id: userId };
+        const payload = {
+            action: "getDashboardData",
+            user_id: userId
+        };
+
+        // Fetch request to your deployed Apps Script URL
         const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
+        // Success hone par UI update karna
         if (data.status === "success") {
+            // 1. SET PROFILE DATA (Now coming under data.profile)
             const firstName = data.profile.name ? data.profile.name.split(" ")[0] : "Patient";
+
             document.getElementById("userNameDisplay").innerText = firstName;
             document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
             document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
             document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
 
+            // Highlight VIP Status
             if(data.profile.vip_status && data.profile.vip_status !== "Basic") {
                 document.getElementById("vipStatus").style.color = "#d35400";
                 document.getElementById("vipStatus").style.fontWeight = "bold";
             }
 
-            const tbody = document.querySelector("#walletTable tbody");
-            tbody.innerHTML = ""; 
+            // 2. AUTO-POPULATE WALLET PASSBOOK
+            const tbody = document.querySelector("#wallet tbody");
+            tbody.innerHTML = ""; // Clear dummy data
 
             if (data.wallet_history && data.wallet_history.length > 0) {
                 data.wallet_history.forEach(tx => {
+                    // Date formatting safely
                     let txDate = new Date(tx.date).toLocaleDateString('en-GB');
                     if(txDate === "Invalid Date") txDate = tx.date; 
                     
@@ -77,12 +89,15 @@ async function fetchDashboardData() {
     }
 }
 
-// --- Request Withdraw Function ---
+// --- NAYA: Request Withdraw Function ---
 window.requestWithdraw = async function() {
     const userId = localStorage.getItem("bhavya_user_id");
     const amount = prompt("Enter amount to withdraw (Min ₹500):");
     
+    // Check basic validation
     if (amount && !isNaN(amount) && Number(amount) >= 500) {
+        
+        // Extra validation: Check if user has enough balance (from the UI text)
         const currentBal = Number(document.getElementById("walletBal").innerText);
         if(Number(amount) > currentBal) {
             alert("Insufficient Wallet Balance!");
@@ -99,12 +114,13 @@ window.requestWithdraw = async function() {
             
             if(res.status === "success") {
                 alert("Withdrawal request sent! Admin will approve it shortly.");
-                fetchDashboardData(); 
+                fetchDashboardData(); // Refresh passbook to show Pending status
             } else {
                 alert("Server Error: " + res.message);
             }
         } catch(e) {
             alert("Network Error while sending request.");
+            console.error(e);
         }
     } else if (amount) {
         alert("Please enter a valid amount (Minimum ₹500).");
@@ -127,183 +143,16 @@ window.switchTab = function(tabId) {
     }
 }
 
+// --- Mobile Sidebar Toggle ---
 window.toggleSidebar = function() {
     document.getElementById('sidebar').classList.toggle('show');
 }
 
+// --- Logout Logic ---
 window.logoutDashboard = function() {
     if(confirm("Are you sure you want to logout?")) {
         localStorage.clear();
         alert("Logged out successfully.");
-        window.location.href = "../index.html"; 
-    }
-}
-
-// ==========================================
-// VIP UPGRADE LOGIC (With Promo Code)
-// ==========================================
-
-window.copyMyReferral = function() {
-    const code = document.getElementById("refCode").innerText;
-    if(code && code !== "-----") {
-        navigator.clipboard.writeText(code);
-        alert("Referral Code Copied! Share it with friends.");
-    }
-}
-
-window.openVipModal = function() {
-    document.getElementById("vip-modal").style.display = "flex";
-}
-
-window.closeVipModal = function() {
-    document.getElementById("vip-modal").style.display = "none";
-    document.getElementById("vipPayMode").value = "";
-    document.getElementById("vipMem1").value = "";
-    document.getElementById("vipMem2").value = "";
-    document.getElementById("vipMem3").value = "";
-    document.getElementById("vipUtr").value = "";
-    document.getElementById("vipScreenshot").value = "";
-    document.getElementById("vipPromoCode").value = "";
-    document.getElementById("vipPromoCode").disabled = false;
-    document.getElementById("btn-apply-promo").disabled = false;
-    document.getElementById("promo-msg").style.display = "none";
-    
-    finalVipAmount = 999;
-    appliedPromo = "";
-    document.getElementById("vipFinalPrice").innerText = finalVipAmount;
-    document.getElementById("originalPriceText").style.display = "none";
-    
-    toggleVipPaymentFields(); 
-}
-
-window.toggleVipPaymentFields = function() {
-    const payMode = document.getElementById("vipPayMode").value;
-    const onlineSec = document.getElementById("vip-online-section");
-    const cashSec = document.getElementById("vip-cash-section");
-
-    if (payMode === "Online") { onlineSec.style.display = "block"; cashSec.style.display = "none"; } 
-    else if (payMode === "Cash") { onlineSec.style.display = "none"; cashSec.style.display = "block"; } 
-    else { onlineSec.style.display = "none"; cashSec.style.display = "none"; }
-}
-
-window.copyUpiId = function() {
-    const upiId = document.getElementById("bhavyaUpiId").innerText;
-    navigator.clipboard.writeText(upiId).then(() => {
-        const msg = document.getElementById("copy-msg");
-        msg.style.display = "block";
-        setTimeout(() => { msg.style.display = "none"; }, 2500); 
-    });
-}
-
-window.applyPromoCode = async function() {
-    const codeInput = document.getElementById("vipPromoCode").value.trim().toUpperCase();
-    const msgBox = document.getElementById("promo-msg");
-    
-    if (!codeInput) { msgBox.style.display = "block"; msgBox.style.color = "red"; msgBox.innerText = "Please enter a code!"; return; }
-
-    msgBox.style.display = "block";
-    msgBox.style.color = "#0056b3";
-    msgBox.innerText = "Checking code...";
-
-    try {
-        const payload = { action: "checkPromoCode", promo_code: codeInput };
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-
-        if (data.status === "success") {
-            let discount = Number(data.discount_amount);
-            finalVipAmount = 999 - discount;
-            appliedPromo = codeInput;
-
-            document.getElementById("vipFinalPrice").innerText = finalVipAmount;
-            document.getElementById("originalPriceText").style.display = "inline"; 
-            
-            msgBox.style.color = "green";
-            msgBox.innerText = `🎉 Code Applied! You got ₹${discount} off.`;
-            document.getElementById("vipPromoCode").disabled = true; 
-            document.getElementById("btn-apply-promo").disabled = true; 
-        } else {
-            msgBox.style.color = "red";
-            msgBox.innerText = "❌ Invalid or Expired Code.";
-        }
-    } catch (error) {
-        msgBox.style.color = "red";
-        msgBox.innerText = "Network error. Try again.";
-    }
-}
-
-window.submitVipRequest = async function() {
-    const userId = localStorage.getItem("bhavya_user_id");
-    const payMode = document.getElementById("vipPayMode").value;
-    const mem1 = document.getElementById("vipMem1").value.trim();
-    const mem2 = document.getElementById("vipMem2").value.trim();
-    const mem3 = document.getElementById("vipMem3").value.trim();
-
-    if (!payMode) { alert("Please select a Payment Mode."); return; }
-
-    let payload = {
-        action: "submitVipRequest",
-        user_id: userId,
-        amount_paid: finalVipAmount,
-        applied_promo: appliedPromo,
-        payment_mode: payMode,
-        members: [mem1, mem2, mem3],
-        payment_id: "Cash on Visit", 
-        screenshot_data: "",
-        screenshot_name: ""
-    };
-
-    const btn = document.getElementById("btn-submit-vip");
-
-    if (payMode === "Online") {
-        const utr = document.getElementById("vipUtr").value.trim();
-        const fileInput = document.getElementById("vipScreenshot");
-
-        if (utr.length < 5) { alert("Please enter a valid UTR / Reference Number."); return; } 
-        if (fileInput.files.length === 0) { alert("Please upload a payment screenshot."); return; }
-
-        const file = fileInput.files[0];
-        if (file.size > 2 * 1024 * 1024) { alert("Image size must be less than 2MB."); return; }
-
-        payload.payment_id = utr;
-        btn.innerText = "Uploading & Processing...";
-        btn.disabled = true;
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            payload.screenshot_data = e.target.result.split(",")[1];
-            payload.screenshot_name = file.name;
-            await sendVipDataToBackend(payload, btn);
-        };
-        reader.readAsDataURL(file);
-    } 
-    else {
-        btn.innerText = "Processing...";
-        btn.disabled = true;
-        await sendVipDataToBackend(payload, btn);
-    }
-}
-
-async function sendVipDataToBackend(payload, btn) {
-    try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-            method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        
-        if (data.status === "success") {
-            alert("Application Submitted! Your VIP Plan will be activated after Admin verification.");
-            closeVipModal();
-        } else {
-            alert("Server Error: " + data.message);
-        }
-    } catch (error) {
-        alert("Connection Failed. Please try again.");
-        console.error(error);
-    } finally {
-        btn.innerText = "Submit Application";
-        btn.disabled = false;
+        window.location.href = "../index.html"; // Redirect to home page
     }
 }
