@@ -1,5 +1,5 @@
 // 🌟 LATEST GOOGLE SCRIPT URL PROVIDED BY YOU
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzh5xaD_twrih6kShL6Cj8pjFuHLH6xlSvbl06rRr6ZebX1zAUuH0KtHeNUdEr3kHw/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxsMBVUq-jK-kdGt2LZbiVb9MtZzplo2orxMPn3lZugwVMJ4XbTBLLt5m-J5FK8-SHX/exec";
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchDashboardData();
