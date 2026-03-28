@@ -287,15 +287,6 @@ function closeProfileForm(type) {
 }
 
 // ---------------- PATIENT PROFILE LOGIC ---------------- //
-function autoGenerateReferral() {
-    const nameInput = document.getElementById('profName').value.trim().toUpperCase();
-    const savedMobile = localStorage.getItem("bhavya_mobile") || "0000"; 
-    let namePart = nameInput.replace(/[^A-Z]/g, '').substring(0, 3);
-    if(nameInput.length > 0 && namePart.length < 3) namePart = namePart.padEnd(3, 'X'); 
-    if(nameInput.length === 0) { document.getElementById('profReferral').value = ""; return; }
-    document.getElementById('profReferral').value = namePart + savedMobile.slice(-4);
-}
-
 function savePatientProfile() {
     const name = document.getElementById('profName').value.trim();
     const address = document.getElementById('profAddress').value.trim();
@@ -327,7 +318,6 @@ function savePatientProfile() {
         alert("Network Error!"); document.getElementById('profile-form-section').style.display = 'none';
     });
 }
-
 // ---------------- DOCTOR PROFILE LOGIC ---------------- //
 function toggleOnlineFields() {
     const val = document.getElementById('docOnlineConsult').value;
