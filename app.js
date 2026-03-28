@@ -286,7 +286,9 @@ function closeProfileForm(type) {
     alert("Welcome to BhavyaCare! Please complete your profile later from the banner above.");
 }
 
-// ---------------- PATIENT PROFILE LOGIC ---------------- //
+// =======================================================
+// 🌟 PATIENT PROFILE LOGIC (UPDATED)
+// =======================================================
 function savePatientProfile() {
     const name = document.getElementById('profName').value.trim();
     const address = document.getElementById('profAddress').value.trim();
@@ -295,29 +297,50 @@ function savePatientProfile() {
 
     if(!name || !address || !city || !pincode) { alert("Please fill all the required (*) fields!"); return; }
 
+    // 🌟 AUTO-GENERATE REFERRAL CODE LOGIC
+    let namePrefix = name.replace(/\s+/g, '').substring(0, 3).toUpperCase();
+    if (namePrefix.length < 3) namePrefix = namePrefix.padEnd(3, 'X');
+    
+    let mobile = localStorage.getItem("bhavya_mobile") || "";
+    let mobileSuffix = mobile.length >= 4 ? mobile.slice(-4) : "0000";
+    
+    const generatedReferralCode = namePrefix + mobileSuffix;
+
     const saveBtn = document.getElementById('btn-save-profile');
     saveBtn.innerText = "Saving Please Wait...";
     saveBtn.style.backgroundColor = "#ffc107"; 
 
     const payload = {
-        action: "saveProfile", user_id: localStorage.getItem("bhavya_user_id"),
-        name: name, dob: document.getElementById('profDOB').value, email: document.getElementById('profEmail').value.trim(),
-        address: address, city: city, pincode: pincode, referral: document.getElementById('profReferral').value.trim()
+        action: "saveProfile", 
+        user_id: localStorage.getItem("bhavya_user_id"),
+        name: name, 
+        dob: document.getElementById('profDOB').value, 
+        email: document.getElementById('profEmail').value.trim(),
+        address: address, 
+        city: city, 
+        pincode: pincode, 
+        referral: document.getElementById('profReferral').value.trim(),
+        my_referral_code: generatedReferralCode // 🌟 NAYA: Bhejne ke liye naya variable
     };
 
     fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
     .then(response => response.json())
     .then(data => {
-        alert("Profile saved successfully! You are ready to book tests.");
-        saveBtn.innerText = "Save & Continue"; saveBtn.style.backgroundColor = "#28a745";
+        alert("Profile saved successfully! Redirecting to your Dashboard...");
+        saveBtn.innerText = "Save & Continue"; 
+        saveBtn.style.backgroundColor = "#28a745";
         localStorage.removeItem("bhavya_profile_skipped"); 
         checkProfileBanner();
         document.getElementById('profile-form-section').style.display = 'none';
+        
+        // 🌟 NAYA: Sidha dashboard par bhej do
+        window.location.href = "dashboard/dashboard.html";
     })
     .catch(error => {
         alert("Network Error!"); document.getElementById('profile-form-section').style.display = 'none';
     });
 }
+
 // ---------------- DOCTOR PROFILE LOGIC ---------------- //
 function toggleOnlineFields() {
     const val = document.getElementById('docOnlineConsult').value;
@@ -359,7 +382,7 @@ async function saveDoctorProfile() {
 
     try {
         const docB64 = await getBase64(docFile);
-        const imgB64 = await getBase64(docImage);
+        const imgB64 = await getBase64(imgImage);
 
         const isOnline = document.getElementById('docOnlineConsult').value;
         const onlineFee = isOnline === "Yes" ? document.getElementById('docOnlineFee').value.trim() : "";
@@ -746,7 +769,7 @@ window.saveExecutiveProfile = async function() {
 };
 
 // =======================================================
-// 🌟 NAYA: PHARMACY PROFILE LOGIC
+// 🌟 PHARMACY PROFILE LOGIC
 // =======================================================
 window.switchPharmTab = function(evt, tabId) {
     let contents = document.querySelectorAll("#pharmacy-profile-section .hosp-tab-content");
