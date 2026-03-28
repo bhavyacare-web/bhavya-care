@@ -202,6 +202,71 @@
     </div>
 
     <script src="Dashboard.js"></script>
+    <style>
+    /* VIP Modal Styles */
+    #vip-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
+    .vip-modal-content { background: white; width: 90%; max-width: 500px; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative; animation: slideDown 0.3s; }
+    .vip-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f4f4f4; padding-bottom: 10px; margin-bottom: 20px; }
+    .vip-modal-header h3 { margin: 0; color: #d35400; display: flex; align-items: center; gap: 10px; }
+    .vip-close-btn { background: none; border: none; font-size: 24px; color: #888; cursor: pointer; }
+    .vip-close-btn:hover { color: #d32f2f; }
+    
+    .qr-container { text-align: center; background: #fdfdfd; padding: 15px; border: 1px dashed #ccc; border-radius: 8px; margin-bottom: 15px; }
+    .qr-container img { width: 150px; height: 150px; margin-bottom: 10px; }
+    .price-tag { font-size: 24px; font-weight: bold; color: #28a745; text-align: center; margin-bottom: 15px; }
+    .info-msg { background: #e6f0fa; color: #0056b3; padding: 10px; border-radius: 5px; font-size: 13px; text-align: center; margin-bottom: 15px; font-weight: 500;}
+</style>
 
+<div id="vip-modal">
+    <div class="vip-modal-content">
+        <div class="vip-modal-header">
+            <h3><i class="fas fa-crown"></i> VIP Family Plan</h3>
+            <button class="vip-close-btn" onclick="closeVipModal()">✖</button>
+        </div>
+        
+        <div class="price-tag">₹999 / Year</div>
+        
+        <div class="form-grid" style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                <label style="font-size: 13px; font-weight: bold; color: #333;">Add Family Members (Max 3 - Optional)</label>
+                <input type="text" id="vipMem1" class="input-box" placeholder="Member 1 Name" style="margin-top: 8px;">
+                <input type="text" id="vipMem2" class="input-box" placeholder="Member 2 Name">
+                <input type="text" id="vipMem3" class="input-box" placeholder="Member 3 Name">
+            </div>
+
+            <div>
+                <label style="font-size: 13px; font-weight: bold; color: #333;">Select Payment Mode *</label>
+                <select id="vipPayMode" class="input-box" onchange="toggleVipPaymentFields()" style="margin-top: 5px;">
+                    <option value="" disabled selected>-- Choose Option --</option>
+                    <option value="Online">Online (UPI / QR)</option>
+                    <option value="Cash">Cash on Lab Visit</option>
+                </select>
+            </div>
+
+            <div id="vip-online-section" style="display: none;">
+                <div class="qr-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=YOUR_UPI_ID@bank&pn=BhavyaCare&am=999" alt="Scan to Pay">
+                    <p style="margin: 0; font-size: 13px; font-weight: bold;">Scan to pay ₹999</p>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">UPI ID: bhavyacare@ybl</p>
+                </div>
+                
+                <label style="font-size: 13px; font-weight: bold; color: #333;">12-Digit UTR / Reference No. *</label>
+                <input type="number" id="vipUtr" class="input-box" placeholder="e.g. 301234567890" style="margin-top: 5px;">
+                
+                <label style="font-size: 13px; font-weight: bold; color: #333; margin-top: 10px; display: block;">Upload Payment Screenshot (Max 2MB) *</label>
+                <input type="file" id="vipScreenshot" class="input-box" accept="image/*" style="margin-top: 5px;">
+            </div>
+
+            <div id="vip-cash-section" style="display: none;">
+                <div class="info-msg">
+                    <i class="fas fa-info-circle"></i> No payment required right now.<br>
+                    Please pay <b>₹999 in cash</b> during your first Lab Visit or Home Collection. Your VIP benefits will be activated by the Admin upon cash receipt.
+                </div>
+            </div>
+
+            <button id="btn-submit-vip" class="action-btn" style="background-color: #d35400; padding: 12px; font-size: 16px;" onclick="submitVipRequest()">Submit Application</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
