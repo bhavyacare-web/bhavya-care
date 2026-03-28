@@ -85,6 +85,43 @@
     </div>
 
     <div class="main-content">
+        <div class="main-content">
+        
+        <div id="profile-warning-banner" style="display: none; background-color: #ffcc00; color: #333; text-align: center; padding: 12px; font-weight: bold; font-size: 14px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            ⚠️ Action Required: Please complete your profile to access all features.
+            <button onclick="switchTab('profile')" style="background: #0056b3; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px; transition: 0.3s;">Complete Profile Now</button>
+        </div>
+
+        <div class="header-bar">
+            ```
+
+*(Dhyan dein: Maine isme `onclick="switchTab('profile')"` laga diya hai, taaki button dabte hi user seedha Profile wale tab par chala jaye).*
+
+---
+
+### Step 2: `Dashboard.js` mein Logic lagayein
+Ab apni `Dashboard.js` kholiye aur `fetchDashboardData()` function mein jahan aap Name aur Status set kar rahe hain, wahan ye chota sa `if-else` condition add kar dijiye. 
+
+Aapka code ab kuch aisa dikhega:
+
+```javascript
+        if (data.status === "success") {
+            const firstName = data.profile.name ? data.profile.name.split(" ")[0] : "Patient";
+            document.getElementById("userNameDisplay").innerText = firstName;
+            document.getElementById("walletBal").innerText = data.profile.wallet_balance || 0;
+            document.getElementById("vipStatus").innerText = data.profile.vip_status || "Basic";
+            document.getElementById("refCode").innerText = data.profile.referral_code || "N/A";
+
+            // 🌟 NAYA LOGIC: Agar profile naya hai, toh banner dikhao
+            if (data.profile.name === "New Profile") {
+                document.getElementById("profile-warning-banner").style.display = "block";
+            } else {
+                document.getElementById("profile-warning-banner").style.display = "none";
+            }
+
+            // Highlight VIP Status
+            if(data.profile.vip_status && data.profile.vip_status !== "Basic") {
+// ... baaki ka purana code ...
         <div class="header-bar">
             <i class="fas fa-bars mobile-toggle" onclick="toggleSidebar()"></i>
             <h3>Welcome back, <span id="userNameDisplay">Patient</span>!</h3>
