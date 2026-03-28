@@ -21,9 +21,6 @@
         .header-bar h3 { margin: 0; color: #333; font-size: 24px; }
         .user-profile { display: flex; align-items: center; gap: 10px; background: white; padding: 8px 15px; border-radius: 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .user-profile img { width: 35px; height: 35px; border-radius: 50%; }
-        #profile-warning-banner { display: none; background-color: #ffcc00; color: #333; text-align: center; padding: 12px; font-weight: bold; font-size: 14px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        #profile-warning-banner button { background: #0056b3; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px; transition: 0.3s; }
-        #profile-warning-banner button:hover { background: #004494; }
         .tab-content { display: none; animation: fadeIn 0.3s; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -75,12 +72,6 @@
     </div>
 
     <div class="main-content">
-        
-        <div id="profile-warning-banner">
-            ⚠️ Action Required: Please complete your profile to access all features.
-            <button onclick="document.getElementById('profile-form-section').style.display = 'block';">Complete Profile Now</button>
-        </div>
-
         <div class="header-bar">
             <i class="fas fa-bars mobile-toggle" onclick="toggleSidebar()"></i>
             <h3>Welcome back, <span id="userNameDisplay">Patient</span>!</h3>
@@ -141,8 +132,8 @@
         <div id="profile" class="tab-content">
             <div class="data-box" style="text-align: center; padding: 40px;">
                 <h4 style="margin-bottom: 15px;">Your Profile Details</h4>
-                <p style="color: #666; margin-bottom: 20px;">Click the button below to view or edit your personal information.</p>
-                <button class="card-btn" style="width: auto; padding: 10px 25px; background: #0056b3; color: white;" onclick="document.getElementById('profile-form-section').style.display = 'block';">✏️ Edit Profile</button>
+                <p style="color: #666; margin-bottom: 20px;">To update your personal information or complete your profile, please return to the Home Page.</p>
+                <button class="card-btn" style="width: auto; padding: 10px 25px; background: #0056b3; color: white;" onclick="window.location.href = '../index.html';">Go to Home Page</button>
             </div>
         </div>
     </div>
@@ -151,25 +142,9 @@
         .modal-overlay { width: 95%; margin: 20px auto; background: #ffffff; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 15px; text-align: left; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; animation: slideDown 0.4s ease-out; max-height: 85vh; overflow-y: auto; }
         @keyframes slideDown { from { opacity: 0; transform: translate(-50%, -60%); } to { opacity: 1; transform: translate(-50%, -50%); } }
         .input-box { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .full-width { grid-column: span 2; }
+        .form-group { margin-top: 10px; }
         .close-btn-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #aaa; cursor: pointer; border: none; background: none; }
     </style>
-
-    <div id="profile-form-section" class="modal-overlay" style="max-width: 550px; padding: 25px 30px; border-top: 5px solid #0056b3;">
-        <button class="close-btn-modal" onclick="document.getElementById('profile-form-section').style.display='none'">✖</button>
-        <h2 style="color: #0056b3; text-align: center; margin-bottom: 5px;">Bhavya<span style="color: #28a745;">Care</span></h2>
-        <h3 style="text-align: center; margin-bottom: 20px;">Complete Your Profile</h3>
-        <div class="form-grid">
-            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Full Name *</label><input type="text" id="profName" class="input-box"></div>
-            <div><label style="font-size: 13px; font-weight: bold;">Date of Birth</label><input type="date" id="profDOB" class="input-box"></div>
-            <div><label style="font-size: 13px; font-weight: bold;">Email ID *</label><input type="email" id="profEmail" class="input-box"></div>
-            <div class="full-width"><label style="font-size: 13px; font-weight: bold;">Address *</label><input type="text" id="profAddress" class="input-box"></div>
-            <div><label style="font-size: 13px; font-weight: bold;">City *</label><input type="text" id="profCity" class="input-box"></div>
-            <div><label style="font-size: 13px; font-weight: bold;">Pincode *</label><input type="number" id="profPincode" class="input-box"></div>
-        </div>
-        <button id="btn-save-profile" style="background:#28a745; width:100%; color:white; border:none; margin-top: 20px; font-size: 16px; padding: 12px; border-radius:5px; cursor:pointer;" onclick="savePatientProfileFromDash()">Save Profile</button>
-    </div>
 
     <div id="vip-upgrade-modal" class="modal-overlay" style="max-width: 450px; padding: 25px; border-top: 5px solid #ffc107; z-index: 3000;">
         <button class="close-btn-modal" onclick="document.getElementById('vip-upgrade-modal').style.display='none'">✖</button>
@@ -181,11 +156,11 @@
             <label style="font-size:12px; font-weight:bold;">Member 1 (Self) *</label>
             <input type="text" id="vipMem1" class="input-box" placeholder="Your Name" readonly style="background:#f4f4f4;">
         </div>
-        <div class="form-group" style="margin-top:10px;">
+        <div class="form-group">
             <label style="font-size:12px; font-weight:bold;">Member 2 Name</label>
             <input type="text" id="vipMem2" class="input-box" placeholder="Family Member 2">
         </div>
-        <div class="form-group" style="margin-top:10px;">
+        <div class="form-group">
             <label style="font-size:12px; font-weight:bold;">Member 3 Name</label>
             <input type="text" id="vipMem3" class="input-box" placeholder="Family Member 3">
         </div>
