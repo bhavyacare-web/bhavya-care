@@ -105,21 +105,9 @@ function updateNameLabel() {
 
     if (isPartnerMode && roleElem) {
         const role = roleElem.value;
-        if (role === 'doctor') {
-            nameLabel.innerText = "Doctor Name:";
-            userNameInput.placeholder = "Enter doctor name";
-        } else if (role === 'lab') {
+        if (role === 'lab') {
             nameLabel.innerText = "Lab Name:";
             userNameInput.placeholder = "Enter lab name";
-        } else if (role === 'pharmacy') {
-            nameLabel.innerText = "Pharmacy Name:";
-            userNameInput.placeholder = "Enter pharmacy name";
-        } else if (role === 'hospital') {
-            nameLabel.innerText = "Hospital Name:";
-            userNameInput.placeholder = "Enter hospital name";
-        } else if (role === 'executive') {
-            nameLabel.innerText = "Executive Name:";
-            userNameInput.placeholder = "Enter executive name";
         }
     } else {
         nameLabel.innerText = "Full Name:";
@@ -221,10 +209,6 @@ async function verifyOTP() {
 
         console.log("Backend returned Data:", resData);
 
-        if(selectedRole === "doctor" && resData.role === "patient") {
-            alert("Backend Error: Script update nahi hui hai. Ye aapko Patient man raha hai.");
-        }
-
         const finalRole = resData.role;
         const finalUserId = resData.user_id;
 
@@ -233,10 +217,6 @@ async function verifyOTP() {
         localStorage.setItem("bhavya_role", finalRole);
         localStorage.setItem("bhavya_user_id", finalUserId);
         localStorage.setItem("bhavya_name", resData.name || userName); 
-        
-        // NEW LOGIC: Doctor ka status bhi save karega
-        localStorage.setItem("bhavya_doc_status", resData.doc_status || "not_registered");
-        localStorage.setItem("bhavya_doc_reject_reason", resData.reject_reason || "");
 
         closeLoginPopup();
         alert("Login Successful! Welcome " + userName);
@@ -261,7 +241,7 @@ async function verifyOTP() {
 }
 
 // ==========================================
-// 5. LOGOUT & DASHBOARD NAVIGATION (UPDATED)
+// 5. LOGOUT & DASHBOARD NAVIGATION (STRICT)
 // ==========================================
 function logoutUser() {
     if (typeof firebase !== 'undefined') {
@@ -278,36 +258,29 @@ function logoutUser() {
 
 function goToDashboard() {
     const role = localStorage.getItem("bhavya_role");
+    const userId = localStorage.getItem("bhavya_user_id");
+
+    // STRICT CHECK: Ensure user is genuinely logged in before redirecting
+    const isValidUser = userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "" &&
+                        role && role !== "null" && role !== "undefined" && role.trim() !== "";
+
+    if (!isValidUser) {
+        alert("Please Login First to access Dashboard!");
+        if (typeof openPatientLogin === "function") {
+            openPatientLogin(); // Show login popup if not logged in
+        }
+        return;
+    }
     
-    // --- DASHBOARD ROUTING LOGIC ---
+    // --- DASHBOARD ROUTING LOGIC (Lab & Patient Only) ---
     if (role === "patient") {
         window.location.href = "patient_dashboard/patient_dashboard.html"; 
     } 
     else if (role === "lab") {
         window.location.href = "Lab/lab_registration.html"; 
     }
-    else if (role === "doctor") {
-        const docStatus = localStorage.getItem("bhavya_doc_status");
-        
-        if (docStatus === "not_registered") {
-            window.location.href = "doctor/doctor_registration.html";
-        } 
-        else if (docStatus === "Inactive" || docStatus === "Pending" || docStatus === "Rejected") {
-            // Rejected wale ko bhi idhar hi bhejna hai
-            window.location.href = "doctor/pending_approval.html";
-        } 
-        else if (docStatus === "Active") {
-            window.location.href = "doctor/doctor_dashboard.html";
-        } else {
-            // Agar kabhi status undefined ho jaye toh default registration par
-            window.location.href = "doctor/doctor_registration.html";
-        }
-    }
-    else if (role === "pharmacy") {
-        window.location.href = "pharmacy/pharmacy_registration.html"; // ✨ URL UPDATE
-    }
-    else if (role === "hospital" || role === "executive") {
-        alert("Redirecting to " + role.toUpperCase() + " Dashboard... (Under Construction)");
+    else if (role === "admin") {
+        window.location.href = "admin/admin_dashboard.html"; 
     }
     else {
         alert("Role not found. Please log in again.");
