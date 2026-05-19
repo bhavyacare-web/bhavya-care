@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <script>
-        // ✨ SESSION PROTECTION LOGIC ✨
+        // ✨ STRICT SESSION PROTECTION LOGIC ✨
         document.addEventListener("DOMContentLoaded", () => {
             const userId = localStorage.getItem("bhavya_user_id");
             const role = localStorage.getItem("bhavya_role");
 
-            if (userId && role) {
+            // Yeh block strictly check karega ki user genuinely logged in hai ya nahi (Blocks null/empty string bugs)
+            const isValidUser = userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "" &&
+                                role && role !== "null" && role !== "undefined" && role.trim() !== "";
+
+            if (isValidUser) {
                 if (role === "lab") window.location.replace("Lab/lab_dashboard.html"); 
                 else if (role === "pharmacy") window.location.replace("pharmacy/pharmacy_dashboard.html");
                 else if (role === "patient") window.location.replace("patient_dashboard/patient_dashboard.html");
@@ -334,6 +338,7 @@
                     <button class="user-profile-btn" onclick="toggleMenu()">My Account</button>
                 </div>
                 <div id="myDropdown" class="dropdown-content">
+                    <!-- Dashboard link is strictly controlled by script now -->
                     <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;"><i class="fas fa-chart-line" style="color: var(--secondary); width: 20px;"></i> My Dashboard</a>
                     <a href="prescription.html"><i class="fas fa-upload" style="color: #8b5cf6; width: 20px;"></i> Upload Prescription</a>
                     <a href="terms.html"><i class="fas fa-file-contract" style="color: #64748b; width: 20px;"></i> Terms & Conditions</a>
@@ -654,6 +659,31 @@
     <script src="app.js"></script>
 
     <script>
+        // ✨ STRICT DASHBOARD NAVIGATION BUTTON FIX ✨
+        function goToDashboard() {
+            const userId = localStorage.getItem("bhavya_user_id");
+            const role = localStorage.getItem("bhavya_role");
+
+            // Strictly check if actual user data is present, otherwise block navigation
+            const isValidUser = userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "" &&
+                                role && role !== "null" && role !== "undefined" && role.trim() !== "";
+
+            if (!isValidUser) {
+                showHomeToast("Please Login First to access Dashboard!", "error");
+                if (typeof openPatientLogin === "function") {
+                    openPatientLogin(); // Show login popup
+                }
+                return;
+            }
+
+            // Route to correct dashboard only if valid
+            if (role === "lab") window.location.href = "Lab/lab_dashboard.html"; 
+            else if (role === "pharmacy") window.location.href = "pharmacy/pharmacy_dashboard.html";
+            else if (role === "patient") window.location.href = "patient_dashboard/patient_dashboard.html";
+            else if (role === "doctor") window.location.href = "doctor/doctor_dashboard.html"; 
+            else if (role === "admin") window.location.href = "admin/admin_dashboard.html"; 
+        }
+
         // ✨ AUTO OPEN VIP MODAL & DYNAMIC TICKER LOGIC ✨
         document.addEventListener("DOMContentLoaded", () => {
             
@@ -714,7 +744,7 @@
         function handleVipRateClick(event) {
             if(event) event.stopPropagation(); // Prevents double clicking if clicked inside a card
             const userId = localStorage.getItem("bhavya_user_id");
-            if (userId) { 
+            if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") { 
                 window.location.href = 'vip/vip_member.html'; 
             } else {
                 showHomeToast("Please Login to view VIP details!", "error");
@@ -756,8 +786,9 @@
 
         function handleVipBuyClick() {
             const userId = localStorage.getItem("bhavya_user_id");
-            if (userId) { window.location.href = "vip/vip_member.html"; } 
-            else {
+            if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") { 
+                window.location.href = "vip/vip_member.html"; 
+            } else {
                 closeVipImageModal();
                 showHomeToast("Login First to Buy VIP Plan!", "error");
                 if (typeof openPatientLogin === "function") { setTimeout(() => openPatientLogin(), 800); } 
