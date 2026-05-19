@@ -45,7 +45,7 @@
         .global-search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s;}
         
         /* ✨ QUICK ACTIONS GRID ✨ */
-        .quick-actions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .quick-actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
         .q-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 15px 10px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .q-btn:active { transform: scale(0.95); }
         .q-btn .icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 2px;}
@@ -189,7 +189,7 @@
             .data-box { padding: 15px; margin-bottom: 15px; border-radius: 16px; } 
             .section-title { font-size: 15px; margin-bottom: 12px; }
             
-            .quick-actions-grid { gap: 8px; margin-bottom: 20px; } 
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; } 
             .q-btn { padding: 10px 6px; border-radius: 14px; gap: 5px; } 
             .q-btn .icon-circle { width: 38px; height: 38px; font-size: 16px; }
             .q-btn span { font-size: 10px; line-height: 1.2; }
@@ -214,13 +214,10 @@
         </div>
         <a class="nav-item active" onclick="switchTab('overview')"><i class="fas fa-home"></i> <span>Home</span></a>
         <a class="nav-item" onclick="switchTab('bookings')"><i class="fas fa-microscope"></i> <span>Tests</span></a>
-        <a class="nav-item" onclick="switchTab('consults')"><i class="fas fa-user-md"></i> <span>Consults</span></a>
-        <a class="nav-item desktop-only" onclick="switchTab('medicines')"><i class="fas fa-pills"></i> <span>Medicines</span></a>
+        <a class="nav-item" onclick="switchTab('reports')"><i class="fas fa-file-medical-alt"></i> <span>Reports</span></a>
         
         <a class="nav-item mobile-only" onclick="toggleMobileMenu()"><i class="fas fa-layer-group"></i> <span>Menu</span></a>
         
-        <a class="nav-item desktop-only" onclick="switchTab('prescriptions')"><i class="fas fa-file-prescription"></i> <span>Rx</span></a>
-        <a class="nav-item desktop-only" onclick="switchTab('reports')"><i class="fas fa-file-medical-alt"></i> <span>Reports</span></a>
         <a class="nav-item desktop-only" onclick="switchTab('profile')"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
         <a class="nav-item desktop-only" style="color: var(--danger); margin-top: auto;" onclick="logoutDashboard()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </nav>
@@ -229,21 +226,14 @@
     <div class="bottom-sheet" id="mobileMenuSheet">
         <div class="sheet-handle"></div>
         <h3 style="margin: 0 0 20px 0; color: var(--text-main); font-size: 18px; font-weight: 800;">More Options</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <button class="q-btn" style="border-color:#bbf7d0;" onclick="toggleMobileMenu(); switchTab('medicines')">
-                <div class="icon-circle" style="background:#dcfce7; color:#059669;"><i class="fas fa-pills"></i></div><span>Medicines</span>
+        <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+            <button class="q-btn" style="border-color:#e2e8f0; flex-direction:row; padding:15px; justify-content: flex-start;" onclick="toggleMobileMenu(); switchTab('profile')">
+                <div class="icon-circle" style="background:#f1f5f9; color:#475569; width: 35px; height: 35px;"><i class="fas fa-user"></i></div>
+                <span style="font-size: 14px;">My Info</span>
             </button>
-            <button class="q-btn" style="border-color:#fef08a;" onclick="toggleMobileMenu(); switchTab('prescriptions')">
-                <div class="icon-circle" style="background:#fef3c7; color:#d97706;"><i class="fas fa-file-prescription"></i></div><span>Prescriptions</span>
-            </button>
-            <button class="q-btn" style="border-color:#bae6fd;" onclick="toggleMobileMenu(); switchTab('reports')">
-                <div class="icon-circle" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-file-medical-alt"></i></div><span>Reports</span>
-            </button>
-            <button class="q-btn" style="border-color:#e2e8f0;" onclick="toggleMobileMenu(); switchTab('profile')">
-                <div class="icon-circle" style="background:#f1f5f9; color:#475569;"><i class="fas fa-user"></i></div><span>My Info</span>
-            </button>
-            <button class="q-btn" style="grid-column: span 2; border-color:#fecaca; flex-direction:row; padding:15px;" onclick="logoutDashboard()">
-                <i class="fas fa-sign-out-alt" style="color:#dc2626; font-size:18px;"></i> <span style="color:#dc2626;">Logout Securely</span>
+            <button class="q-btn" style="border-color:#fecaca; flex-direction:row; padding:15px; justify-content: flex-start;" onclick="logoutDashboard()">
+                <div class="icon-circle" style="background:#fee2e2; color:#dc2626; width: 35px; height: 35px;"><i class="fas fa-sign-out-alt"></i></div>
+                <span style="color:#dc2626; font-size: 14px;">Logout Securely</span>
             </button>
         </div>
     </div>
@@ -299,12 +289,6 @@
                 <button class="q-btn" onclick="window.location.href='../booking/booking.html'">
                     <div class="icon-circle" style="background:#e0e7ff; color:#4f46e5;"><i class="fas fa-microscope"></i></div><span>Book Test</span>
                 </button>
-                <button class="q-btn" onclick="window.location.href='../bookdoctor/bookdoctor.html'">
-                    <div class="icon-circle" style="background:#dcfce7; color:#059669;"><i class="fas fa-user-md"></i></div><span>Dr Consult</span>
-                </button>
-                <button class="q-btn" onclick="window.location.href='../pharmacy/medicineorders.html'">
-                    <div class="icon-circle" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-pills"></i></div><span>Medicines</span>
-                </button>
                 <button class="q-btn" onclick="window.location.href='../prescription.html'">
                     <div class="icon-circle" style="background:#fef3c7; color:#d97706;"><i class="fas fa-file-upload"></i></div><span>Upload Rx</span>
                 </button>
@@ -313,18 +297,16 @@
                 </button>
                 <button class="q-btn" onclick="window.open('https://wa.me/918950112467', '_blank')">
                     <div class="icon-circle" style="background:#dcfce7; color:#25D366;"><i class="fab fa-whatsapp"></i></div>
-                    <span style="line-height: 1.2;">WhatsApp<br>Booking</span>
+                    <span style="line-height: 1.2;">WhatsApp</span>
                 </button>
             </div>
 
-            <!-- ✨ DASHBOARD DISCOUNT PROFILES SLIDER ✨ -->
             <div class="data-box" style="padding: 15px 20px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
                 <div class="section-title" style="margin-bottom: 15px; color: var(--text-main);">
                     <span><i class="fas fa-tags" style="color: var(--warning); margin-right: 5px;"></i> Recommended Packages</span>
                    <span style="font-size: 12px; color: var(--primary); cursor: pointer; font-weight: 700;" onclick="goToDiscountProfiles()">View All <i class="fas fa-chevron-right"></i></span>
                 </div>
                 <div class="horizontal-slider" id="dashboardDiscountSlider">
-                    <!-- ✨ Skeleton Loaders (Jab tak data aa raha hai) ✨ -->
                     <div class="pkg-card" style="min-width: 270px; border-color: transparent; box-shadow: none; background: #fff;">
                         <div class="dash-skel" style="height: 20px; width: 30%; margin-bottom: 12px;"></div>
                         <div class="dash-skel" style="height: 18px; width: 70%; margin-bottom: 15px;"></div>
@@ -345,7 +327,7 @@
                         </div>
                     </div>
                 </div>
-            </div> <!-- ✨ YE WALA MISSING THA (Data Box Closing) ✨ -->
+            </div> 
             
             <div class="compact-cards-row">
                 <div class="compact-card card-wallet" onclick="switchTab('wallet')" style="cursor: pointer;">
@@ -363,7 +345,6 @@
                 </div>
             </div>
 
-            <!-- ✨ REFER & EARN CARD ✨ -->
             <div class="data-box" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); padding: 15px; border-color: #bfdbfe; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <h4 style="margin: 0 0 5px 0; color: #3730a3; font-size: 14px; font-weight: 800;"><i class="fas fa-gift" style="color: #4f46e5;"></i> Refer & Earn</h4>
@@ -405,33 +386,6 @@
                 <div id="patientBookingsContainer">
                     <div class="skel-card skeleton-box" style="height:120px;"></div>
                     <div class="skel-card skeleton-box" style="height:120px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="consults" class="tab-content">
-            <div class="data-box">
-                <div class="section-title">My Consultations</div>
-                <div id="patientConsultsContainer">
-                    <div class="skel-card skeleton-box" style="height:120px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="medicines" class="tab-content">
-            <div class="data-box">
-                <div class="section-title">Pharmacy Orders</div>
-                <div id="patientMedicinesContainer">
-                    <div class="skel-card skeleton-box" style="height:120px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="prescriptions" class="tab-content">
-            <div class="data-box">
-                <div class="section-title">My Prescriptions</div>
-                <div id="prescriptionsTabContainer">
-                    <div class="skel-card skeleton-box" style="height:80px;"></div>
                 </div>
             </div>
         </div>
@@ -519,143 +473,17 @@
         <div style="display:flex; justify-content:space-between; background:white; border:1px solid var(--border); padding:10px 15px; border-radius:10px; align-items:center;" id="vd-mem3"></div>
     </div>
 
-    <div id="cancel-consult-modal" class="modal-overlay">
-        <button class="close-btn-modal" onclick="document.getElementById('cancel-consult-modal').style.display='none'">✖</button>
+    <div id="cancel-order-modal" class="modal-overlay">
+        <button class="close-btn-modal" onclick="document.getElementById('cancel-order-modal').style.display='none'">✖</button>
         <div style="text-align: center; margin-bottom: 15px;">
             <div style="background: #ffebee; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;"><i class="fas fa-ban" style="font-size: 26px; color: #d32f2f;"></i></div>
-            <h3 style="margin:0; color: var(--text-main);">Cancel Consultation</h3>
+            <h3 style="margin:0; color: var(--text-main);">Cancel Booking</h3>
         </div>
-        <input type="hidden" id="cancelConsultIdHidden">
-        <div class="form-group"><textarea id="cancelConsultReason" class="input-box" rows="2" placeholder="Reason for cancellation..." style="resize: none;"></textarea></div>
-        <div style="margin-top:15px; text-align:left;">
-            <label style="font-size:13px; font-weight:bold; color:#555;">Refund Method:</label>
-            <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
-                <label style="background:#f4f7f6; padding:10px; border-radius:8px; border:1px solid #ddd; cursor:pointer; display:flex; align-items:center; gap:10px;">
-                    <input type="radio" name="refundMethod" value="Wallet" checked onchange="toggleRefundMethod()">
-                    <div><strong style="font-size:13px; color:var(--primary);">BhavyaCare Wallet (Instant)</strong><div style="font-size:11px; color:#777;">Refund added immediately.</div></div>
-                </label>
-                <label style="background:#f4f7f6; padding:10px; border-radius:8px; border:1px solid #ddd; cursor:pointer; display:flex; align-items:center; gap:10px;">
-                    <input type="radio" name="refundMethod" value="Bank" onchange="toggleRefundMethod()">
-                    <div><strong style="font-size:13px; color:var(--danger);">Bank/UPI (Takes Time)</strong><div style="font-size:11px; color:#777;">Processed on 1st of next month.</div></div>
-                </label>
-            </div>
-        </div>
-        <div id="bankRefundSection" style="display:none; margin-top:15px; background:#fff8e1; padding:10px; border-radius:8px; border:1px solid #ffeeba;">
-            <p style="font-size:11px; color:#856404; margin:0 0 10px 0;"><strong>Note:</strong> Upload your UPI QR code.</p>
-            <input type="file" id="refundQrInput" class="input-box" accept="image/*" style="font-size:12px; background:white;">
-        </div>
-        <button id="btnConfirmConsultCancel" style="background:var(--danger); width:100%; color:white; border:none; margin-top:20px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitCancelConsult()">Confirm Cancellation</button>
+        <input type="hidden" id="cancelOrderIdHidden">
+        <div class="form-group"><textarea id="cancelReasonInput" class="input-box" rows="2" placeholder="Reason for cancellation..." style="resize: none;"></textarea></div>
+        <button id="btnConfirmCancel" style="background:var(--danger); width:100%; color:white; border:none; margin-top:20px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitCancelOrder()">Confirm Cancellation</button>
     </div>
 
-    <div id="review-modal" class="modal-overlay">
-        <button class="close-btn-modal" onclick="document.getElementById('review-modal').style.display='none'">✖</button>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <div style="background: #fff8e1; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;"><i class="fas fa-star" style="font-size: 26px; color: #ffc107;"></i></div>
-            <h3 style="margin:0; color: var(--text-main);">Rate Doctor</h3>
-        </div>
-        <input type="hidden" id="reviewApptIdHidden">
-        <div class="star-rating" id="starRatingContainer">
-            <i class="fas fa-star" onclick="setRating(1)"></i><i class="fas fa-star" onclick="setRating(2)"></i><i class="fas fa-star" onclick="setRating(3)"></i><i class="fas fa-star" onclick="setRating(4)"></i><i class="fas fa-star" onclick="setRating(5)"></i>
-        </div>
-        <div class="form-group"><textarea id="reviewCommentInput" class="input-box" rows="3" placeholder="Leave a comment (Optional)..."></textarea></div>
-        <button id="btnSubmitReview" style="background:var(--primary); width:100%; color:white; border:none; margin-top:15px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitReview()">Submit Review</button>
-    </div>
-    
-    <div id="patient-ready-modal" class="modal-overlay" style="background: rgba(255,255,255,0.90); backdrop-filter: blur(10px); border: 2px solid var(--success);">
-        <div style="text-align: center;">
-            <div style="background: #e8f5e9; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;"><i class="fas fa-stethoscope" style="font-size: 30px; color: var(--success); animation: pulse 1.5s infinite;"></i></div>
-            <h3 style="margin:0; color: var(--text-main); font-size: 22px;">Doctor is Waiting!</h3>
-            <p style="color:var(--text-light); font-size:14px; margin-top:10px;">The doctor is waiting in the clinic room. Please set up your camera and mic, then click below to enter.</p>
-        </div>
-        <input type="hidden" id="readyApptIdHidden">
-        <input type="hidden" id="readyMeetLinkHidden">
-        <button id="btnPatientReady" style="background:var(--success); width:100%; color:white; border:none; font-weight:bold; padding:15px; border-radius:8px; cursor:pointer; margin-top:15px; font-size: 16px;" onclick="patientConfirmsReady()">I Am Ready</button>
-    </div>
-
-    <div id="claim-refund-modal" class="modal-overlay">
-        <button class="close-btn-modal" onclick="document.getElementById('claim-refund-modal').style.display='none'">✖</button>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <i class="fas fa-hand-holding-usd" style="font-size: 30px; color: #f57c00; margin-bottom:10px;"></i>
-            <h3 style="margin:0; color: var(--text-main);">Claim Your Refund</h3>
-            <p style="font-size:12px; color:#666; margin-top:5px;">Select how you want to receive your money.</p>
-        </div>
-        <input type="hidden" id="claimRefundApptId">
-        <div style="margin-top:15px; text-align:left;">
-            <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
-                <label style="background:#f4f7f6; padding:10px; border-radius:8px; border:1px solid #ddd; cursor:pointer; display:flex; align-items:center; gap:10px;">
-                    <input type="radio" name="claimRefundMethod" value="Wallet" checked onchange="toggleClaimRefundMethod()">
-                    <div><strong style="font-size:13px; color:var(--primary);">BhavyaCare Wallet (Instant)</strong><div style="font-size:11px; color:#777;">Refund added immediately.</div></div>
-                </label>
-                <label style="background:#f4f7f6; padding:10px; border-radius:8px; border:1px solid #ddd; cursor:pointer; display:flex; align-items:center; gap:10px;">
-                    <input type="radio" name="claimRefundMethod" value="Bank" onchange="toggleClaimRefundMethod()">
-                    <div><strong style="font-size:13px; color:var(--danger);">Bank/UPI (Takes Time)</strong><div style="font-size:11px; color:#777;">Processed on 1st of next month.</div></div>
-                </label>
-            </div>
-        </div>
-        <div id="claimBankRefundSection" style="display:none; margin-top:15px; background:#fff8e1; padding:10px; border-radius:8px; border:1px solid #ffeeba;">
-            <p style="font-size:11px; color:#856404; margin:0 0 10px 0;"><strong>Note:</strong> Upload your UPI QR code.</p>
-            <input type="file" id="claimRefundQrInput" class="input-box" accept="image/*" style="font-size:12px; background:white;">
-        </div>
-        <button id="btnConfirmClaim" style="background:#f57c00; width:100%; color:white; border:none; margin-top:20px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitClaimRefund()">Submit Refund Request</button>
-    </div>
-
-    <div id="confirmMedicineModal" class="modal-overlay">
-        <button class="close-btn-modal" onclick="closeConfirmMedicineModal()">✖</button>
-        <div style="text-align: center; margin-bottom: 15px;">
-            <i class="fas fa-pills" style="font-size: 30px; color: var(--primary); margin-bottom:10px;"></i>
-            <h3 style="margin:0; color: var(--text-main);">Confirm Medicine Order</h3>
-            <p id="prescAlert" style="color: #dc2626; font-size: 13px; font-weight: 600; display: none; background: #fee2e2; padding: 8px; border-radius: 8px; margin-top: 10px;">
-                <i class="fas fa-exclamation-triangle"></i> Pharmacy requires a valid prescription for these medicines.
-            </p>
-        </div>
-        <form id="confirmMedicineForm">
-            <input type="hidden" id="modalMedOrderId">
-            <div class="form-group" id="prescUploadGroup" style="display: none; margin-top: 15px;">
-                <label style="display: block; font-weight: 700; margin-bottom: 8px; font-size: 13px; color:#555;">Upload Valid Prescription (PDF/Image) *</label>
-                <input type="file" id="validPrescriptionFile" accept=".pdf,image/*" style="width: 100%; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 8px; background: #f8fafc; font-size:12px;">
-            </div>
-            <button type="button" class="btn btn-confirm" id="btnSubmitConfirmMed" style="background: var(--success); width:100%; color:white; border:none; margin-top:20px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitConfirmMedicineForm()">Confirm & Place Order</button>
-        </form>
-    </div>
-
-    <div id="cancel-med-order-modal" class="modal-overlay">
-        <div class="modal">
-            <button class="close-btn-modal" onclick="document.getElementById('cancel-med-order-modal').style.display='none'">✖</button>
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="background: #ffebee; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;"><i class="fas fa-ban" style="font-size: 26px; color: #d32f2f;"></i></div>
-                <h3 style="margin:0; color: var(--text-main);">Cancel Medicine Order</h3>
-            </div>
-            <form id="cancelMedOrderForm" onsubmit="submitCancelMedicineOrder(event)">
-                <input type="hidden" id="cancelMedOrderIdHidden">
-                <div class="form-group">
-                    <label>Reason for Cancellation *</label>
-                    <textarea id="cancelMedReasonInput" class="input-box" rows="3" placeholder="Why are you cancelling this order?" required style="resize: none; border-color:#fca5a5;"></textarea>
-                    <p style="font-size:12px; color:#ef4444; margin-top:5px;">This reason will be shared with the pharmacy.</p>
-                </div>
-                <button type="submit" class="btn" id="btnConfirmMedCancel" style="background:var(--danger); color:white; width:100%; margin-top:10px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;">
-                    Confirm Cancellation
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <div id="pharma-review-modal" class="modal-overlay">
-        <div class="modal">
-            <button class="close-btn-modal" onclick="document.getElementById('pharma-review-modal').style.display='none'">✖</button>
-            <div style="text-align: center; margin-bottom: 15px;">
-                <div style="background: #fff8e1; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;"><i class="fas fa-store" style="font-size: 26px; color: #ffc107;"></i></div>
-                <h3 style="margin:0; color: var(--text-main);">Rate Pharmacy</h3>
-                <p style="font-size:12px; color:#888;">How was your medicine delivery experience?</p>
-            </div>
-            <input type="hidden" id="pharmaReviewOrderIdHidden">
-            <div class="star-rating" id="pharmaStarRatingContainer">
-                <i class="fas fa-star" onclick="setPharmaRating(1)"></i><i class="fas fa-star" onclick="setPharmaRating(2)"></i><i class="fas fa-star" onclick="setPharmaRating(3)"></i><i class="fas fa-star" onclick="setPharmaRating(4)"></i><i class="fas fa-star" onclick="setPharmaRating(5)"></i>
-            </div>
-            <div class="form-group"><textarea id="pharmaReviewCommentInput" class="input-box" rows="3" placeholder="Leave a review (Optional)..."></textarea></div>
-            <button id="btnSubmitPharmaReview" style="background:var(--primary); width:100%; color:white; border:none; margin-top:15px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitPharmaReview()">Submit Rating</button>
-        </div>
-    </div>
-    
     <div class="modal-overlay" id="feedbackModal">
         <div class="modal" style="max-width: 400px; text-align: center;">
             <button class="close-btn-modal" onclick="document.getElementById('feedbackModal').style.display='none'">✖</button>
@@ -681,7 +509,6 @@
 
     <div id="toast-container"></div>
 
-    <!-- ✨ DASHBOARD PACKAGE INFO MODAL ✨ -->
     <div id="dashboardInfoModal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
         <div style="background:#fff; padding:20px; border-radius:16px; width:90%; max-width:400px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
             <button onclick="document.getElementById('dashboardInfoModal').style.display='none'" style="position:absolute; right:15px; top:15px; border:none; background:#f1f5f9; color:#64748b; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:16px;">✖</button>
