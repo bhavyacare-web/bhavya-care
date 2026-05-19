@@ -13,9 +13,7 @@
 
             if (isValidUser) {
                 if (role === "lab") window.location.replace("Lab/lab_dashboard.html"); 
-                else if (role === "pharmacy") window.location.replace("pharmacy/pharmacy_dashboard.html");
                 else if (role === "patient") window.location.replace("patient_dashboard/patient_dashboard.html");
-                else if (role === "doctor") window.location.replace("doctor/doctor_dashboard.html"); 
                 else if (role === "admin") window.location.replace("admin/admin_dashboard.html"); 
             }
         });
@@ -359,10 +357,9 @@
         <div id="phone-section">
             <div id="partner-role-container" style="display: none; margin-bottom: 15px;">
                 <p style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Select Partner Type:</p>
+                <!-- Dhyan dijiye yahan se Hospital aur Executive options hta diye hain -->
                 <select id="partnerRole" class="input-box" onchange="updateNameLabel()">
                     <option value="lab" selected>Lab</option>
-                    <option value="hospital">Hospital</option>
-                    <option value="executive">Executive</option>
                 </select>
             </div>
             <p id="nameLabel" style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Full Name:</p>
@@ -678,9 +675,7 @@
 
             // Route to correct dashboard only if valid
             if (role === "lab") window.location.href = "Lab/lab_dashboard.html"; 
-            else if (role === "pharmacy") window.location.href = "pharmacy/pharmacy_dashboard.html";
             else if (role === "patient") window.location.href = "patient_dashboard/patient_dashboard.html";
-            else if (role === "doctor") window.location.href = "doctor/doctor_dashboard.html"; 
             else if (role === "admin") window.location.href = "admin/admin_dashboard.html"; 
         }
 
