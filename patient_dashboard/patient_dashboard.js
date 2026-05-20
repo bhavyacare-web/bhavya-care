@@ -1,4 +1,4 @@
-const GOOGLE_SCRIPT_URL = "https://https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec"; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWr17vpptoYrEG5HKPzPaadUp_0pVnN_10ZfJ7X_r/exec"; 
 let isUserVip = false;
 let globalBookingsData = [];
 let globalCompletedReports = []; 
