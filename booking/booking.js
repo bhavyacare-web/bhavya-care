@@ -59,7 +59,6 @@ try {
     }
 } catch (e) { cart = []; }
 
-// Niche ka baaki code as it is rahega...
 let searchTimeout; 
 let pollingInterval; 
 
@@ -279,7 +278,12 @@ function handleAutoSuggest() {
     let suggestBox = document.getElementById("autoSuggestBox");
     if(query.length < 2) { suggestBox.style.display = "none"; return; }
     
-    let matches = allServices.filter(s => s.service_name.toLowerCase().includes(query) && s.service_id !== "VIP-FREE-001").slice(0, 6);
+    // ✨ HIDDEN SURPRISE LOGIC INCLUDED HERE ✨
+    let matches = allServices.filter(s => 
+        s.service_name.toLowerCase().includes(query) && 
+        s.service_id !== "VIP-FREE-001" && 
+        String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') !== "surprise package"
+    ).slice(0, 6);
     
     if(matches.length > 0) {
         suggestBox.innerHTML = matches.map(m => `<div style="padding:12px 15px; border-bottom:1px solid #eee; cursor:pointer;" onclick="selectSuggested('${m.service_name.replace(/'/g, "\\'")}')"><i class="fas fa-search" style="color:#cbd5e1; margin-right:8px;"></i> <b>${m.service_name}</b> <span style="float:right; color:var(--success); font-weight:bold;">₹${m.basic_price}</span></div>`).join('');
@@ -299,7 +303,12 @@ function renderServices(searchQuery = "") {
     const subContainer = document.getElementById("subCategoryContainer");
     if(!container) return;
     
-    let displayServices = allServices.filter(s => s.service_id !== "VIP-FREE-001");
+    // ✨ HIDDEN SURPRISE LOGIC INCLUDED HERE ✨
+    let displayServices = allServices.filter(s => 
+        s.service_id !== "VIP-FREE-001" && 
+        String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') !== "surprise package"
+    );
+
     let filtered = displayServices.filter(s => String(s.service_type || '').toLowerCase().trim() === currentCategory);
 
     if ((currentCategory === 'profile' || currentCategory === 'discount_profile') && !searchQuery) {
@@ -371,10 +380,8 @@ function renderServices(searchQuery = "") {
 
         if (descText !== "") {
             if (isPackageOrProfile) {
-                // Packages & Discount Profiles ke liye purana modal function call karo
                 infoIconHtml = `<i class="fas fa-info-circle" onclick="openModal('${s_id}')" style="color:#3b82f6; cursor:pointer; margin-left:8px; font-size:16px;"></i>`;
             } else {
-                // Normal tests ke liye naya description popup function call karo
                 infoIconHtml = `<i class="fas fa-info-circle" onclick="showTestInfo('${s_id}')" style="color:#3b82f6; cursor:pointer; margin-left:8px; font-size:16px;"></i>`;
             }
         }
@@ -427,11 +434,14 @@ function updateQty(id, change, price, name, type) {
 function updateCartUI() {
     const topCartBtn = document.getElementById("topCartBtn"); const cartBar = document.getElementById("bottomCartBar"); const cartText = document.getElementById("bottomCartText");
     let totalItems = cart.reduce((sum, item) => sum + item.qty, 0); let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    topCartBtn.innerText = `🛒 Cart (${totalItems})`;
+    if(topCartBtn) topCartBtn.innerText = `🛒 Cart (${totalItems})`;
     if (totalItems > 0) {
-        cartText.innerHTML = `${totalItems} Item${totalItems > 1 ? 's' : ''} <span style="color:#cbd5e1; margin:0 8px;">|</span> ₹${totalPrice}`;
-        cartBar.classList.add("visible");
-    } else { cartBar.classList.remove("visible"); }
+        if(cartText) cartText.innerHTML = `${totalItems} Item${totalItems > 1 ? 's' : ''} <span style="color:#cbd5e1; margin:0 8px;">|</span> ₹${totalPrice}`;
+        if(cartBar) cartBar.classList.add("visible");
+    } else { if(cartBar) cartBar.classList.remove("visible"); }
+    
+    // ✨ Call the surprise banner check here
+    checkSurpriseBannerStatus();
 }
 
 // 🌟 EMPTY CART UI & BANNER TOGGLE IN SPA 🌟
@@ -1649,9 +1659,9 @@ function processOrderSubmission(userId) {
         btn.innerText = "Confirm Booking"; btn.disabled = false; 
     });
 }
+
 // ✨ BULLETPROOF TEST DESCRIPTION FUNCTION ✨
 window.showTestInfo = function(serviceId) {
-    // ID ko string banakar trim kar diya taaki hamesha match ho
     let targetId = String(serviceId).trim();
     let service = allServices.find(s => String(s.service_id).trim() === targetId);
     
@@ -1659,7 +1669,6 @@ window.showTestInfo = function(serviceId) {
         let desc = service.description ? String(service.description).trim() : "";
         if (desc !== "") {
             document.getElementById('testInfoTitle').innerText = service.service_name;
-            // .replace(/\n/g, '<br>') line breaks ko theek se dikhayega
             document.getElementById('testInfoDesc').innerHTML = desc.replace(/\n/g, '<br>');
             document.getElementById('testInfoModal').style.display = 'flex';
         } else {
@@ -1669,22 +1678,170 @@ window.showTestInfo = function(serviceId) {
         showToast("Test loading... Please wait.", "info");
     }
 };
-// ✨ AUTO-SWITCH CATEGORY LOGIC (FIXED TIMING) ✨
+
 window.addEventListener('load', () => {
-    // 1.5 Second ka delay diya hai taki pehle Google Sheet se saara data aa jaye
     setTimeout(() => {
         let checkTarget = localStorage.getItem("targetCategory");
         if(checkTarget) {
-            currentCategory = checkTarget; // Target category set karo
-            localStorage.removeItem("targetCategory"); // Memory se clean karo
-            
-            // Tab button ki UI ko active karna (Agar ID 'btn-discount_profile' hai)
-            // Taki user ko lage ki sahi tab click hui hai
+            currentCategory = checkTarget; 
+            localStorage.removeItem("targetCategory"); 
             document.querySelectorAll('.cat-card').forEach(btn => btn.classList.remove('selected'));
-            // Default active hataya
-            
-            // Render call kardo taki sahi cards aa jayein
             renderServices(); 
         }
-    }, 1500); // 1.5 seconds delay
+    }, 1500); 
 });
+
+// =======================================================
+// ✨ SMART SURPRISE SCRATCH CARD LOGIC ✨
+// =======================================================
+let surpriseService = null;
+let isScratched = false;
+
+function checkSurpriseBannerStatus() {
+    let banner = document.getElementById("surpriseOfferBanner");
+    if (!banner) return;
+    
+    let hasSurprise = cart.some(item => item.service_type === "surprise_package" || String(item.service_id).startsWith("SURP-"));
+    if (hasSurprise) {
+        banner.style.display = "none";
+    } else {
+        banner.style.display = "flex";
+    }
+}
+
+function openSurpriseModal() {
+    let cartServiceNames = cart.map(item => String(item.service_name).toLowerCase().trim());
+
+    let surprisePool = allServices.filter(s => 
+        String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') === "surprise package"
+    );
+
+    if (surprisePool.length === 0) {
+        showToast("Surprise offer is currently not configured by Admin.", "error");
+        return;
+    }
+
+    let eligibleTests = surprisePool.filter(s => 
+        !cartServiceNames.includes(String(s.service_name).toLowerCase().trim())
+    );
+
+    if (eligibleTests.length === 0) {
+        showToast("You already have all our surprise tests in your cart!", "info");
+        return;
+    }
+
+    surpriseService = eligibleTests[Math.floor(Math.random() * eligibleTests.length)];
+
+    document.getElementById("scratchTestName").innerText = formatText(surpriseService.service_name);
+    
+    let actualPrice = surpriseService.service_price || surpriseService.basic_price || 500;
+    document.getElementById("scratchActualPrice").innerText = "₹" + actualPrice;
+    
+    let desc = surpriseService.description ? surpriseService.description : "Highly recommended by doctors for routine checkups.";
+    document.getElementById("scratchDesc").innerHTML = `<i class="fas fa-stethoscope" style="color:var(--primary);"></i> <b>Why do this?</b><br>${desc}`;
+
+    document.getElementById("scratchModal").classList.add("active");
+    document.getElementById("scratchSuccessMsg").style.display = "none";
+    
+    setupScratchCanvas();
+}
+
+function setupScratchCanvas() {
+    isScratched = false;
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.style.display = 'block';
+    canvas.style.opacity = '1';
+    canvas.width = canvas.parentElement.offsetWidth;
+    canvas.height = canvas.parentElement.offsetHeight;
+
+    let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, "#cbd5e1");
+    gradient.addColorStop(0.5, "#94a3b8");
+    gradient.addColorStop(1, "#64748b");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = 'bold 18px Inter';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.fillText('🪙 Scratch to Reveal', canvas.width / 2, canvas.height / 2);
+
+    let isDrawing = false;
+
+    function getMousePos(e) {
+        let rect = canvas.getBoundingClientRect();
+        let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function scratch(e) {
+        if (!isDrawing) return;
+        e.preventDefault(); 
+        let pos = getMousePos(e);
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 25, 0, 2 * Math.PI); 
+        ctx.fill();
+    }
+
+    canvas.onmousedown = (e) => { isDrawing = true; scratch(e); };
+    canvas.ontouchstart = (e) => { isDrawing = true; scratch(e); };
+    canvas.onmousemove = scratch;
+    canvas.ontouchmove = scratch;
+    canvas.onmouseup = () => { isDrawing = false; checkScratchedArea(ctx, canvas); };
+    canvas.ontouchend = () => { isDrawing = false; checkScratchedArea(ctx, canvas); };
+}
+
+function checkScratchedArea(ctx, canvas) {
+    if (isScratched) return;
+    let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let transparentPixels = 0;
+    
+    for (let i = 3; i < pixels.length; i += 16) { 
+        if (pixels[i] === 0) transparentPixels++;
+    }
+
+    let totalPixels = pixels.length / 16;
+    let scratchedPercentage = (transparentPixels / totalPixels) * 100;
+
+    if (scratchedPercentage > 40) {
+        isScratched = true;
+        canvas.style.transition = 'opacity 0.6s ease-out';
+        canvas.style.opacity = '0';
+        
+        setTimeout(() => {
+            canvas.style.display = 'none';
+            addSurpriseToCart();
+        }, 600);
+    }
+}
+
+function addSurpriseToCart() {
+    if (!surpriseService) return;
+
+    cart.push({ 
+        service_id: "SURP-" + surpriseService.service_id, 
+        service_name: "🎁 Surprise: " + formatText(surpriseService.service_name), 
+        price: 100, 
+        qty: 1, 
+        service_type: "surprise_package", 
+        selected_lab_id: null,
+        fulfillment: "center"
+    });
+
+    localStorage.setItem('bhavyaCart', JSON.stringify(cart));
+    
+    document.getElementById("scratchSuccessMsg").style.display = "block";
+    showToast("Surprise Test added for ₹100!", "success");
+
+    setTimeout(() => {
+        document.getElementById("scratchModal").classList.remove("active");
+        updateCartUI(); 
+        autoAssignGroupLabs(); 
+        renderGroupedCart();
+        calculateFinalBill();
+    }, 2000); 
+}
