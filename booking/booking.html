@@ -171,6 +171,13 @@
     @keyframes slideUpToast { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     @keyframes fadeOutToast { from { opacity: 1; } to { opacity: 0; } }
 
+    /* ✨ SURPRISE SCRATCH CARD CSS ✨ */
+    .surprise-banner { background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%); color: white; padding: 16px; border-radius: 16px; margin-bottom: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); transition: 0.3s; border: 1px solid #c084fc;}
+    .surprise-banner:active { transform: scale(0.98); }
+    .scratch-card-container { position: relative; width: 100%; height: 220px; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); margin-top: 15px;}
+    .scratch-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #f0fdf4; border: 2px dashed #22c55e; border-radius: 16px;}
+    #scratchCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; touch-action: none; border-radius: 16px;}
+
     @media (min-width: 768px) {
         .services-container { display: grid; grid-template-columns: repeat(2, 1fr); }
         .modal-content { max-width: 600px; }
@@ -180,7 +187,8 @@
 </head>
 <body>
   
-  <div id="toast-container"></div> <div class="sticky-top-wrapper">
+  <div id="toast-container"></div> 
+  <div class="sticky-top-wrapper">
     <div class="header">
      <button class="nav-btn" id="navBackBtn" onclick="handleHomeNavigation()">
         <i class="fas fa-arrow-left" style="margin-right: 5px;"></i> <span id="navBackText">Home</span>
@@ -307,6 +315,14 @@
 
               <div id="vipUpsellCartBanner" style="display:none;"></div>
 
+              <div id="surpriseOfferBanner" class="surprise-banner" style="display:none;" onclick="openSurpriseModal()">
+                  <div>
+                      <h4 style="margin: 0 0 5px; font-size: 15px; font-weight: 800;"><i class="fas fa-gift"></i> Add a Surprise Test</h4>
+                      <p style="margin: 0; font-size: 12px; opacity: 0.9; font-weight: 500;">Pay only ₹100 & unlock a premium test!</p>
+                  </div>
+                  <button style="background: white; color: #a21caf; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 800; font-size: 13px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">+ ₹100</button>
+              </div>
+
               <div id="cartItemsContainer"></div>
 
               <div id="crossSellContainer" style="display:none; margin-top:15px; margin-bottom:15px;"></div>
@@ -403,7 +419,7 @@
   <div class="modal-overlay" id="vipPromoModal">
     <div class="modal-content" style="padding: 25px 20px; text-align:center;">
       <span class="close-modal" onclick="closeVipPromo()" style="position:absolute; right:20px; top:15px;">&times;</span>
-      <img src="../image/BASIC AND VIP PLAN.jpg" alt="VIP Plan" class="promo-img-responsive" style="width:100%; border-radius:12px; margin-bottom:20px;" onerror="this.src='https://via.placeholder.com/600x300?text=VIP+Family+Plan'">
+      <img src="../image/BASIC AND VIP PLAN.jpg" alt="VIP Plan" class="promo-img-responsive" style="width:100%; border-radius:12px; margin-bottom:20px;" onerror="this.onerror=null; this.src='https://via.placeholder.com/600x300?text=VIP+Family+Plan';">
       <h3 style="font-size:18px; margin-bottom:10px; font-weight:800;">Activate VIP Family Plan?</h3>
       <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Unlock premium discounts for your entire family instantly!</p>
       
@@ -515,6 +531,30 @@
               <h3 id="testInfoTitle" style="margin: 0; color: var(--text-main); font-size: 16px; font-weight: 800;">Test Name</h3>
           </div>
           <p id="testInfoDesc" style="font-size: 13px; color: var(--text-light); line-height: 1.6; margin: 0; text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);"></p>
+      </div>
+  </div>
+
+  <div id="scratchModal" class="modal-overlay">
+      <div class="modal-content" style="background: linear-gradient(to bottom, #ffffff, #f8fafc); padding: 20px;">
+          <span class="close-modal" onclick="document.getElementById('scratchModal').classList.remove('active')" style="position: absolute; right: 20px; top: 15px;">&times;</span>
+          <h3 style="margin-top:0; color: #9333ea; font-size: 20px; font-weight: 800;">🎉 Surprise Unlocked!</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">Scratch the card below to reveal your premium test.</p>
+          
+          <div class="scratch-card-container">
+              <div class="scratch-result">
+                  <div style="font-size: 11px; font-weight: 800; color: #16a34a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">You Won</div>
+                  <h2 id="scratchTestName" style="margin: 0 0 5px; color: #0f172a; font-size: 18px; font-weight: 900;">Loading...</h2>
+                  <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-bottom: 10px;">
+                      <span style="font-size: 12px; color: #94a3b8; text-decoration: line-through;" id="scratchActualPrice">₹0</span>
+                      <span style="font-size: 20px; color: #16a34a; font-weight: 900;">₹100 Only!</span>
+                  </div>
+                  <p id="scratchDesc" style="font-size: 11px; color: #475569; background: white; padding: 8px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin: 0; line-height: 1.4; font-weight: 600;">
+                      Recommended for tracking your health.
+                  </p>
+              </div>
+              <canvas id="scratchCanvas"></canvas>
+          </div>
+          <p id="scratchSuccessMsg" style="display:none; color: #16a34a; font-size: 14px; font-weight: 800; margin-top: 15px; animation: slideUpToast 0.3s;"><i class="fas fa-check-circle"></i> Successfully added to cart!</p>
       </div>
   </div>
 
