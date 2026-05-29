@@ -1195,7 +1195,16 @@ function renderLabTimeSelectors() {
     let todayStr = new Date().toISOString().split('T')[0];
     let html = `<h3 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-main);">Select Appointment Time</h3>`;
 
+    // Check karo kya cart me normal lab maujood hai
+    let hasNormalLab = uniqueLabIds.some(id => id !== "BHAVYACARE-INTERNAL");
+
     uniqueLabIds.forEach(labId => {
+        // ✨ NAYA LOGIC: Agar normal lab hai, toh Surprise Package (INTERNAL) ka alag se dabba mat dikhao ✨
+        if (labId === "BHAVYACARE-INTERNAL" && hasNormalLab) {
+            if(!labSlots[labId]) labSlots[labId] = { date: "", time: "" };
+            return; // Is lab ka UI skip kardo
+        }
+
         let lab = allActiveLabsList.find(l => String(l.lab_id) === String(labId));
         let labName = lab ? lab.lab_name : "Selected Provider";
         
@@ -1232,6 +1241,12 @@ function renderLabTimeSelectors() {
 function updateLabDate(labId, dateStr, isRenderCall = false) {
     labSlots[labId].date = dateStr;
     if(!isRenderCall) labSlots[labId].time = ""; 
+    
+    // ✨ NAYA LOGIC: Normal lab ki date chupke se Surprise Package me copy karo ✨
+    if (labId !== "BHAVYACARE-INTERNAL" && labSlots["BHAVYACARE-INTERNAL"]) {
+        labSlots["BHAVYACARE-INTERNAL"].date = dateStr;
+        if(!isRenderCall) labSlots["BHAVYACARE-INTERNAL"].time = "";
+    }
 
     let container = document.getElementById(`slots-${labId}`);
     if(!container || !dateStr) return;
@@ -1292,6 +1307,12 @@ function updateLabDate(labId, dateStr, isRenderCall = false) {
 
 function selectLabTime(labId, timeStr) {
     labSlots[labId].time = timeStr;
+
+    // ✨ NAYA LOGIC: Normal lab ka time slot bhi automatically Surprise Package me copy kardo ✨
+    if (labId !== "BHAVYACARE-INTERNAL" && labSlots["BHAVYACARE-INTERNAL"]) {
+        labSlots["BHAVYACARE-INTERNAL"].date = labSlots[labId].date;
+        labSlots["BHAVYACARE-INTERNAL"].time = timeStr;
+    }
 
     const slotButtons = document.querySelectorAll(`#slots-${labId} .slot-btn`);
     slotButtons.forEach(btn => {
