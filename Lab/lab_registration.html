@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,11 +94,6 @@
             .input-with-button { flex-direction: column; gap: 12px; }
             .input-with-button > div:first-child { display: flex; gap: 10px; width: 100%;}
             .ai-controls { width: 100%; }
-        }
-
-        @media (max-width: 400px) {
-            .service-checkboxes { grid-template-columns: 1fr; }
-            .form-container { padding: 20px 15px; }
         }
     </style>
 </head>
@@ -206,7 +200,8 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
 <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
+    // ✨ Corrected URL ✨
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWr17vpptoYrEG5HKPzPaadUp_0pVnN_10ZfJ7X_r/exec";
     
     const services = ["pathology", "profile", "discount_profile", "usg", "xray", "ct", "mri", "ecg", "echo", "tmt", "eeg", "pft", "holter", "abp", "ncv_emg", "ssep", "evoked_potentiat", "sleep_study", "mammography", "dlco", "endoscopy", "colonoscopy"];
     const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
@@ -224,9 +219,33 @@
             return;
         }
 
-        // ==========================================
-        // CHECK STATUS BEFORE SHOWING FORM
-        // ==========================================
+        // Fetch se pehle hi function define kar diya taaki dono case me use ho sake
+        function buildRegistrationForm() {
+            document.getElementById("statusChecker").style.display = "none";
+            document.getElementById("mainFormContainer").style.display = "block";
+            
+            document.getElementById("lab_name").value = labName;
+
+            const servDiv = document.getElementById("servicesContainer");
+            servDiv.innerHTML = "";
+            services.forEach(srv => {
+                let displayName = srv.replace("_", " ").toUpperCase();
+                servDiv.innerHTML += `<label><input type="checkbox" id="srv_${srv}"> ${displayName}</label>`;
+            });
+
+            const timeDiv = document.getElementById("timingsContainer");
+            timeDiv.innerHTML = "";
+            days.forEach(day => {
+                let dayName = day.charAt(0).toUpperCase() + day.slice(1);
+                timeDiv.innerHTML += `
+                <div class="timing-row">
+                    <div class="timing-day">${dayName}</div>
+                    <div><input type="time" id="${day}_open" title="Opening Time"></div>
+                    <div><input type="time" id="${day}_close" title="Closing Time"></div>
+                </div>`;
+            });
+        }
+
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ action: "checkLabStatus", user_id: userId })
@@ -246,36 +265,14 @@
                 `;
             } 
             else {
-                // If NOT_FOUND, show the form
-                statusBox.style.display = "none";
-                document.getElementById("mainFormContainer").style.display = "block";
-                
-                // Initialize Form Elements
-                document.getElementById("lab_name").value = labName;
-
-                const servDiv = document.getElementById("servicesContainer");
-                services.forEach(srv => {
-                    let displayName = srv.replace("_", " ").toUpperCase();
-                    servDiv.innerHTML += `<label><input type="checkbox" id="srv_${srv}"> ${displayName}</label>`;
-                });
-
-                const timeDiv = document.getElementById("timingsContainer");
-                days.forEach(day => {
-                    let dayName = day.charAt(0).toUpperCase() + day.slice(1);
-                    timeDiv.innerHTML += `
-                    <div class="timing-row">
-                        <div class="timing-day">${dayName}</div>
-                        <div><input type="time" id="${day}_open" title="Opening Time"></div>
-                        <div><input type="time" id="${day}_close" title="Closing Time"></div>
-                    </div>`;
-                });
+                // Not found yaani naya user, build the form!
+                buildRegistrationForm();
             }
         })
         .catch(error => {
             console.error("Status Check Error:", error);
-            // Fallback: If API fails, show form just in case
-            document.getElementById("statusChecker").style.display = "none";
-            document.getElementById("mainFormContainer").style.display = "block";
+            // API fail hui toh bhi form dikhao
+            buildRegistrationForm();
         });
 
         document.getElementById("pincodeInput").addEventListener("keypress", function(e) { if (e.key === "Enter") { e.preventDefault(); addTag('pincode'); } });
@@ -412,7 +409,6 @@
         
         if(pincodeList.length === 0 || cityList.length === 0) { alert("Please add at least one Available Pincode and one Available City using the '+' or 'Auto-Fill' button."); return; }
 
-        // Timing Check: At least 1 day required
         let hasAtLeastOneTime = false;
         days.forEach(day => {
             let openTime = document.getElementById(day + "_open").value; let closeTime = document.getElementById(day + "_close").value;
@@ -422,7 +418,7 @@
         if (!hasAtLeastOneTime) { alert("Please provide Opening and Closing times for at least 1 day."); return; }
 
         const btn = document.getElementById("submitBtn");
-        btn.innerText = "Uploading Documents & Saving... Please wait"; btn.disabled = true;
+        btn.innerText = "Uploading Documents & Saving... Please wait (Do not close tab)"; btn.disabled = true;
 
         try {
             let available_pincodes_json = JSON.stringify(pincodeList); let available_cities_str = cityList.join(', ');
@@ -445,7 +441,7 @@
 
             if (resData.status === "success") {
                 alert("Success! Your profile has been submitted and is under process.");
-                window.location.reload(); // Reloads page to show "Under Review" screen
+                window.location.reload(); 
             } else {
                 alert("Server Error: " + resData.message); btn.innerText = "Submit Profile for Verification"; btn.disabled = false;
             }
