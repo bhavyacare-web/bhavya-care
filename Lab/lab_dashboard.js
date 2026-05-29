@@ -1,4 +1,5 @@
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
+// ✨ Corrected URL ✨
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWr17vpptoYrEG5HKPzPaadUp_0pVnN_10ZfJ7X_r/exec";
 
 let allOrders = [];
 let currentFilteredOrders = []; 
@@ -55,9 +56,27 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("startDate").value = today.toISOString().split('T')[0];
     }
 
-    fetchOrders(userId);
+    // ✨ NAYA LOGIC: Check Status before showing dashboard orders ✨
+    document.getElementById("ordersGrid").innerHTML = `<div style="text-align:center; padding:50px; width:100%; grid-column: 1 / -1; color:#64748b; font-weight:600;"><i class="fas fa-spinner fa-spin"></i> Verifying Lab Status...</div>`;
 
-    document.getElementById("payoutForm").addEventListener("submit", submitLabCommission);
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: "checkLabStatus", user_id: userId })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status !== "ACTIVE") {
+            // Agar active nahi hai, forcefully registration page par bhejo
+            window.location.href = "lab_registration.html"; 
+        } else {
+            fetchOrders(userId);
+            document.getElementById("payoutForm").addEventListener("submit", submitLabCommission);
+        }
+    })
+    .catch(err => {
+        showToast("Error verifying status. Retrying...", "error");
+        fetchOrders(userId); // Fallback to fetch orders if check fails
+    });
 });
 
 function fetchOrders(userId) {
