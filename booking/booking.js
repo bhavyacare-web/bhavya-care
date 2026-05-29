@@ -939,6 +939,13 @@ function autoAssignGroupLabs() {
             return;
         }
 
+        // ✨ NAYA LOGIC: Surprise package ko forcefully BhavyaCare Nodal Center me daalo ✨
+        if (item.service_type === "surprise_package" || String(item.service_id).startsWith("SURP-")) {
+            item.selected_lab_id = "BHAVYACARE-INTERNAL";
+            item.fulfillment = "center"; // Center ya Home jo aap chahein
+            return;
+        }
+
         let type = (item.service_type || "pathology").toLowerCase().trim();
         let allLabsForSvc = allActiveLabsList.filter(lab => lab.provided_services[type] === true);
 
@@ -978,12 +985,15 @@ function renderGroupedCart() {
     cart.forEach((item, index) => {
         let type = (item.service_type || "pathology").toLowerCase().trim();
         if (item.service_id === "VIP-FREE-001") { type = "vip sponsored"; }
+        
+        // ✨ Grouping logic for surprise package ✨
+        else if (type === "surprise_package" || String(item.service_id).startsWith("SURP-")) { type = "surprise package"; }
 
         if(!groupedCart[type]) {
             groupedCart[type] = {
                 items: [],
                 fulfillment: item.fulfillment || (homeServiceCategories.includes(type) || type === "vip sponsored" ? "home" : "center"),
-                selected_lab_id: item.service_id === "VIP-FREE-001" ? "BHAVYACARE-INTERNAL" : item.selected_lab_id
+                selected_lab_id: (item.service_id === "VIP-FREE-001" || type === "surprise package") ? "BHAVYACARE-INTERNAL" : item.selected_lab_id
             };
         }
         groupedCart[type].items.push({ ...item, originalIndex: index });
@@ -991,7 +1001,12 @@ function renderGroupedCart() {
 
     for (const [type, group] of Object.entries(groupedCart)) {
         let isVipGroup = type === "vip sponsored";
-        let groupTitle = isVipGroup ? '<i class="fas fa-gift" style="color:var(--warning);"></i> VIP Package' : `<i class="fas fa-notes-medical"></i> ${type} Booking`;
+        let isSurpriseGroup = type === "surprise package";
+        
+        let groupTitle = "";
+        if (isVipGroup) groupTitle = '<i class="fas fa-gift" style="color:var(--warning);"></i> VIP Package';
+        else if (isSurpriseGroup) groupTitle = '<i class="fas fa-magic" style="color:#d946ef;"></i> Surprise Package';
+        else groupTitle = `<i class="fas fa-notes-medical"></i> ${type} Booking`;
 
         html += `<div class="group-container">
                     <div class="group-header">${groupTitle}</div>`;
@@ -1010,21 +1025,28 @@ function renderGroupedCart() {
                 </div>`;
         });
 
-        if (isVipGroup) {
+        // ✨ INTERNAL HANDLING UI (For VIP & SURPRISE) ✨
+        if (isVipGroup || isSurpriseGroup) {
+            let badgeTxt = isVipGroup ? "SPONSORED" : "SURPRISE";
+            let infoTxt = isVipGroup ? "<i class='fas fa-check-circle' style='color:var(--success);'></i> Free Home Collection Included" : "<i class='fas fa-exclamation-circle' style='color:#b45309;'></i> This is a sponsored package and will be processed by our Nodal Center.";
+            let themeColor = isVipGroup ? "var(--primary)" : "#d946ef";
+            let themeBg = isVipGroup ? "var(--primary-soft)" : "#fdf4ff";
+            let themeBorder = isVipGroup ? "#bfdbfe" : "#f0abfc";
+
             html += `
-            <div style="background: var(--primary-soft); border: 1px solid #bfdbfe; border-radius: 12px; padding: 15px; margin-top: 15px;">
-                <p style="font-size:12px; font-weight:800; color:var(--primary); margin: 0 0 10px 0; text-transform:uppercase;"><i class="fas fa-star" style="color:var(--warning);"></i> Handled Internally</p>
-                <div class="lab-card selected" style="border-color: var(--primary); background: #ffffff; margin-bottom: 0; cursor: default;">
-                    <div class="lab-img" style="background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; width:50px; height:50px; border-radius:8px;">
+            <div style="background: ${themeBg}; border: 1px solid ${themeBorder}; border-radius: 12px; padding: 15px; margin-top: 15px;">
+                <p style="font-size:12px; font-weight:800; color:${themeColor}; margin: 0 0 10px 0; text-transform:uppercase;"><i class="fas fa-star" style="color:var(--warning);"></i> Handled Internally</p>
+                <div class="lab-card selected" style="border-color: ${themeColor}; background: #ffffff; margin-bottom: 0; cursor: default;">
+                    <div class="lab-img" style="background: ${themeColor}; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; width:50px; height:50px; border-radius:8px;">
                         <i class="fas fa-heartbeat"></i>
                     </div>
                     <div class="lab-info">
-                        <h4 class="lab-name" style="color: var(--primary);">BhavyaCare Nodal Center <span class="badge-small" style="background:var(--warning); color:white;">SPONSORED</span></h4>
-                        <p class="lab-addr" style="color: var(--text-muted);"><i class="fas fa-check-circle" style="color:var(--success);"></i> Free Home Collection Included</p>
+                        <h4 class="lab-name" style="color: ${themeColor};">BhavyaCare Nodal Center <span class="badge-small" style="background:var(--warning); color:white;">${badgeTxt}</span></h4>
+                        <p class="lab-addr" style="color: var(--text-muted);">${infoTxt}</p>
                     </div>
                 </div>
             </div></div>`;
-            continue; 
+            continue; // Skip standard lab rendering
         }
 
         let isHomeEligible = homeServiceCategories.includes(type);
@@ -1100,9 +1122,7 @@ function renderGroupedCart() {
     
     document.getElementById('cartItemsContainer').innerHTML = html;
     
-    // ✨ CROSS SELL LOGIC RENDER ✨
     renderCrossSell();
-
     renderLabTimeSelectors();
     calculateFinalBill(); 
 }
@@ -1701,11 +1721,25 @@ function checkSurpriseBannerStatus() {
     let banner = document.getElementById("surpriseOfferBanner");
     if (!banner) return;
     
+    // 1. Agar surprise package pehle se cart mein hai, toh banner hide kardo
     let hasSurprise = cart.some(item => item.service_type === "surprise_package" || String(item.service_id).startsWith("SURP-"));
     if (hasSurprise) {
         banner.style.display = "none";
-    } else {
+        return;
+    }
+
+    // 2. ✨ NAYA LOGIC: Check karo ki cart mein normal Blood Test ya Package hai ya nahi ✨
+    // Agar sirf MRI/XRAY/USG cart mein hai, toh banner nahi dikhega.
+    let eligibleTypes = ['pathology', 'test', 'blood test', 'profile', 'package', 'discount_profile'];
+    let hasEligibleService = cart.some(item => {
+        let type = String(item.service_type || '').toLowerCase().trim();
+        return eligibleTypes.includes(type);
+    });
+
+    if (hasEligibleService) {
         banner.style.display = "flex";
+    } else {
+        banner.style.display = "none";
     }
 }
 
