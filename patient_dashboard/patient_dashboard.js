@@ -713,3 +713,80 @@ window.copyDashReferralCode = function() {
         showToast("Referral code not available right now.", "error");
     }
 };
+// ==========================================
+// ✨ PREMIUM VIP CARD LOGIC ✨
+// ==========================================
+
+function generateAndShowVipCard() {
+    // 1. Pehle normal VIP details modal band kardo
+    document.getElementById('vip-details-modal').style.display = 'none';
+
+    // 2. Data uthao aur Card mein set karo
+    const name = localStorage.getItem("bhavya_name") || "VIP Patient";
+    const id = localStorage.getItem("bhavya_user_id") || "---";
+    const photoSrc = document.getElementById("editProfilePreview").src; // Jo profile section me photo hai
+    const refCode = document.getElementById("refCodeDisplay").innerText;
+
+    document.getElementById("vc-name").innerText = name;
+    document.getElementById("vc-id").innerText = "ID: " + id;
+    document.getElementById("vc-photo").src = photoSrc;
+    document.getElementById("vc-ref").innerText = (refCode === "Loading.." || refCode === "N/A") ? "NONE" : refCode;
+
+    // Dates from the existing VIP modal
+    document.getElementById("vc-start").innerText = document.getElementById("vd-start").innerText;
+    document.getElementById("vc-end").innerText = document.getElementById("vd-end").innerText;
+
+    // Members list
+    let memHtml = "";
+    let mem1 = document.getElementById("vd-mem1").innerText;
+    let mem2 = document.getElementById("vd-mem2").innerText;
+    let mem3 = document.getElementById("vd-mem3").innerText;
+
+    if (mem1) memHtml += `<p>${mem1.split('\n')[0]} <span>(Self)</span></p>`;
+    if (mem2) memHtml += `<p>${mem2.split('\n')[0]} <span>(Member)</span></p>`;
+    if (mem3) memHtml += `<p>${mem3.split('\n')[0]} <span>(Member)</span></p>`;
+
+    document.getElementById("vc-members-container").innerHTML = memHtml;
+
+    // 3. Naya VIP Card Modal show kardo
+    document.getElementById("vipCardModal").classList.add("active");
+}
+
+function closeVipCardModal() {
+    document.getElementById("vipCardModal").classList.remove("active");
+}
+
+function downloadVipCard() {
+    // html2canvas library ka use karke HTML div ko image banayenge
+    const cardElement = document.getElementById('vipCardElement');
+    const name = localStorage.getItem("bhavya_name") || "Patient";
+    const btn = document.querySelector(".btn-card-action:not(.close)");
+    
+    let originalText = btn.innerHTML;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving...`;
+    btn.disabled = true;
+
+    // Quality badhane ke liye scale = 3 use kiya hai
+    html2canvas(cardElement, { scale: 3, backgroundColor: null, useCORS: true }).then(canvas => {
+        // Image Data URL generate karna
+        let image = canvas.toDataURL("image/png");
+        
+        // Auto-download link banana
+        let link = document.createElement('a');
+        link.download = `BhavyaCare_VIP_Card_${name.replace(/\s+/g, '_')}.png`;
+        link.href = image;
+        link.click();
+
+        // Button wapas normal karna
+        btn.innerHTML = `<i class="fas fa-check"></i> Saved!`;
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            showToast("VIP Card Downloaded successfully!", "success");
+        }, 2000);
+    }).catch(err => {
+        showToast("Error saving card.", "error");
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
