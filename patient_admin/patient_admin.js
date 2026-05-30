@@ -251,10 +251,14 @@ async function fetchVipData() {
             if (result.data.length === 0) { tableBody.innerHTML = "<tr><td colspan='10' style='text-align:center;'>No VIP applications found.</td></tr>"; return; }
             result.data.forEach(vip => {
                 let statusBadge = ''; let actionBtn = '';
-                if (vip.status === 'inactive' || vip.status === '') {
+                
+                // ✨ FIX: Yahan 'pending' status ko bhi handle kiya gaya hai ✨
+                let safeStatus = vip.status ? vip.status.toLowerCase().trim() : 'pending';
+
+                if (safeStatus === 'pending' || safeStatus === 'inactive' || safeStatus === '') {
                     statusBadge = `<span class="badge-btn status-pending">Pending</span>`;
                     actionBtn = `<button class="badge-btn status-primary" onclick="openVipModal('${vip.row_index}', '${vip.user_id}')">Take Action</button>`;
-                } else if (vip.status === 'active') {
+                } else if (safeStatus === 'active') {
                     statusBadge = `<span class="badge-btn status-active">Active</span>`;
                     actionBtn = `<span style="font-size:12px; color:green; font-weight:bold;">Approved</span>`;
                 } else {
@@ -309,6 +313,13 @@ async function submitVipAction(statusValue) {
     const remarks = document.getElementById('modalRemarks').value.trim();
 
     if (!confirm(`Confirm mark as ${statusValue.toUpperCase()}?`)) return;
+    
+    // Agar reject kar rahe hain toh reason (remarks) likhna zaroori kar diya
+    if (statusValue === 'rejected' && remarks === "") {
+        alert("Please provide Admin Remarks (Reason) for rejection.");
+        return;
+    }
+
     closeModals(); document.getElementById("loader").style.display = "block";
 
     try {
@@ -428,7 +439,6 @@ function renderRxTable(data) {
     data.forEach((r) => {
         let statusColor = r.status === "Pending" ? "status-pending" : "status-active";
         
-        // Handling the typo issue robustly 
         let fileUrl = r.prescription_url || r.prescription_ur || ""; 
         let fileLink = fileUrl ? `<a href="${fileUrl}" target="_blank" style="color:#0056b3; font-weight:bold; text-decoration:none;"><i class="fas fa-file-pdf"></i> View File</a>` : "N/A";
         
