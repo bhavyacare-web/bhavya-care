@@ -1,4 +1,4 @@
-// ✨ Corrected URL ✨
+// ✨ Naya aur Sahi URL ✨
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWr17vpptoYrEG5HKPzPaadUp_0pVnN_10ZfJ7X_r/exec";
 
 let allOrders = [];
@@ -56,17 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("startDate").value = today.toISOString().split('T')[0];
     }
 
-    // ✨ NAYA LOGIC: Check Status before showing dashboard orders ✨
     document.getElementById("ordersGrid").innerHTML = `<div style="text-align:center; padding:50px; width:100%; grid-column: 1 / -1; color:#64748b; font-weight:600;"><i class="fas fa-spinner fa-spin"></i> Verifying Lab Status...</div>`;
 
+    // ✨ FIX: ADDED HEADERS TO BYPASS CORS ✨
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action: "checkLabStatus", user_id: userId })
     })
     .then(res => res.json())
     .then(data => {
         if (data.status !== "ACTIVE") {
-            // Agar active nahi hai, forcefully registration page par bhejo
             window.location.href = "lab_registration.html"; 
         } else {
             fetchOrders(userId);
@@ -75,13 +75,15 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => {
         showToast("Error verifying status. Retrying...", "error");
-        fetchOrders(userId); // Fallback to fetch orders if check fails
+        fetchOrders(userId); 
     });
 });
 
 function fetchOrders(userId) {
+    // ✨ FIX: ADDED HEADERS TO BYPASS CORS ✨
     fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action: "getLabDashboardOrders", user_id: userId })
     })
     .then(res => res.json())
@@ -149,7 +151,6 @@ function renderOrders() {
         let dtStr = formatDateTime(order.date);
         let slotStr = formatDateTime(order.slot);
 
-        // ✨ RATING DISPLAY LOGIC IN CARD ✨
         let ratingHtml = "";
         if(order.rating && order.rating !== "") {
             let stars = "";
@@ -193,7 +194,7 @@ function renderOrders() {
 function calculateLabStatsAndCharts() {
     let totalTests = 0, netEarnings = 0, totalDues = 0, verifyingDues = 0;
     let pending = 0, active = 0, completed = 0, cancelled = 0;
-    let totalStars = 0, ratedOrders = 0; // ✨ FOR RATING ✨
+    let totalStars = 0, ratedOrders = 0;
     let revByDate = {};
 
     allOrders.forEach(o => {
@@ -217,7 +218,6 @@ function calculateLabStatsAndCharts() {
             if(!revByDate[dStr]) revByDate[dStr] = 0;
             revByDate[dStr] += Number(o.lab_earning || 0);
             
-            // ✨ ADDING RATING STARS ✨
             if(o.rating && !isNaN(o.rating) && o.rating !== "") {
                 totalStars += Number(o.rating);
                 ratedOrders++;
@@ -231,7 +231,6 @@ function calculateLabStatsAndCharts() {
     safeSetText("statTests", totalTests);
     safeSetText("statEarnings", "₹" + netEarnings.toFixed(2));
 
-    // ✨ RATING UI UPDATE ✨
     let avg = ratedOrders > 0 ? (totalStars / ratedOrders).toFixed(1) : "0.0";
     safeSetText("statRating", avg);
     safeSetText("totalReviews", ratedOrders + " Patient Reviews");
