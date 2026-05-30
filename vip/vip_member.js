@@ -1,4 +1,4 @@
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec"; // <-- YAHAN APNA URL UPDATE KAREIN
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
 
 let baseVipPrice = 3000;
 let vipDiscount = 500;
@@ -29,7 +29,6 @@ async function initVipPage() {
                 document.getElementById("rejectedRemarks").innerText = statusData.data.remarks || "No reason provided.";
             } 
             else { 
-                // 🌟 Yahan pehle vip-form-container aata tha, ab hum pehle pincode dikhayenge
                 document.getElementById("vip-pincode-container").style.display = "block"; 
             }
         }
@@ -51,7 +50,6 @@ function showVipPincodeCheck() {
     document.getElementById("vip-pincode-container").style.display = "block";
 }
 
-// 🌟 Naya Function: Pincode Check karne ke liye 🌟
 async function verifyPincodeAndProceed() {
     const pincode = document.getElementById("checkPincodeInput").value.trim();
     if(!pincode || pincode.length !== 6) { 
@@ -146,24 +144,48 @@ if (payScreenshotInput) {
 
 async function submitVIP() {
     const payMode = document.querySelector('input[name="payMode"]:checked').value;
-    const screenshot = document.getElementById("payScreenshotBase64").value;
+    const screenshot = document.getElementById("payScreenshotBase64") ? document.getElementById("payScreenshotBase64").value : "";
 
     if (payMode === 'online' && !screenshot) { alert("Please upload the payment screenshot first."); return; }
 
     const btn = document.getElementById("btn-submit");
     btn.innerText = "Processing & Uploading..."; btn.disabled = true;
 
+    // Optional inputs check safe banaya
+    const m1 = document.getElementById("mem1Name") ? document.getElementById("mem1Name").value.trim() : "";
+    const m2 = document.getElementById("mem2Name") ? document.getElementById("mem2Name").value.trim() : "";
+    const m3 = document.getElementById("mem3Name") ? document.getElementById("mem3Name").value.trim() : "";
+    const payId = document.getElementById("payId") ? document.getElementById("payId").value.trim() : "";
+
     const payload = {
-        action: "submitVipApplication", user_id: localStorage.getItem("bhavya_user_id"),
-        member1_name: document.getElementById("mem1Name").value, member2_name: document.getElementById("mem2Name").value.trim(), member3_name: document.getElementById("mem3Name").value.trim(),
-        referrer_user_id: validReferrerId, payment_mode: payMode, payment_id: document.getElementById("payId").value.trim(), payment_screenshot: screenshot, amount_paid: finalAmount
+        action: "submitVipApplication", 
+        user_id: localStorage.getItem("bhavya_user_id"),
+        member1_name: m1, 
+        member2_name: m2, 
+        member3_name: m3,
+        referrer_user_id: validReferrerId, 
+        payment_mode: payMode, 
+        payment_id: payId, 
+        payment_screenshot: screenshot, 
+        amount_paid: finalAmount
     };
 
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
         const result = await response.json();
-        if (result.status === "success") { alert(result.message); window.location.reload(); } 
-        else { alert("Error: " + result.message); }
-    } catch (error) { alert("Submission failed. Check connection."); } 
-    finally { btn.innerText = "Submit Application"; btn.disabled = false; }
+        
+        if (result.status === "success") { 
+            alert(result.message); 
+            window.location.reload(); 
+        } else { 
+            alert("API Error: " + result.message); 
+            btn.innerText = "Submit Application"; 
+            btn.disabled = false;
+        }
+    } catch (error) { 
+        alert("Submission failed! Reason: " + error.message);
+        console.error(error);
+        btn.innerText = "Submit Application"; 
+        btn.disabled = false;
+    } 
 }
