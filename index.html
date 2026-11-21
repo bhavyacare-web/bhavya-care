@@ -895,8 +895,7 @@
             let resultsDiv = document.getElementById("homeSearchResults");
 
             if (homeAllServices.length === 0) {
-                resultsDiv.innerHTML = "<div style='padding:15px; text-align:center; color:#64748b; font-weight:600;'>Loading tests... <i class='fas fa-spinner fa-spin'></i></div>";
-                resultsDiv.style.display = "block";
+                resultsDiv.style.display = "none";
                 return;
             }
 
