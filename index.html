@@ -785,27 +785,37 @@
         let homeCurrentSubCat = 'all';
         let homePageCart = [];
 
-        document.addEventListener("DOMContentLoaded", () => {
+       document.addEventListener("DOMContentLoaded", () => {
             try {
                 let stored = localStorage.getItem('bhavyaCart');
                 if (stored) { homePageCart = JSON.parse(stored); }
+
+                let cachedServices = localStorage.getItem('bhavyaServicesCache');
+                if (cachedServices) {
+                    homeAllServices = JSON.parse(cachedServices);
+                    renderHomePackages();
+                }
             } catch (e) { homePageCart = []; }
 
             fetch(HOME_GAS_URL, { method: 'POST', body: JSON.stringify({ action: "getBookingData", user_id: "" }) })
             .then(r => r.json()).then(res => {
                 if(res.status === "success") {
                     homeAllServices = res.data.services || [];
+                    try { localStorage.setItem('bhavyaServicesCache', JSON.stringify(homeAllServices)); } catch (e) {}
                     renderHomePackages(); 
                     enableDragScroll('.slider-wrapper');
                     enableDragScroll('.home-cat-nav');
                     enableDragScroll('.compact-diag-grid'); 
                     enableDragScroll('#reviewsSlider');
+
+                    if (document.activeElement && document.activeElement.id === "globalSearchInput") {
+                        liveHomeSearch();
+                    }
                 }
             }).catch(e => console.log("Silent fetch error", e));
             
             updateHomeCartBadge(); 
         });
-
         function renderHomePackages(subCat = homeCurrentSubCat) {
             homeCurrentSubCat = subCat;
             const slider = document.getElementById("homePackageSlider");
