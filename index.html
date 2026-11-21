@@ -890,18 +890,53 @@
             slider.innerHTML = html;
         }
 
-        function liveHomeSearch() {
+       function liveHomeSearch() {
             let query = document.getElementById("globalSearchInput").value.toLowerCase().trim();
             let resultsDiv = document.getElementById("homeSearchResults");
-            if(query.length < 2) { resultsDiv.style.display = "none"; return; }
-            
-            let filtered = homeAllServices.filter(s => s.service_id !== "VIP-FREE-001" && (String(s.service_name).toLowerCase().includes(query) || String(s.service_category).toLowerCase().includes(query))).slice(0, 6); 
-            if(filtered.length === 0) {
+
+            if (homeAllServices.length === 0) {
+                resultsDiv.innerHTML = "<div style='padding:15px; text-align:center; color:#64748b; font-weight:600;'>Loading tests... <i class='fas fa-spinner fa-spin'></i></div>";
+                resultsDiv.style.display = "block";
+                return;
+            }
+
+            let filtered = [];
+            let headerHtml = "";
+
+            if (query.length === 0) {
+                // Yahan apne pasand ke important test ke naam daal sakte hain
+                const importantKeywords = ["cbc", "thyroid", "hba1c", "lipid", "lft", "kft", "vitamin d", "full body"];
+                
+                importantKeywords.forEach(k => {
+                    let match = homeAllServices.find(s => 
+                        s.service_id !== "VIP-FREE-001" &&
+                        !filtered.includes(s) &&
+                        String(s.service_name).toLowerCase().includes(k)
+                    );
+                    if (match) filtered.push(match);
+                });
+                filtered = filtered.slice(0, 6);
+
+                // Agar upar wale naam sheet mein match na hon to shuru ke 6 test dikha dega
+                if (filtered.length === 0) {
+                    filtered = homeAllServices.filter(s => s.service_id !== "VIP-FREE-001").slice(0, 6);
+                }
+
+                headerHtml = `<div style="padding:10px 20px; background:#f8fafc; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; border-bottom:1px solid #e2e8f0; border-top-left-radius:16px; border-top-right-radius:16px;">🔥 Popular Tests</div>`;
+            } else {
+                filtered = homeAllServices.filter(s => 
+                    s.service_id !== "VIP-FREE-001" && 
+                    (String(s.service_name).toLowerCase().includes(query) || String(s.service_category).toLowerCase().includes(query))
+                ).slice(0, 6);
+            }
+
+            if (filtered.length === 0) {
                 resultsDiv.innerHTML = "<div style='padding:15px; text-align:center; color:#64748b; font-weight:600;'><i class='fas fa-search' style='font-size:24px; color:#cbd5e1; margin-bottom:10px;'></i><br>No tests found</div>";
-                resultsDiv.style.display = "block"; return;
+                resultsDiv.style.display = "block";
+                return;
             }
             
-            let html = "";
+            let html = headerHtml;
             filtered.forEach(s => {
                 let price = homeFormatPrice(s.basic_price || s.service_price); 
                 let totalMrp = homeFormatPrice(s.service_price);
@@ -922,8 +957,15 @@
                 
                 html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px; border-bottom:1px solid #f1f5f9; transition:0.2s;"><div style="flex:1; padding-right:10px;"><div style="font-weight:800; font-size:14px; color:#0f172a; margin-bottom:4px;">${cleanName}</div><div style="font-size:13px; color:#10b981; font-weight:800;">₹${price} <del style="color:#94a3b8; font-size:11px; font-weight:600; margin-left:5px;">₹${totalMrp}</del></div></div>${actionBtnHtml}</div>`;
             });
-            html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="executeHomeSearch()">View all results <i class="fas fa-arrow-right"></i></div>`;
-            resultsDiv.innerHTML = html; resultsDiv.style.display = "block";
+
+            if (query.length === 0) {
+                html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="window.location.href='booking/booking.html'">View all tests & packages <i class="fas fa-arrow-right"></i></div>`;
+            } else {
+                html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="executeHomeSearch()">View all results <i class="fas fa-arrow-right"></i></div>`;
+            }
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = "block";
         }
 
         function updateHomeQty(id, change, price, name, type) {
@@ -938,8 +980,8 @@
             }
             localStorage.setItem('bhavyaCart', JSON.stringify(homePageCart));
             updateHomeCartBadge(); renderHomePackages(homeCurrentSubCat); 
-            let query = document.getElementById("globalSearchInput").value.trim();
-            if(query.length >= 2) { liveHomeSearch(); }
+            let resultsDiv = document.getElementById("homeSearchResults");
+            if (resultsDiv && resultsDiv.style.display === "block") { liveHomeSearch(); }
         }
 
         function updateHomeCartBadge() {
