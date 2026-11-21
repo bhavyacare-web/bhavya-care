@@ -24,7 +24,7 @@ try {
 // =======================================================
 
 // 👇 YE LINE SIRF EK BAAR HONI CHAHIYE 👇
-const GAS_URL = https://script.google.com/macros/s/AKfycbz_leCWfb7HNhh4BLGLMqhM8dF9jCKpvmqIZkijnzEJl__E3dZftwl3z-hZ7mmzYtrHSA/exec 
+const HOME_GAS_URL = "https://script.google.com/macros/s/AKfycbz_leCWfb7HNhh4BLGLMqhM8dF9jCKpvmqIZkijnzEJl__E3dZftwl3z-hZ7mmzYtrHSA/exec";
 
 // --- GLOBALS ---
 let cart = [];
