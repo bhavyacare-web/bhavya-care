@@ -149,19 +149,21 @@
         .slider-wrapper { max-width: 1020px; margin: 0 auto; overflow-x: auto; display: flex; gap: 20px; padding: 15px 10px 30px; cursor: grab; -webkit-overflow-scrolling: touch;}
         .slider-wrapper::-webkit-scrollbar { display: none; }
         
-        .pkg-card { min-width: 330px; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 15px; transition: 0.3s; user-select: none;}
+        .pkg-card { min-width: 330px; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 14px; transition: 0.3s; user-select: none;}
         .pkg-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(37,99,235,0.12); border-color: #93c5fd;}
         .pkg-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .pkg-cat-badge { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .pkg-test-count { background: #fef3c7; color: #d97706; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
+        .pkg-test-count { background: #fef3c7; color: #d97706; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
         .pkg-title { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px; line-height: 1.3;}
         .pkg-desc { background: #f8fafc; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; }
-        .pkg-desc ul { margin: 0; padding-left: 16px; font-size: 12px; color: #475569; font-weight: 600; line-height: 1.6;}
-        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 12px; display: inline-block;
-        .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 8px; }
-        .pkg-meta-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
+        .pkg-desc ul { margin: 0; padding-left: 18px; font-size: 14px; color: #334155; font-weight: 600; line-height: 1.7;}
+        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: 12px; display: inline-block; margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd;}
+
+        .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
+        .pkg-meta-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 6px; line-height: 1.2; }
         .pkg-meta-fasting { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
-        .pkg-meta-report { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd;}
+        .pkg-meta-report { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
         .pkg-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 10px;}
         .pkg-price-area { display: flex; flex-direction: column; gap: 2px;}
         .pkg-total-mrp { font-size: 12px; color: #94a3b8; font-weight: 600;}
@@ -176,7 +178,6 @@
         .qty-control button { background: var(--primary-light); color: var(--primary); border: none; padding: 10px 14px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s;}
         .qty-control button:hover { background: var(--primary); color: white;}
         .qty-text { font-size: 15px; font-weight: 800; width: 35px; text-align: center; color: var(--text-main);}
-
         /* 🛠️ HOW IT WORKS */
         .hiw-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .hiw-step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 40px 20px; background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
@@ -923,12 +924,12 @@
                     }
                 }
 
-                html += `
+               html += `
                 <div class="pkg-card">
                     <div class="pkg-header-row"><span class="pkg-cat-badge">${cleanCat}</span>${pkg.number_of_test ? `<span class="pkg-test-count"><i class="fas fa-microscope"></i> ${pkg.number_of_test} Tests</span>` : ''}</div>
-                    <h3 class="pkg-title">${cleanName} <i class="fas fa-info-circle" style="color:var(--primary); font-size:14px; cursor:pointer;" onclick="openHomeInfoModal('${s_id}')" title="Click for details"></i></h3>
-                    ${metaHtml}
+                    <h3 class="pkg-title">${cleanName} <i class="fas fa-info-circle" style="color:var(--primary); font-size:15px; cursor:pointer;" onclick="openHomeInfoModal('${s_id}')" title="Click for details"></i></h3>
                     ${descPreviewHtml}
+                    ${metaHtml}
                     <div class="pkg-footer">
                         <div class="pkg-price-area">
                             <span class="pkg-total-mrp">Total: <del>₹${totalMrp}</del></span>
