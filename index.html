@@ -157,7 +157,11 @@
         .pkg-title { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px; line-height: 1.3;}
         .pkg-desc { background: #f8fafc; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; }
         .pkg-desc ul { margin: 0; padding-left: 16px; font-size: 12px; color: #475569; font-weight: 600; line-height: 1.6;}
-        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 12px; display: inline-block; margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd;}
+        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 12px; display: inline-block;
+        .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .pkg-meta-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
+        .pkg-meta-fasting { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+        .pkg-meta-report { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd;}
         .pkg-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 10px;}
         .pkg-price-area { display: flex; flex-direction: column; gap: 2px;}
         .pkg-total-mrp { font-size: 12px; color: #94a3b8; font-weight: 600;}
@@ -816,13 +820,26 @@
             
             updateHomeCartBadge(); 
         });
+       function getPkgField(obj, keywords) {
+            if (!obj) return "";
+            for (const key of Object.keys(obj)) {
+                const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (keywords.some(kw => normKey.includes(kw))) {
+                    const val = String(obj[key] || '').trim();
+                    if (val !== "" && val.toLowerCase() !== "undefined" && val.toLowerCase() !== "null") {
+                        return val;
+                    }
+                }
+            }
+            return "";
+        }
+
         function renderHomePackages(subCat = homeCurrentSubCat) {
             homeCurrentSubCat = subCat;
             const slider = document.getElementById("homePackageSlider");
             const nav = document.getElementById("homePackageCategories");
             if(!slider || !nav) return;
 
-            // ✨ SLICE (0, 10) REMOVED - AB SAARE PACKAGES SHOW HONGE ✨
             let packages = homeAllServices.filter(s => 
                 s.service_id !== "VIP-FREE-001" && 
                 (String(s.service_type).trim().toLowerCase() === 'profile' || 
@@ -871,13 +888,37 @@
                     actionBtnHtml = `<button class="btn-add-cart" onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')">ADD +</button>`;
                 }
 
+                // Fasting (Column L) aur Reporting Time (Column N)
+                let fastingVal = getPkgField(pkg, ['fasting', 'emptystomach']);
+                let reportVal = getPkgField(pkg, ['reportingtime', 'reporttime']);
+                let fastingLabel = fastingVal
+                    ? (fastingVal.toLowerCase().includes('fast') || fastingVal.toLowerCase().includes('empty') ? fastingVal : `Fasting: ${fastingVal}`)
+                    : "";
+                let reportLabel = reportVal
+                    ? (reportVal.toLowerCase().includes('report') ? reportVal : `Report: ${reportVal}`)
+                    : "";
+
+                let metaHtml = "";
+                if (fastingLabel || reportLabel) {
+                    metaHtml = `<div class="pkg-meta-row">
+                        ${fastingLabel ? `<span class="pkg-meta-badge pkg-meta-fasting"><i class="fas fa-utensils"></i> ${fastingLabel}</span>` : ''}
+                        ${reportLabel ? `<span class="pkg-meta-badge pkg-meta-report"><i class="fas fa-clock"></i> ${reportLabel}</span>` : ''}
+                    </div>`;
+                }
+
+                // Upar ke 2 aur niche ke 2 test show karne ka logic
                 let descRaw = String(pkg.description || '');
                 let descPreviewHtml = "";
                 if (descRaw.trim() !== "") {
-                    let items = descRaw.split(/<br>|\n/).filter(i => i.trim() !== '');
+                    let items = descRaw.split(/<br\s*\/?>|\n/i).filter(i => i.trim() !== '');
+                    if (items.length === 1 && descRaw.includes(',')) {
+                        items = descRaw.split(',').filter(i => i.trim() !== '');
+                    }
                     if (items.length > 0) {
-                        let previewItems = items.slice(0, 2).map(i => homeFormatText(i.trim())); 
-                        let moreText = pkg.number_of_test ? `+ ${pkg.number_of_test} Parameters` : (items.length > 2 ? "+ More Details" : "");
+                        let previewItems = items.length <= 4
+                            ? items.map(i => homeFormatText(i.trim()))
+                            : [...items.slice(0, 2), ...items.slice(-2)].map(i => homeFormatText(i.trim()));
+                        let moreText = pkg.number_of_test ? `+ ${pkg.number_of_test} Parameters` : (items.length > 4 ? "+ More Details" : "");
                         descPreviewHtml = `<div class="pkg-desc"><ul>${previewItems.map(i => `<li>${i}</li>`).join('')}</ul>${moreText ? `<div class="pkg-param-pill" onclick="openHomeInfoModal('${s_id}')">${moreText}</div>` : ''}</div>`;
                     }
                 }
@@ -886,6 +927,7 @@
                 <div class="pkg-card">
                     <div class="pkg-header-row"><span class="pkg-cat-badge">${cleanCat}</span>${pkg.number_of_test ? `<span class="pkg-test-count"><i class="fas fa-microscope"></i> ${pkg.number_of_test} Tests</span>` : ''}</div>
                     <h3 class="pkg-title">${cleanName} <i class="fas fa-info-circle" style="color:var(--primary); font-size:14px; cursor:pointer;" onclick="openHomeInfoModal('${s_id}')" title="Click for details"></i></h3>
+                    ${metaHtml}
                     ${descPreviewHtml}
                     <div class="pkg-footer">
                         <div class="pkg-price-area">
@@ -899,7 +941,6 @@
             });
             slider.innerHTML = html;
         }
-
        function liveHomeSearch() {
             let query = document.getElementById("globalSearchInput").value.toLowerCase().trim();
             let resultsDiv = document.getElementById("homeSearchResults");
