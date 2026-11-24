@@ -22,7 +22,7 @@
     }
 
     body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; padding-bottom: 90px; color: var(--text-main); }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
+- { box-sizing: border-box; -webkit-tap-highlight-color: transparent;}
     
     /* 🌟 UNIFIED HEADER 🌟 */
     .sticky-top-wrapper { position: sticky; top: 0; z-index: 1000; width: 100%; display: flex; flex-direction: column; }
@@ -175,7 +175,7 @@
     .surprise-banner { background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%); color: white; padding: 16px; border-radius: 16px; margin-bottom: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); transition: 0.3s; border: 1px solid #c084fc;}
     .surprise-banner:active { transform: scale(0.98); }
     .scratch-card-container { position: relative; width: 100%; height: 220px; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); margin-top: 15px;}
-    .scratch-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #f0fdf4; border: 2px dashed #22c55e; border-radius: 16px;}
+    .scratch-result { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #f0fdf4; border: 2px dashed #22c5egreen; border-radius: 16px;}
     #scratchCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer; touch-action: none; border-radius: 16px;}
 
     @media (min-width: 768px) {
@@ -278,6 +278,10 @@
                     <input type="tel" id="uMobile" class="form-input" placeholder="10-digit Mobile Number">
                   </div>
                   <div class="input-group">
+                    <label class="input-label">Email Address (For Confirmation & Reports)</label>
+                    <input type="email" id="uEmail" class="form-input" placeholder="e.g. name@gmail.com">
+                  </div>
+                  <div class="input-group">
                     <label class="input-label">City/Locality <span style="color:var(--danger)">*</span></label>
                     <input type="text" id="uCity" class="form-input" placeholder="e.g. Delhi">
                   </div>
@@ -298,6 +302,7 @@
                   <div style="font-size: 14px; line-height: 1.6;">
                     <strong id="sumName" style="font-size: 16px; color: var(--text-main);"></strong><br>
                     <span id="sumMobile" style="color: var(--text-main); font-weight: 600;"></span><br>
+                    <span id="sumEmail" style="color: var(--primary); font-weight: 600;"></span><br>
                     <span id="sumCityPin" style="color: var(--text-main); font-weight: 600;"></span><br>
                     <span id="sumAddress" style="color: var(--text-muted);"></span>
                   </div>
@@ -558,8 +563,6 @@
       </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
