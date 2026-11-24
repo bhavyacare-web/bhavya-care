@@ -32,15 +32,11 @@ let currentView = 'booking';
 const categoryConfig = {
     'pathology': { name: 'Test', icon: '🩸' },
     'profile':   { name: 'Package', icon: '🩺' }, 
-    'usg':       { name: 'Ultrasound', icon: '🖥️' },
-    'xray':      { name: 'X-Ray', icon: '🩻' },
-    'ct':        { name: 'CT Scan', icon: '☢️' },
-    'mri':       { name: 'MRI', icon: '🧠' }, 
-    'ecg':       { name: 'ECG', icon: '❤️' },
-    'echo':      { name: 'ECHO', icon: '💓' }
+    'pft':       { name: 'PFT', icon: '🫁' },
+    'ecg':       { name: 'ECG', icon: '❤️' }
 };
 const defaultIcon = '🧪';
-const mainCategoryKeys = ['pathology', 'profile', 'usg', 'xray', 'ct', 'mri', 'ecg', 'echo'];
+const mainCategoryKeys = ['pathology', 'profile'];
 const homeServiceCategories = ['pathology', 'profile', 'package', 'ecg', 'blood test'];
 
 let isVipPkgPending = false; // ✨ NAYA VARIABLE ADD KIYA
