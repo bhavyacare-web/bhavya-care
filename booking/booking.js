@@ -25,7 +25,37 @@ try {
     console.error("Firebase init error:", e);
 }
 
-// Firebase Auth ready hone ka wait karega taaki permission error na aaye
+// =======================================================
+// AUTOMATIC EMAIL SYSTEM (Zoho SMTP via Firebase Extension)
+// =======================================================
+const EMAIL_SENDERS = {
+    contact: "Bhavya Diagnostics <contact@bhavyadiagnostics.com>",
+    booking: "Bhavya Diagnostics Booking <booking@bhavyadiagnostics.com>",
+    report:  "Bhavya Diagnostics Reports <report@bhavyadiagnostics.com>"
+};
+
+async function sendAutoEmail({ type = "contact", to, subject, html, replyTo = "contact@bhavyadiagnostics.com", attachments = [] }) {
+    if (!db || !to) return;
+    const recipients = (Array.isArray(to) ? to : [to]).filter(e => e && String(e).includes("@"));
+    if (recipients.length === 0) return;
+
+    const mailDoc = {
+        from: EMAIL_SENDERS[type] || EMAIL_SENDERS.contact,
+        replyTo: replyTo,
+        to: recipients,
+        message: {
+            subject: subject,
+            html: html
+        }
+    };
+
+    if (attachments.length > 0) {
+        mailDoc.message.attachments = attachments;
+    }
+
+    return db.collection("mail").add(mailDoc).catch(err => console.error("Auto email error:", err));
+}
+
 function getAuthUser() {
     return new Promise((resolve) => {
         if (typeof firebase === 'undefined' || !firebase.auth) return resolve(null);
@@ -41,7 +71,6 @@ function getAuthUser() {
     });
 }
 
-// Patient details Firestore ke 'patients' collection mein save/update karega
 async function savePatientToFirebase(profileObj) {
     if (!db) return;
     const authUser = await getAuthUser();
@@ -58,7 +87,7 @@ async function savePatientToFirebase(profileObj) {
 // MASTER FRONTEND JS (booking.js & cart.js UNIFIED SPA)
 // =======================================================
 
-// 👇 YE LINE SIRF EK BAAR HONI CHAHIYE 👇
+// Public catalog & lab list ke liye
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
 
 // --- GLOBALS ---
@@ -74,11 +103,12 @@ const defaultIcon = '🧪';
 const mainCategoryKeys = ['pathology', 'profile', 'pft', 'ecg'];
 const homeServiceCategories = ['pathology', 'profile', 'package', 'ecg', 'blood test'];
 
-let isVipPkgPending = false; // ✨ NAYA VARIABLE ADD KIYA
+let isVipPkgPending = false;
 let allServices = [];
 let userPlanStatus = "basic"; 
 let currentCategory = 'profile'; 
 let currentSubCategory = 'all'; 
+let welcomeEmailAlreadySent = false;
 
 // Load cart aggressively
 try {
@@ -98,7 +128,7 @@ let baseVipPrice = 3000;
 let vipDiscount = 500;
 let validReferrerId = "";
 
-let bookingData = { name: "", mobile: "", city: "", pincode: "", address: "", isVip: false };
+let bookingData = { name: "", mobile: "", email: "", city: "", pincode: "", address: "", isVip: false };
 let allActiveLabsList = []; 
 let cartConfirmationResult; 
 let appRules = {};
@@ -144,7 +174,6 @@ function fetchBookingData() {
     const cachedServices = localStorage.getItem("bhavya_services_cache");
     const cachedPlan = localStorage.getItem("bhavya_plan_cache");
     
-    // ✨ NAYA LOGIC: Data load hone ke baad URL check karega ✨
     function checkUrlAndRender() {
         const urlParams = new URLSearchParams(window.location.search);
         const searchParam = urlParams.get('search');
@@ -153,7 +182,6 @@ function fetchBookingData() {
         if (viewParam === 'cart') {
             toggleView('cart');
         } else if (searchParam) {
-            // Search input me text daalo aur bina ruke search kar do
             document.getElementById("searchInput").value = searchParam;
             renderServices(searchParam.toLowerCase());
         } else {
@@ -166,7 +194,7 @@ function fetchBookingData() {
         userPlanStatus = cachedPlan || "basic";
         handleBannerDisplay();
         renderCategories();
-        checkUrlAndRender(); // Cache se mila toh turant search karega
+        checkUrlAndRender();
     }
 
     fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: "getBookingData", user_id: userId }) })
@@ -180,7 +208,6 @@ function fetchBookingData() {
             
             let claimBanner = document.getElementById("vipClaimBanner");
             if (claimBanner) {
-                // Sirf tab dikhao jab View 'booking' ho aur VIP pending ho
                 if (isVipPkgPending && userPlanStatus === "vip" && currentView === 'booking') {
                     claimBanner.style.display = "block";
                 } else {
@@ -195,7 +222,6 @@ function fetchBookingData() {
             renderCategories();
             
             if (!cachedServices) { 
-                // Naya data aaya toh search karega
                 checkUrlAndRender(); 
             }
         }
@@ -309,7 +335,6 @@ function handleAutoSuggest() {
     let suggestBox = document.getElementById("autoSuggestBox");
     if(query.length < 2) { suggestBox.style.display = "none"; return; }
     
-    // ✨ HIDDEN SURPRISE LOGIC INCLUDED HERE ✨
     let matches = allServices.filter(s => 
         s.service_name.toLowerCase().includes(query) && 
         s.service_id !== "VIP-FREE-001" && 
@@ -334,7 +359,6 @@ function renderServices(searchQuery = "") {
     const subContainer = document.getElementById("subCategoryContainer");
     if(!container) return;
     
-    // ✨ HIDDEN SURPRISE LOGIC INCLUDED HERE ✨
     let displayServices = allServices.filter(s => 
         s.service_id !== "VIP-FREE-001" && 
         String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') !== "surprise package"
@@ -401,11 +425,8 @@ function renderServices(searchQuery = "") {
         }
 
         let sTypeLowerCase = String(service.service_type || '').toLowerCase().trim();
-        
-        // ✨ YAHAN UPDATE HUA HAI: discount_profile ko bhi premium card design milega ✨
         let isPackageOrProfile = (sTypeLowerCase === 'profile' || sTypeLowerCase === 'package' || sTypeLowerCase === 'discount_profile');
 
-        // 🌟 UPDATED IF-ELSE CONDITION FOR INFO ICON 🌟
         let infoIconHtml = "";
         let descText = service.description ? String(service.description).trim() : "";
 
@@ -417,7 +438,6 @@ function renderServices(searchQuery = "") {
             }
         }
 
-        // 🌟 FASTING WARNING LOGIC 🌟
         let fastingHtml = "";
         let fastData = service.fasting ? service.fasting.toLowerCase() : "";
         if (fastData.includes("yes") || fastData.includes("8") || fastData.includes("10") || fastData.includes("12")) {
@@ -455,7 +475,7 @@ function updateQty(id, change, price, name, type) {
         if (cart[index].qty <= 0) cart.splice(index, 1); 
     } else if (change > 0) { 
         cart.push({ service_id: id, service_name: name, price: price, qty: 1, service_type: type }); 
-        showToast("Item added to cart!", "success"); // ✨ ADD TO CART TOAST ✨
+        showToast("Item added to cart!", "success");
     }
     
     localStorage.setItem('bhavyaCart', JSON.stringify(cart));
@@ -472,19 +492,15 @@ function updateCartUI() {
         if(cartBar) cartBar.classList.add("visible");
     } else { if(cartBar) cartBar.classList.remove("visible"); }
     
-    // ✨ Call the surprise banner check here
     checkSurpriseBannerStatus();
 }
 
-// 🌟 EMPTY CART UI & BANNER TOGGLE IN SPA 🌟
 function toggleView(view) {
     let claimBanner = document.getElementById("vipClaimBanner");
     let warningBanner = document.getElementById("pendingWarningBanner");
 
     if (view === 'cart') {
         currentView = 'cart';
-        
-        // ✨ CART KHOLE TOH DONO BANNERS HIDE KAR DO ✨
         if (claimBanner) claimBanner.style.display = "none";
         if (warningBanner) warningBanner.style.display = "none";
         
@@ -505,8 +521,6 @@ function toggleView(view) {
         }
     } else {
         currentView = 'booking';
-        
-        // ✨ BOOKING PAGE PAR WAPAS AAYE TOH ELIGIBLE BANNERS SHOW KAR DO ✨
         if (claimBanner && userPlanStatus === "vip" && isVipPkgPending) {
             claimBanner.style.display = "block";
         }
@@ -559,7 +573,7 @@ function openVipFormModal() {
 }
 function closeVipFormModal() { document.getElementById("vipFormModal").classList.remove("active"); }
 
-// ✨ HISTORY WALE LOGIN MODAL KE FUNCTIONS ✨
+// ✨ LOGIN MODAL KE FUNCTIONS (100% Firebase) ✨
 let loginConfirmationResult;
 function openPatientLogin() {
     document.getElementById("login-section").classList.add("active");
@@ -595,33 +609,26 @@ function verifyOTP() {
     const otp = document.getElementById("otpCode").value.trim();
     if(otp.length !== 6) return alert("Enter valid 6-digit OTP");
 
-    loginConfirmationResult.confirm(otp).then((result) => {
+    loginConfirmationResult.confirm(otp).then(async (result) => {
         let user = result.user;
-        const payload = { action: "login", uid: user.uid, mobile: user.phoneNumber, role: "patient", name: document.getElementById("userName").value.trim() };
-        
-        fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) })
-        .then(res => res.json())
-        .then(res => {
-            if(res.status === "success") {
-                const finalUserId = res.user_id || (res.data ? res.data.user_id : null); 
-                localStorage.setItem("bhavya_uid", user.uid); 
-                localStorage.setItem("bhavya_mobile", user.phoneNumber); 
-                localStorage.setItem("bhavya_role", res.role || "patient"); 
-                localStorage.setItem("bhavya_user_id", finalUserId); 
-                localStorage.setItem("bhavya_name", document.getElementById("userName").value.trim());
+        const patientName = document.getElementById("userName").value.trim();
 
-                savePatientToFirebase({
-                    user_id: finalUserId,
-                    name: document.getElementById("userName").value.trim(),
-                    mobile: user.phoneNumber,
-                    role: res.role || "patient"
-                });
+        localStorage.setItem("bhavya_uid", user.uid);
+        localStorage.setItem("bhavya_mobile", user.phoneNumber);
+        localStorage.setItem("bhavya_role", "patient");
+        localStorage.setItem("bhavya_user_id", user.uid);
+        localStorage.setItem("bhavya_name", patientName);
 
-                closeLoginPopup();
-                showToast("Login Successful!", "success");
-                // Watcher chal raha hai, wo khud VIP form khol dega
-            }
+        await savePatientToFirebase({
+            user_id: user.uid,
+            name: patientName,
+            mobile: user.phoneNumber,
+            role: "patient",
+            plan: "basic"
         });
+
+        closeLoginPopup();
+        showToast("Login Successful!", "success");
     }).catch((error) => { alert("Invalid OTP."); });
 }
 
@@ -785,7 +792,7 @@ function handleHomeNavigation() {
 }
 
 // =======================================================
-// 🌟 CART & CHECKOUT PAGE LOGIC 🌟
+// 🌟 CART & CHECKOUT PAGE LOGIC (100% Firebase Patient Data) 🌟
 // =======================================================
 function initCartPage() {
     let s2 = document.getElementById('step2-card');
@@ -804,7 +811,6 @@ function initCartPage() {
         let loader = document.getElementById('loadingOverlay');
         if(loader) loader.style.display = 'none'; 
         
-        // ✨ FIX YAHAN HUA HAI: Agar user naya hai, toh skeleton hatao aur khali form dikhao ✨
         let skel = document.getElementById('checkoutFormSkeleton');
         let form = document.getElementById('actualCheckoutForm');
         if(skel) skel.style.display = 'none';
@@ -813,43 +819,56 @@ function initCartPage() {
 }
 
 async function fetchProfile(userId) {
-    // ✨ Skeleton Loader Dikhana Shuru Karein ✨
     let skel = document.getElementById('checkoutFormSkeleton');
     let form = document.getElementById('actualCheckoutForm');
     if(skel) skel.style.display = 'block';
     if(form) form.style.display = 'none';
 
-    let loadedFromFirebase = false;
-
-    // 1. Pehle Firebase se instant auto-fill try karo
     if (db) {
         try {
             const authUser = await getAuthUser();
             if (authUser) {
                 const doc = await db.collection("patients").doc(authUser.uid).get();
                 if (doc.exists) {
-                    const fbData = doc.data();
-                    let uMob = document.getElementById('uMobile');
-                    let uPin = document.getElementById('uPincode');
-                    let uAddr = document.getElementById('uAddress');
-                    let uCity = document.getElementById('uCity');
-                    let nameBox = document.getElementById('nameInputBox');
+                    const data = doc.data();
+                    bookingData.mobile = String(data.mobile || "").replace(/^\+91/, '');
+                    bookingData.email = data.email || "";
+                    bookingData.isVip = (data.plan === "vip" || data.isVip === true);
+                    welcomeEmailAlreadySent = !!data.welcome_email_sent;
 
-                    if (uMob && fbData.mobile) {
-                        bookingData.mobile = String(fbData.mobile).replace(/^\+91/, '');
+                    let uMob = document.getElementById('uMobile');
+                    if (uMob && bookingData.mobile) {
                         uMob.value = bookingData.mobile;
                         uMob.setAttribute("readonly", true);
                     }
-                    if (uPin && fbData.pincode) uPin.value = fbData.pincode;
-                    if (uAddr && fbData.address) uAddr.value = fbData.address;
-                    if (uCity && fbData.city) uCity.value = fbData.city;
-                    if (nameBox && fbData.name) {
-                        nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${fbData.name}" placeholder="Patient Name">`;
+                    let uEmail = document.getElementById('uEmail');
+                    if (uEmail && data.email) uEmail.value = data.email;
+
+                    let uPin = document.getElementById('uPincode');
+                    if (uPin && data.pincode) uPin.value = data.pincode;
+
+                    let uAddr = document.getElementById('uAddress');
+                    if (uAddr && data.address) uAddr.value = data.address;
+
+                    let uCity = document.getElementById('uCity');
+                    if (uCity && data.city) uCity.value = data.city;
+
+                    const nameBox = document.getElementById('nameInputBox');
+                    if (nameBox) {
+                        if (bookingData.isVip && Array.isArray(data.vipMembers) && data.vipMembers.length > 0) {
+                            let badge = document.getElementById('vipBadge');
+                            if(badge) badge.innerHTML = '<span style="background:var(--warning); color:white; font-size:10px; padding:4px 8px; border-radius:12px; margin-left: 10px;"><i class="fas fa-crown"></i> VIP Active</span>';
+                            let opts = data.vipMembers.map(m => `<option value="${m}">${m}</option>`).join('');
+                            nameBox.innerHTML = `<select id="uName" class="form-input">${opts}</select>`;
+                        } else {
+                            nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${data.name || ''}" placeholder="Patient Name">`;
+                        }
                     }
 
-                    loadedFromFirebase = true;
-                    if(skel) skel.style.display = 'none';
-                    if(form) form.style.display = 'block';
+                    userWalletBalance = Number(data.wallet_balance || 0);
+                    let walletTxt = document.getElementById('walletBalTxt');
+                    if (walletTxt) walletTxt.innerText = userWalletBalance;
+                    calculateFinalBill();
                 }
             }
         } catch (fbErr) {
@@ -857,87 +876,17 @@ async function fetchProfile(userId) {
         }
     }
 
-    // 2. Background mein GAS se VIP status, VIP members aur fallback profile laao
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getPatientCheckoutProfile", user_id: userId }) })
-    .then(res => res.json())
-    .then(res => {
-        let loader = document.getElementById('loadingOverlay');
-        if(loader) loader.style.display = 'none';
-
-        if(res.status === "success") {
-            const data = res.data;
-            bookingData.mobile = data.mobile;
-            bookingData.isVip = data.isVip; 
-            
-            let uMob = document.getElementById('uMobile');
-            if(uMob && !uMob.value && data.mobile) { uMob.value = data.mobile; uMob.setAttribute("readonly", true); }
-            
-            // ✨ Pincode Auto-fill
-            let uPin = document.getElementById('uPincode');
-            if(uPin && !uPin.value && data.pincode) uPin.value = data.pincode;
-            
-            // ✨ Address Auto-fill
-            let uAddr = document.getElementById('uAddress');
-            if(uAddr && !uAddr.value && data.address) uAddr.value = data.address;
-
-            // ✨ NAYA: City Auto-fill
-            let uCity = document.getElementById('uCity');
-            if(uCity && !uCity.value && data.city) uCity.value = data.city;
-
-            const nameBox = document.getElementById('nameInputBox');
-            if(nameBox) {
-                if(data.isVip && data.vipMembers && data.vipMembers.length > 0) {
-                    let badge = document.getElementById('vipBadge');
-                    if(badge) badge.innerHTML = '<span style="background:var(--warning); color:white; font-size:10px; padding:4px 8px; border-radius:12px; margin-left: 10px;"><i class="fas fa-crown"></i> VIP Active</span>';
-                    let opts = data.vipMembers.map(m => `<option value="${m}">${m}</option>`).join('');
-                    nameBox.innerHTML = `<select id="uName" class="form-input">${opts}</select>`;
-                } else if (!loadedFromFirebase) {
-                    nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${data.name}" placeholder="Patient Name">`;
-                }
-            }
-
-            // Agar Firebase mein pehle se record nahi tha toh Sheet ka data Firebase mein sync kar do
-            if (!loadedFromFirebase) {
-                savePatientToFirebase({
-                    user_id: userId,
-                    name: data.name || "",
-                    mobile: data.mobile || "",
-                    city: data.city || "",
-                    pincode: data.pincode || "",
-                    address: data.address || "",
-                    isVip: !!data.isVip
-                });
-            }
-            
-            // ✨ Data Load hone ke baad Skeleton chupayein, Asli form dikhayein ✨
-            if(skel) skel.style.display = 'none';
-            if(form) form.style.display = 'block';
-        }
-    }).catch(e => { 
-        let loader = document.getElementById('loadingOverlay');
-        if(loader) loader.style.display = 'none'; 
-        
-        // ✨ Error aane par bhi Skeleton hata de, taki form khali dikhe aur patient fill kar sake ✨
-        if(skel) skel.style.display = 'none';
-        if(form) form.style.display = 'block';
-    });
-
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getCartRulesAndWallet", user_id: userId }) })
-    .then(res => res.json())
-    .then(res => {
-        if(res.status === "success") {
-            appRules = res.data.rules || {};
-            userWalletBalance = res.data.wallet_balance || 0;
-            let walletTxt = document.getElementById('walletBalTxt');
-            if(walletTxt) walletTxt.innerText = userWalletBalance;
-            calculateFinalBill(); 
-        }
-    });
+    let loader = document.getElementById('loadingOverlay');
+    if (loader) loader.style.display = 'none';
+    if (skel) skel.style.display = 'none';
+    if (form) form.style.display = 'block';
 }
 
-function savePatientInfo() {
+async function savePatientInfo() {
     const name = document.getElementById('uName').value.trim();
     const mobile = document.getElementById('uMobile').value.trim();
+    const emailEl = document.getElementById('uEmail');
+    const email = emailEl ? emailEl.value.trim().toLowerCase() : "";
     const city = document.getElementById('uCity').value.trim();
     const pin = document.getElementById('uPincode').value.trim();
     const addr = document.getElementById('uAddress').value.trim();
@@ -946,18 +895,39 @@ function savePatientInfo() {
 
     bookingData.name = name;
     bookingData.mobile = mobile;
+    bookingData.email = email;
     bookingData.city = city.toLowerCase();
     bookingData.pincode = pin;
     bookingData.address = addr;
 
-    savePatientToFirebase({
+    const updateObj = {
         user_id: localStorage.getItem("bhavya_user_id") || "",
         name: name,
         mobile: mobile,
+        email: email,
         city: city,
         pincode: pin,
         address: addr
-    });
+    };
+
+    // Pehli baar email milne par contact@bhavyadiagnostics.com se Welcome Email bhejein
+    if (email && email.includes("@") && !welcomeEmailAlreadySent) {
+        welcomeEmailAlreadySent = true;
+        updateObj.welcome_email_sent = true;
+        sendAutoEmail({
+            type: "contact",
+            to: email,
+            subject: "Welcome to Bhavya Diagnostics!",
+            html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">
+                    <h2 style="color:#0056b3;margin-top:0;">Welcome to Bhavya Diagnostics!</h2>
+                    <p>Dear <b>${name}</b>,</p>
+                    <p>Thank you for registering with <b>Bhavya Diagnostics</b> (Bahadurgarh). You can now book pathology tests, preventive health packages, ECG, and PFT with fast digital reports.</p>
+                    <p style="font-size:13px;color:#64748b;">Need help? Call/WhatsApp us at <b>89501 12467</b> or reply to this email.</p>
+                   </div>`
+        });
+    }
+
+    savePatientToFirebase(updateObj);
 
     cart.forEach(item => {
         let type = (item.service_type || "pathology").toLowerCase().trim();
@@ -968,6 +938,8 @@ function savePatientInfo() {
     document.getElementById('step2-nav').classList.add('active');
     document.getElementById('sumName').innerText = bookingData.name;
     document.getElementById('sumMobile').innerText = "+91 " + bookingData.mobile;
+    const sumEmailEl = document.getElementById('sumEmail');
+    if (sumEmailEl) sumEmailEl.innerText = bookingData.email ? bookingData.email : "";
     document.getElementById('sumCityPin').innerText = `${city.toUpperCase()} - ${pin}`;
     document.getElementById('sumAddress').innerText = bookingData.address;
     document.getElementById('infoForm').style.display = 'none';
@@ -1041,10 +1013,9 @@ function autoAssignGroupLabs() {
             return;
         }
 
-        // ✨ NAYA LOGIC: Surprise package ko forcefully BhavyaCare Nodal Center me daalo ✨
         if (item.service_type === "surprise_package" || String(item.service_id).startsWith("SURP-")) {
             item.selected_lab_id = "BHAVYACARE-INTERNAL";
-            item.fulfillment = "center"; // Center ya Home jo aap chahein
+            item.fulfillment = "center";
             return;
         }
 
@@ -1087,8 +1058,6 @@ function renderGroupedCart() {
     cart.forEach((item, index) => {
         let type = (item.service_type || "pathology").toLowerCase().trim();
         if (item.service_id === "VIP-FREE-001") { type = "vip sponsored"; }
-        
-        // ✨ Grouping logic for surprise package ✨
         else if (type === "surprise_package" || String(item.service_id).startsWith("SURP-")) { type = "surprise package"; }
 
         if(!groupedCart[type]) {
@@ -1127,7 +1096,6 @@ function renderGroupedCart() {
                 </div>`;
         });
 
-        // ✨ INTERNAL HANDLING UI (For VIP & SURPRISE) ✨
         if (isVipGroup || isSurpriseGroup) {
             let badgeTxt = isVipGroup ? "SPONSORED" : "SURPRISE";
             let infoTxt = isVipGroup ? "<i class='fas fa-check-circle' style='color:var(--success);'></i> Free Home Collection Included" : "<i class='fas fa-exclamation-circle' style='color:#b45309;'></i> This is a sponsored package and will be processed by our Nodal Center.";
@@ -1148,7 +1116,7 @@ function renderGroupedCart() {
                     </div>
                 </div>
             </div></div>`;
-            continue; // Skip standard lab rendering
+            continue;
         }
 
         let isHomeEligible = homeServiceCategories.includes(type);
@@ -1297,14 +1265,12 @@ function renderLabTimeSelectors() {
     let todayStr = new Date().toISOString().split('T')[0];
     let html = `<h3 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-main);">Select Appointment Time</h3>`;
 
-    // Check karo kya cart me normal lab maujood hai
     let hasNormalLab = uniqueLabIds.some(id => id !== "BHAVYACARE-INTERNAL");
 
     uniqueLabIds.forEach(labId => {
-        // ✨ NAYA LOGIC: Agar normal lab hai, toh Surprise Package (INTERNAL) ka alag se dabba mat dikhao ✨
         if (labId === "BHAVYACARE-INTERNAL" && hasNormalLab) {
             if(!labSlots[labId]) labSlots[labId] = { date: "", time: "" };
-            return; // Is lab ka UI skip kardo
+            return;
         }
 
         let lab = allActiveLabsList.find(l => String(l.lab_id) === String(labId));
@@ -1344,7 +1310,6 @@ function updateLabDate(labId, dateStr, isRenderCall = false) {
     labSlots[labId].date = dateStr;
     if(!isRenderCall) labSlots[labId].time = ""; 
     
-    // ✨ NAYA LOGIC: Normal lab ki date chupke se Surprise Package me copy karo ✨
     if (labId !== "BHAVYACARE-INTERNAL" && labSlots["BHAVYACARE-INTERNAL"]) {
         labSlots["BHAVYACARE-INTERNAL"].date = dateStr;
         if(!isRenderCall) labSlots["BHAVYACARE-INTERNAL"].time = "";
@@ -1410,7 +1375,6 @@ function updateLabDate(labId, dateStr, isRenderCall = false) {
 function selectLabTime(labId, timeStr) {
     labSlots[labId].time = timeStr;
 
-    // ✨ NAYA LOGIC: Normal lab ka time slot bhi automatically Surprise Package me copy kardo ✨
     if (labId !== "BHAVYACARE-INTERNAL" && labSlots["BHAVYACARE-INTERNAL"]) {
         labSlots["BHAVYACARE-INTERNAL"].date = labSlots[labId].date;
         labSlots["BHAVYACARE-INTERNAL"].time = timeStr;
@@ -1597,7 +1561,6 @@ function renderCrossSell() {
 
     let inCartNames = cart.map(c => c.service_name.toLowerCase());
     
-    // Very basic mapping logic. Example: If Thyroid in cart, suggest Vitamin D.
     const crossSellRules = [
         { trigger: "thyroid", suggest: "vitamin d" },
         { trigger: "lipid", suggest: "hba1c" },
@@ -1667,7 +1630,7 @@ function goToStep3() {
     document.getElementById('cartItemsContainer').style.display = 'none';
     document.getElementById('labTimesContainer').style.display = 'none';
     document.getElementById('btnProceedCheckout').style.display = 'none';
-    document.getElementById('crossSellContainer').style.display = 'none'; // Hide cross sell
+    document.getElementById('crossSellContainer').style.display = 'none';
     
     let summaryDiv = document.getElementById('servicesSummary');
     if(summaryDiv) {
@@ -1746,106 +1709,155 @@ function verifyCartOTP() {
     });
 }
 
-function proceedWithRegistration(user) {
-    const payload = { action: "login", uid: user.uid, mobile: user.phoneNumber, role: "patient", name: bookingData.name };
+async function proceedWithRegistration(user) {
+    localStorage.setItem("bhavya_uid", user.uid);
+    localStorage.setItem("bhavya_mobile", user.phoneNumber);
+    localStorage.setItem("bhavya_role", "patient");
+    localStorage.setItem("bhavya_user_id", user.uid);
+    localStorage.setItem("bhavya_name", bookingData.name);
 
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) })
-    .then(res => res.json())
-    .then(res => {
-        if(res.status === "success") {
-            const finalUserId = res.user_id || (res.data ? res.data.user_id : null); 
-            localStorage.setItem("bhavya_uid", user.uid); localStorage.setItem("bhavya_mobile", user.phoneNumber); localStorage.setItem("bhavya_role", res.role || "patient"); localStorage.setItem("bhavya_user_id", finalUserId); localStorage.setItem("bhavya_name", bookingData.name);
-
-            savePatientToFirebase({
-                user_id: finalUserId,
-                name: bookingData.name,
-                mobile: user.phoneNumber,
-                city: bookingData.city,
-                pincode: bookingData.pincode,
-                address: bookingData.address,
-                role: res.role || "patient"
-            });
-
-            document.getElementById('cartOtpModal').classList.remove('active');
-            processOrderSubmission(finalUserId); 
-        } else { alert("Registration failed."); }
-    }).catch(e => { alert("Network Error."); });
-}
-
-function processOrderSubmission(userId) {
-    const btn = document.getElementById('confirmBtn');
-    btn.innerText = "Processing Order..."; btn.disabled = true;
-    document.getElementById("loadingOverlay").style.display = "flex";
-
-    const payload = {
-        action: "submitBookingOrder",
-        user_id: userId,
-        patient_name: bookingData.name,
-        mobile: bookingData.mobile,
+    await savePatientToFirebase({
+        user_id: user.uid,
+        name: bookingData.name,
+        mobile: user.phoneNumber,
+        email: bookingData.email,
         city: bookingData.city,
         pincode: bookingData.pincode,
         address: bookingData.address,
-        cart_items: cart, 
-        lab_slots: labSlots,
-        subtotal: finalBill.subtotal,
-        collection_charge: finalBill.collectionCharge,
-        wallet_used: finalBill.walletUsed,
-        total_discount: (finalBill.walletUsed + finalBill.refDiscount),
-        referral_code: finalBill.refCode,
-        final_total: finalBill.totalPayable
-    };
-
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) })
-    .then(res => res.json())
-    .then(async res => {
-        if(res.status === "success") {
-            const orderId = (res.data && res.data.order_id) ? res.data.order_id : ("CART-" + Date.now());
-            const authUser = await getAuthUser();
-
-            if (db && authUser) {
-                try {
-                    await db.collection("bookings").doc(orderId).set({
-                        order_id: orderId,
-                        sub_orders: (res.data && res.data.sub_orders) ? res.data.sub_orders : [],
-                        uid: authUser.uid,
-                        user_id: userId,
-                        patient_name: bookingData.name,
-                        mobile: bookingData.mobile,
-                        city: bookingData.city,
-                        pincode: bookingData.pincode,
-                        address: bookingData.address,
-                        cart_items: cart,
-                        lab_slots: labSlots,
-                        subtotal: finalBill.subtotal,
-                        collection_charge: finalBill.collectionCharge,
-                        wallet_used: finalBill.walletUsed,
-                        referral_discount: finalBill.refDiscount,
-                        total_discount: (finalBill.walletUsed + finalBill.refDiscount),
-                        referral_code: finalBill.refCode,
-                        final_total: finalBill.totalPayable,
-                        status: "Pending",
-                        payment_status: "DUE",
-                        created_at: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } catch (fbErr) {
-                    console.error("Firebase booking save error:", fbErr);
-                }
-            }
-
-            localStorage.removeItem('bhavyaCart'); 
-            document.getElementById("loadingOverlay").style.display = "none";
-            alert("🎉 Booking Successful!\n\nYour Order is confirmed. You can pay directly via Cash or UPI.");
-            window.location.href = "../patient_dashboard/patient_dashboard.html";
-        } else {
-            alert("Booking Error: " + res.message);
-            document.getElementById("loadingOverlay").style.display = "none";
-            btn.innerText = "Confirm Booking"; btn.disabled = false;
-        }
-    }).catch(e => { 
-        alert("Error during checkout."); 
-        document.getElementById("loadingOverlay").style.display = "none";
-        btn.innerText = "Confirm Booking"; btn.disabled = false; 
+        role: "patient",
+        plan: "basic"
     });
+
+    document.getElementById('cartOtpModal').classList.remove('active');
+    processOrderSubmission(user.uid);
+}
+
+async function processOrderSubmission(userId) {
+    const btn = document.getElementById('confirmBtn');
+    btn.innerText = "Processing Order...";
+    btn.disabled = true;
+    document.getElementById("loadingOverlay").style.display = "flex";
+
+    try {
+        const authUser = await getAuthUser();
+        if (!db || !authUser) {
+            throw new Error("Please verify OTP / login again to complete booking.");
+        }
+
+        const orderId = "ORD-" + Date.now().toString().slice(-6);
+
+        // 1. Booking सीधे Firebase 'bookings' collection में सेव करें
+        await db.collection("bookings").doc(orderId).set({
+            order_id: orderId,
+            uid: authUser.uid,
+            user_id: authUser.uid,
+            patient_name: bookingData.name,
+            mobile: bookingData.mobile,
+            email: bookingData.email || "",
+            city: bookingData.city,
+            pincode: bookingData.pincode,
+            address: bookingData.address,
+            cart_items: cart,
+            lab_slots: labSlots,
+            subtotal: finalBill.subtotal,
+            collection_charge: finalBill.collectionCharge,
+            wallet_used: finalBill.walletUsed,
+            referral_discount: finalBill.refDiscount,
+            total_discount: (finalBill.walletUsed + finalBill.refDiscount),
+            referral_code: finalBill.refCode,
+            final_total: finalBill.totalPayable,
+            status: "Pending",
+            payment_status: "DUE",
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // 2. Patient की latest डिटेल्स 'patients' collection में अपडेट करें
+        await savePatientToFirebase({
+            user_id: authUser.uid,
+            name: bookingData.name,
+            mobile: bookingData.mobile,
+            email: bookingData.email || "",
+            city: bookingData.city,
+            pincode: bookingData.pincode,
+            address: bookingData.address
+        });
+
+        // 3. Automatic Booking Confirmation Email (booking@bhavyadiagnostics.com)
+        const itemsRowsHtml = cart.map(i => `
+            <tr>
+                <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${i.service_name} (x${i.qty || 1})</td>
+                <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;">₹${Number(i.price || 0) * Number(i.qty || 1)}</td>
+            </tr>`).join("");
+
+        const slotSummaries = Object.values(labSlots)
+            .filter(s => s && s.date && s.time)
+            .map(s => `${s.date} at ${s.time}`)
+            .join(", ") || "As scheduled";
+
+        const confirmationHtml = `
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+                <div style="background:#0056b3;color:#ffffff;padding:18px 24px;">
+                    <h2 style="margin:0;font-size:20px;">Bhavya Diagnostics — Booking Confirmed</h2>
+                    <p style="margin:4px 0 0;font-size:13px;opacity:0.9;">Order ID: <b>${orderId}</b></p>
+                </div>
+                <div style="padding:20px 24px;color:#1e293b;">
+                    <p>Dear <b>${bookingData.name}</b>,</p>
+                    <p>Your diagnostic booking has been received and is currently <b>Pending Confirmation</b>.</p>
+                    <p style="font-size:13px;line-height:1.6;background:#f8fafc;padding:12px;border-radius:8px;">
+                        <b>Mobile:</b> +91 ${bookingData.mobile}<br>
+                        <b>Address:</b> ${bookingData.address}, ${bookingData.city.toUpperCase()} - ${bookingData.pincode}<br>
+                        <b>Preferred Slot:</b> ${slotSummaries}<br>
+                        <b>Payment Mode:</b> Pay at Center / Home (Cash or UPI)
+                    </p>
+                    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;">
+                        <thead>
+                            <tr style="background:#f1f5f9;">
+                                <th style="padding:8px;text-align:left;">Test / Package</th>
+                                <th style="padding:8px;text-align:right;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsRowsHtml}</tbody>
+                    </table>
+                    <p style="text-align:right;font-size:16px;margin-top:14px;">
+                        <b>Total Payable: ₹${finalBill.totalPayable}</b>
+                    </p>
+                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:18px 0;">
+                    <p style="font-size:12px;color:#64748b;margin:0;">
+                        Bhavya Diagnostics • Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh, Haryana<br>
+                        Helpline: 89501 12467 • Website: bhavyadiagnostics.com
+                    </p>
+                </div>
+            </div>`;
+
+        // Patient ko confirmation email (agar email bhara hai)
+        if (bookingData.email && bookingData.email.includes("@")) {
+            await sendAutoEmail({
+                type: "booking",
+                to: bookingData.email,
+                subject: `Booking Confirmed (${orderId}) - Bhavya Diagnostics`,
+                html: confirmationHtml
+            });
+        }
+
+        // Admin copy (booking@bhavyadiagnostics.com par)
+        await sendAutoEmail({
+            type: "booking",
+            to: "booking@bhavyadiagnostics.com",
+            subject: `New Booking Received: ${orderId} - ${bookingData.name} (₹${finalBill.totalPayable})`,
+            html: confirmationHtml
+        });
+
+        localStorage.removeItem('bhavyaCart');
+        document.getElementById("loadingOverlay").style.display = "none";
+        alert("🎉 Booking Successful!\n\nOrder ID: " + orderId + "\nYou can pay directly via Cash or UPI.");
+        window.location.href = "../patient_dashboard/patient_dashboard.html";
+    } catch (err) {
+        console.error("Firebase booking error:", err);
+        alert("Booking Error: " + err.message);
+        document.getElementById("loadingOverlay").style.display = "none";
+        btn.innerText = "Confirm Booking";
+        btn.disabled = false;
+    }
 }
 
 // ✨ BULLETPROOF TEST DESCRIPTION FUNCTION ✨
@@ -1889,15 +1901,12 @@ function checkSurpriseBannerStatus() {
     let banner = document.getElementById("surpriseOfferBanner");
     if (!banner) return;
     
-    // 1. Agar surprise package pehle se cart mein hai, toh banner hide kardo
     let hasSurprise = cart.some(item => item.service_type === "surprise_package" || String(item.service_id).startsWith("SURP-"));
     if (hasSurprise) {
         banner.style.display = "none";
         return;
     }
 
-    // 2. ✨ NAYA LOGIC: Check karo ki cart mein normal Blood Test ya Package hai ya nahi ✨
-    // Agar sirf MRI/XRAY/USG cart mein hai, toh banner nahi dikhega.
     let eligibleTypes = ['pathology', 'test', 'blood test', 'profile', 'package', 'discount_profile'];
     let hasEligibleService = cart.some(item => {
         let type = String(item.service_type || '').toLowerCase().trim();
