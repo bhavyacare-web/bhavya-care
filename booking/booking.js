@@ -11,12 +11,47 @@ const firebaseConfig = {
     measurementId: "G-G82G4VWGGT"
 };
 
+let db = null;
 try {
-    if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+    if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        if (typeof firebase.firestore === 'function') {
+            db = firebase.firestore();
+        }
     }
 } catch(e) {
     console.error("Firebase init error:", e);
+}
+
+// Firebase Auth ready hone ka wait karega taaki permission error na aaye
+function getAuthUser() {
+    return new Promise((resolve) => {
+        if (typeof firebase === 'undefined' || !firebase.auth) return resolve(null);
+        if (firebase.auth().currentUser) return resolve(firebase.auth().currentUser);
+        const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+            unsubscribe();
+            resolve(user);
+        });
+        setTimeout(() => {
+            try { unsubscribe(); } catch(e) {}
+            resolve(firebase.auth().currentUser || null);
+        }, 2500);
+    });
+}
+
+// Patient details Firestore ke 'patients' collection mein save/update karega
+async function savePatientToFirebase(profileObj) {
+    if (!db) return;
+    const authUser = await getAuthUser();
+    if (!authUser) return;
+
+    return db.collection("patients").doc(authUser.uid).set({
+        ...profileObj,
+        uid: authUser.uid,
+        updated_at: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).catch(err => console.error("Firebase patient save error:", err));
 }
 
 // =======================================================
@@ -31,12 +66,12 @@ let cart = [];
 let currentView = 'booking';
 const categoryConfig = {
     'pathology': { name: 'Test', icon: '🩸' },
-    'profile':   { name: 'Package', icon: '🩺' }, 
+    'profile':   { name: 'Package', icon: '🩺' },
     'pft':       { name: 'PFT', icon: '🫁' },
     'ecg':       { name: 'ECG', icon: '❤️' }
 };
 const defaultIcon = '🧪';
-const mainCategoryKeys = ['pathology', 'profile'];
+const mainCategoryKeys = ['pathology', 'profile', 'pft', 'ecg'];
 const homeServiceCategories = ['pathology', 'profile', 'package', 'ecg', 'blood test'];
 
 let isVipPkgPending = false; // ✨ NAYA VARIABLE ADD KIYA
@@ -411,6 +446,7 @@ function renderServices(searchQuery = "") {
     });
     container.innerHTML = htmlContent;
 }
+
 function updateQty(id, change, price, name, type) {
     id = String(id);
     let index = cart.findIndex(item => String(item.service_id) === id);
@@ -573,6 +609,14 @@ function verifyOTP() {
                 localStorage.setItem("bhavya_role", res.role || "patient"); 
                 localStorage.setItem("bhavya_user_id", finalUserId); 
                 localStorage.setItem("bhavya_name", document.getElementById("userName").value.trim());
+
+                savePatientToFirebase({
+                    user_id: finalUserId,
+                    name: document.getElementById("userName").value.trim(),
+                    mobile: user.phoneNumber,
+                    role: res.role || "patient"
+                });
+
                 closeLoginPopup();
                 showToast("Login Successful!", "success");
                 // Watcher chal raha hai, wo khud VIP form khol dega
@@ -767,13 +811,53 @@ function initCartPage() {
         if(form) form.style.display = 'block';
     }
 }
-function fetchProfile(userId) {
+
+async function fetchProfile(userId) {
     // ✨ Skeleton Loader Dikhana Shuru Karein ✨
     let skel = document.getElementById('checkoutFormSkeleton');
     let form = document.getElementById('actualCheckoutForm');
     if(skel) skel.style.display = 'block';
     if(form) form.style.display = 'none';
 
+    let loadedFromFirebase = false;
+
+    // 1. Pehle Firebase se instant auto-fill try karo
+    if (db) {
+        try {
+            const authUser = await getAuthUser();
+            if (authUser) {
+                const doc = await db.collection("patients").doc(authUser.uid).get();
+                if (doc.exists) {
+                    const fbData = doc.data();
+                    let uMob = document.getElementById('uMobile');
+                    let uPin = document.getElementById('uPincode');
+                    let uAddr = document.getElementById('uAddress');
+                    let uCity = document.getElementById('uCity');
+                    let nameBox = document.getElementById('nameInputBox');
+
+                    if (uMob && fbData.mobile) {
+                        bookingData.mobile = String(fbData.mobile).replace(/^\+91/, '');
+                        uMob.value = bookingData.mobile;
+                        uMob.setAttribute("readonly", true);
+                    }
+                    if (uPin && fbData.pincode) uPin.value = fbData.pincode;
+                    if (uAddr && fbData.address) uAddr.value = fbData.address;
+                    if (uCity && fbData.city) uCity.value = fbData.city;
+                    if (nameBox && fbData.name) {
+                        nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${fbData.name}" placeholder="Patient Name">`;
+                    }
+
+                    loadedFromFirebase = true;
+                    if(skel) skel.style.display = 'none';
+                    if(form) form.style.display = 'block';
+                }
+            }
+        } catch (fbErr) {
+            console.error("Firebase profile load error:", fbErr);
+        }
+    }
+
+    // 2. Background mein GAS se VIP status, VIP members aur fallback profile laao
     fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getPatientCheckoutProfile", user_id: userId }) })
     .then(res => res.json())
     .then(res => {
@@ -786,19 +870,19 @@ function fetchProfile(userId) {
             bookingData.isVip = data.isVip; 
             
             let uMob = document.getElementById('uMobile');
-            if(uMob) { uMob.value = data.mobile; uMob.setAttribute("readonly", true); }
+            if(uMob && !uMob.value && data.mobile) { uMob.value = data.mobile; uMob.setAttribute("readonly", true); }
             
             // ✨ Pincode Auto-fill
             let uPin = document.getElementById('uPincode');
-            if(uPin && data.pincode) uPin.value = data.pincode;
+            if(uPin && !uPin.value && data.pincode) uPin.value = data.pincode;
             
             // ✨ Address Auto-fill
             let uAddr = document.getElementById('uAddress');
-            if(uAddr && data.address) uAddr.value = data.address;
+            if(uAddr && !uAddr.value && data.address) uAddr.value = data.address;
 
             // ✨ NAYA: City Auto-fill
             let uCity = document.getElementById('uCity');
-            if(uCity && data.city) uCity.value = data.city;
+            if(uCity && !uCity.value && data.city) uCity.value = data.city;
 
             const nameBox = document.getElementById('nameInputBox');
             if(nameBox) {
@@ -807,9 +891,22 @@ function fetchProfile(userId) {
                     if(badge) badge.innerHTML = '<span style="background:var(--warning); color:white; font-size:10px; padding:4px 8px; border-radius:12px; margin-left: 10px;"><i class="fas fa-crown"></i> VIP Active</span>';
                     let opts = data.vipMembers.map(m => `<option value="${m}">${m}</option>`).join('');
                     nameBox.innerHTML = `<select id="uName" class="form-input">${opts}</select>`;
-                } else {
+                } else if (!loadedFromFirebase) {
                     nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${data.name}" placeholder="Patient Name">`;
                 }
+            }
+
+            // Agar Firebase mein pehle se record nahi tha toh Sheet ka data Firebase mein sync kar do
+            if (!loadedFromFirebase) {
+                savePatientToFirebase({
+                    user_id: userId,
+                    name: data.name || "",
+                    mobile: data.mobile || "",
+                    city: data.city || "",
+                    pincode: data.pincode || "",
+                    address: data.address || "",
+                    isVip: !!data.isVip
+                });
             }
             
             // ✨ Data Load hone ke baad Skeleton chupayein, Asli form dikhayein ✨
@@ -852,6 +949,15 @@ function savePatientInfo() {
     bookingData.city = city.toLowerCase();
     bookingData.pincode = pin;
     bookingData.address = addr;
+
+    savePatientToFirebase({
+        user_id: localStorage.getItem("bhavya_user_id") || "",
+        name: name,
+        mobile: mobile,
+        city: city,
+        pincode: pin,
+        address: addr
+    });
 
     cart.forEach(item => {
         let type = (item.service_type || "pathology").toLowerCase().trim();
@@ -1649,6 +1755,17 @@ function proceedWithRegistration(user) {
         if(res.status === "success") {
             const finalUserId = res.user_id || (res.data ? res.data.user_id : null); 
             localStorage.setItem("bhavya_uid", user.uid); localStorage.setItem("bhavya_mobile", user.phoneNumber); localStorage.setItem("bhavya_role", res.role || "patient"); localStorage.setItem("bhavya_user_id", finalUserId); localStorage.setItem("bhavya_name", bookingData.name);
+
+            savePatientToFirebase({
+                user_id: finalUserId,
+                name: bookingData.name,
+                mobile: user.phoneNumber,
+                city: bookingData.city,
+                pincode: bookingData.pincode,
+                address: bookingData.address,
+                role: res.role || "patient"
+            });
+
             document.getElementById('cartOtpModal').classList.remove('active');
             processOrderSubmission(finalUserId); 
         } else { alert("Registration failed."); }
@@ -1664,7 +1781,8 @@ function processOrderSubmission(userId) {
         action: "submitBookingOrder",
         user_id: userId,
         patient_name: bookingData.name,
-        mobile: bookingData.mobile, 
+        mobile: bookingData.mobile,
+        city: bookingData.city,
         pincode: bookingData.pincode,
         address: bookingData.address,
         cart_items: cart, 
@@ -1679,8 +1797,41 @@ function processOrderSubmission(userId) {
 
     fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload) })
     .then(res => res.json())
-    .then(res => {
+    .then(async res => {
         if(res.status === "success") {
+            const orderId = (res.data && res.data.order_id) ? res.data.order_id : ("CART-" + Date.now());
+            const authUser = await getAuthUser();
+
+            if (db && authUser) {
+                try {
+                    await db.collection("bookings").doc(orderId).set({
+                        order_id: orderId,
+                        sub_orders: (res.data && res.data.sub_orders) ? res.data.sub_orders : [],
+                        uid: authUser.uid,
+                        user_id: userId,
+                        patient_name: bookingData.name,
+                        mobile: bookingData.mobile,
+                        city: bookingData.city,
+                        pincode: bookingData.pincode,
+                        address: bookingData.address,
+                        cart_items: cart,
+                        lab_slots: labSlots,
+                        subtotal: finalBill.subtotal,
+                        collection_charge: finalBill.collectionCharge,
+                        wallet_used: finalBill.walletUsed,
+                        referral_discount: finalBill.refDiscount,
+                        total_discount: (finalBill.walletUsed + finalBill.refDiscount),
+                        referral_code: finalBill.refCode,
+                        final_total: finalBill.totalPayable,
+                        status: "Pending",
+                        payment_status: "DUE",
+                        created_at: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch (fbErr) {
+                    console.error("Firebase booking save error:", fbErr);
+                }
+            }
+
             localStorage.removeItem('bhavyaCart'); 
             document.getElementById("loadingOverlay").style.display = "none";
             alert("🎉 Booking Successful!\n\nYour Order is confirmed. You can pay directly via Cash or UPI.");
