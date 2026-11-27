@@ -336,8 +336,16 @@ function renderBookingsTable() {
         }
 
         const reportUrl = b.report_url || (Array.isArray(b.report_pdf) ? b.report_pdf[0] : b.report_pdf) || "";
+        const cleanWaMobile = String(b.mobile || "").replace(/\D/g, "").slice(-10);
+        const waReportMsg = reportUrl
+            ? `Namaste ${b.patient_name || "Patient"}, your diagnostic report for Order #${b.order_id || b.docId} from Bhavya Diagnostics Bahadurgarh is ready.\n\nDownload Report PDF: ${reportUrl}\n\nThank you for choosing Bhavya Diagnostics (89501 12467).`
+            : "";
+        const waShareBtn = (reportUrl && cleanWaMobile.length === 10)
+            ? `<a href="https://wa.me/91${cleanWaMobile}?text=${encodeURIComponent(waReportMsg)}" target="_blank" rel="noopener noreferrer" class="btn-act" style="background:#25D366; color:white; text-decoration:none; margin-top:4px;"><i class="fab fa-whatsapp"></i> Send on WhatsApp</a>`
+            : "";
+
         const reportLinkHtml = reportUrl
-            ? `<div style="margin-top:6px;"><a href="${escapeHtml(reportUrl)}" target="_blank" style="color:var(--success); font-weight:800; font-size:12px; text-decoration:none;"><i class="fas fa-file-pdf"></i> View Uploaded PDF</a>${b.report_uploaded_by ? `<br><small style="color:#64748b;">By: ${escapeHtml(b.report_uploaded_by)}</small>` : ""}</div>`
+            ? `<div style="margin-top:6px;"><a href="${escapeHtml(reportUrl)}" target="_blank" style="color:var(--success); font-weight:800; font-size:12px; text-decoration:none;"><i class="fas fa-file-pdf"></i> View Uploaded PDF</a>${b.report_uploaded_by ? `<br><small style="color:#64748b;">By: ${escapeHtml(b.report_uploaded_by)}</small>` : ""}<br>${waShareBtn}</div>`
             : "";
 
         const paySt = String(b.payment_status || "DUE").toUpperCase();
