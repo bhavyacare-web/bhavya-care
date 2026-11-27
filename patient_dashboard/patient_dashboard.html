@@ -2,11 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Patient Dashboard - BhavyaCare Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Patient Dashboard | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="description" content="Manage your diagnostic lab bookings, download NABL certified medical reports, view Bhavya VIP Membership card and wallet balance at Bhavya Diagnostics Bahadurgarh.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://www.bhavyadiagnostics.com/patient_dashboard/patient_dashboard.html">
+    <link rel="icon" href="../image/logo.jpeg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="../image/logo.jpeg">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
@@ -20,7 +25,7 @@
             --text-main: #0f172a; --text-light: #64748b; 
             --border: #e2e8f0;
         }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent;}
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--text-main); }
         .main-content { flex-grow: 1; overflow-y: auto; padding: 20px; padding-bottom: 90px; -webkit-overflow-scrolling: touch; }
@@ -30,83 +35,106 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         /* Header Styles */
-        .mobile-header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); z-index: 100; position: sticky; top: 0; border-bottom: 1px solid var(--border);}
-        .brand h2 { margin: 0; font-size: 20px; color: var(--primary); font-weight: 800; letter-spacing: -0.5px;}
+        .mobile-header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); z-index: 100; position: sticky; top: 0; border-bottom: 1px solid var(--border); }
+        .brand h2 { margin: 0; font-size: 20px; color: var(--primary); font-weight: 800; letter-spacing: -0.5px; }
         .brand span { color: var(--success); }
         
-        .user-profile-mini { display: flex; align-items: center; gap: 10px; cursor: pointer;}
-        .user-profile-mini .greeting { font-size: 12px; color: var(--text-light); text-align: right; font-weight: 500;}
+        .user-profile-mini { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .user-profile-mini .greeting { font-size: 12px; color: var(--text-light); text-align: right; font-weight: 500; }
         .user-profile-mini .name { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0; }
-        .profile-img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--primary-light); object-fit: cover;}
+        .profile-img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--primary-light); object-fit: cover; }
         
         /* ✨ GLOBAL SEARCH BAR ✨ */
-        .global-search-box { position: relative; margin-bottom: 20px; max-width: 800px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-radius: 14px;}
-        .global-search-box input { width: 100%; padding: 16px 15px 16px 45px; border-radius: 14px; border: 1px solid var(--border); font-size: 14px; outline: none; font-weight: 500; font-family: inherit;}
+        .global-search-box { position: relative; margin-bottom: 20px; max-width: 800px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border-radius: 14px; }
+        .global-search-box input { width: 100%; padding: 16px 15px 16px 45px; border-radius: 14px; border: 1px solid var(--border); font-size: 14px; outline: none; font-weight: 500; font-family: inherit; }
         .global-search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-        .global-search-box i.fa-search { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px;}
-        .global-search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s;}
+        .global-search-box i.fa-search { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px; }
+        .global-search-btn { position: absolute; right: 6px; top: 6px; bottom: 6px; background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         
         /* ✨ QUICK ACTIONS GRID ✨ */
         .quick-actions-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .q-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 15px 10px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .q-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 15px 10px; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .q-btn:active { transform: scale(0.95); }
-        .q-btn .icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 2px;}
-        .q-btn span { font-size: 11px; font-weight: 700; color: var(--text-main); text-align: center;}
+        .q-btn .icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 2px; }
+        .q-btn span { font-size: 11px; font-weight: 700; color: var(--text-main); text-align: center; }
         
         /* ✨ COMPACT WALLET & VIP CARDS ✨ */
         .compact-cards-row { display: flex; gap: 15px; margin-bottom: 25px; }
-        .compact-card { flex: 1; border-radius: 16px; padding: 16px; position: relative; overflow: hidden; color: white; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 20px rgba(0,0,0,0.08);}
+        .compact-card { flex: 1; border-radius: 16px; padding: 16px; position: relative; overflow: hidden; color: white; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
         .card-wallet { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
         .card-vip { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); cursor: pointer; }
         .card-vip:active { transform: scale(0.98); }
-        .cc-title { font-size: 11px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;}
-        .cc-value { font-size: 24px; font-weight: 800; margin: 0; line-height: 1.2;}
-        .cc-action { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; backdrop-filter: blur(5px); width: max-content;}
+        .cc-title { font-size: 11px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .cc-value { font-size: 24px; font-weight: 800; margin: 0; line-height: 1.2; }
+        .cc-action { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; backdrop-filter: blur(5px); width: max-content; }
         .cc-icon { position: absolute; right: -15px; bottom: -20px; font-size: 80px; opacity: 0.15; }
         
-        /* ✨ VIP ALERT ATTACHED TO CARD ✨ */
-        #vipPackageAlert { background: linear-gradient(90deg, #f59e0b, #d97706); border-radius: 12px; padding: 12px; color: white; font-size: 12px; font-weight: bold; text-align: center; margin-top: -15px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: none; position: relative; z-index: 2;}
+        #vipPackageAlert { background: linear-gradient(90deg, #f59e0b, #d97706); border-radius: 12px; padding: 12px; color: white; font-size: 12px; font-weight: bold; text-align: center; margin-top: -15px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: none; position: relative; z-index: 2; }
 
-        .data-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid var(--border);}
-        .section-title { margin: 0 0 15px 0; color: var(--text-main); font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center;}
+        .data-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid var(--border); }
+        .section-title { margin: 0 0 15px 0; color: var(--text-main); font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
         
         /* ✨ SKELETON LOADERS ✨ */
         .skeleton-box { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 8px; }
         .skel-text { height: 12px; margin-bottom: 10px; width: 100%; }
         .skel-text.short { width: 60%; }
-        .skel-card { border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 15px;}
+        .skel-card { border: 1px solid var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; gap: 15px; }
         .skel-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
         .list-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .list-info h5 { margin: 0 0 5px 0; font-size: 14px; color: var(--text-main); font-weight: 700;}
+        .list-info h5 { margin: 0 0 5px 0; font-size: 14px; color: var(--text-main); font-weight: 700; }
         .list-info p { margin: 0; font-size: 12px; color: var(--text-light); }
         
-        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
         .status-success { background: var(--success-light); color: #065f46; }
         .status-warning { background: var(--warning-light); color: #b45309; }
         .status-primary { background: var(--primary-light); color: var(--primary); }
         .status-danger { background: var(--danger-light); color: #991b1b; }
 
         /* 🌟 NAVIGATION STYLES 🌟 */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 1000; border-top-left-radius: 20px; border-top-right-radius: 20px;}
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 5px 20px 5px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 1000; border-top-left-radius: 20px; border-top-right-radius: 20px; }
         .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-decoration: none; font-size: 10px; font-weight: 700; gap: 5px; padding: 8px 12px; border-radius: 12px; transition: 0.3s; cursor: pointer; }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; transition: 0.3s;}
+        .nav-item i { font-size: 20px; margin-bottom: 2px; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
         .nav-item.active i { transform: translateY(-3px); }
 
-        /* ✨ DASHBOARD HORIZONTAL SLIDER CSS ✨ */
-        .horizontal-slider { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scroll-behavior: smooth; margin: 0 -5px; padding: 5px; }
-        .horizontal-slider::-webkit-scrollbar { display: none; }
-        .pkg-card { min-width: 240px; background: white; border-radius: 16px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid var(--border); display:flex; flex-direction:column; gap:10px; position: relative; overflow: hidden;}
-        .pkg-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--warning); }
-        .pkg-title { font-size: 14px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; }
-        .pkg-price-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px; }
-        .pkg-book-btn { background: var(--warning-light); color: #b45309; border: 1px solid #fcd34d; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s;}
-        .pkg-book-btn:active { transform: scale(0.95); }
+        /* ✨ INDEX.HTML STYLE HEALTH PACKAGE CARDS IN DASHBOARD ✨ */
+        .dash-cat-nav { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 12px; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .dash-cat-nav::-webkit-scrollbar { display: none; }
+        .dash-cat-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #475569; padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; flex: 0 0 auto; transition: 0.2s; }
+        .dash-cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(0,86,179,0.2); }
 
-        /* ✨ DASHBOARD SKELETON LOADER ANIMATION ✨ */
+        .horizontal-slider { display: flex; gap: 15px; overflow-x: auto; padding: 5px 2px 12px; scroll-behavior: smooth; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+        .horizontal-slider::-webkit-scrollbar { display: none; }
+        .pkg-card { min-width: 310px; max-width: 330px; background: #ffffff; border-radius: 18px; padding: 18px; box-shadow: 0 6px 20px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 10px; transition: 0.25s; scroll-snap-align: start; flex: 0 0 auto; }
+        .pkg-card:hover { transform: translateY(-3px); border-color: #93c5fd; }
+        .pkg-header-row { display: flex; justify-content: space-between; align-items: center; }
+        .pkg-cat-badge { background: #e0f2fe; color: #0284c7; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 7px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pkg-test-count { background: #fef3c7; color: #d97706; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 7px; }
+        .pkg-title { font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 7px; line-height: 1.3; }
+        .pkg-desc { background: #f8fafc; border-radius: 11px; padding: 11px 13px; border: 1px solid #e2e8f0; }
+        .pkg-desc ul { margin: 0; padding-left: 16px; font-size: 12.5px; color: #334155; font-weight: 600; line-height: 1.6; }
+        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 11.5px; font-weight: 800; padding: 5px 11px; border-radius: 10px; display: inline-block; margin-top: 8px; cursor: pointer; border: 1px solid #bae6fd; }
+        .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pkg-meta-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 6px; line-height: 1.25; }
+        .pkg-meta-fasting { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+        .pkg-meta-report { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .pkg-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 6px; }
+        .pkg-price-area { display: flex; flex-direction: column; gap: 2px; }
+        .pkg-total-mrp { font-size: 11px; color: #94a3b8; font-weight: 600; }
+        .pkg-basic-price { font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; line-height: 1.1; }
+        .pkg-basic-badge { font-size: 9.5px; font-weight: 800; background: #e0f2fe; color: #0284c7; padding: 2px 7px; border-radius: 5px; }
+        .pkg-vip-pill { background: #ffffff; color: #475569; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; margin-top: 5px; border: 1px solid #cbd5e1; width: max-content; cursor: pointer; }
+        .pkg-vip-pill:hover { background: #fef3c7; border-color: #f59e0b; color: #d97706; }
+        .btn-add-cart { background: white; color: var(--primary); border: 2px solid var(--primary); padding: 8px 18px; border-radius: 9px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-add-cart:hover { background: var(--primary-light); }
+        .qty-control { display: flex; align-items: center; background: white; border: 2px solid var(--primary); border-radius: 9px; overflow: hidden; }
+        .qty-control button { background: var(--primary-light); color: var(--primary); border: none; padding: 8px 11px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .qty-control button:hover { background: var(--primary); color: white; }
+        .qty-text { font-size: 13.5px; font-weight: 800; width: 28px; text-align: center; color: var(--text-main); }
+
         @keyframes shimmerDash {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
@@ -125,25 +153,25 @@
         
         #floatingCartBtn { position: fixed; bottom: 90px; right: 20px; background: var(--primary); color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 4px 15px rgba(0, 86, 179, 0.4); cursor: pointer; z-index: 1000; transition: 0.3s; }
         #floatingCartBtn:active { transform: scale(0.9); }
-        #globalCartBadge { position: absolute; top: -2px; right: -2px; background: var(--danger); color: white; font-size: 11px; font-weight: 800; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        #globalCartBadge { position: absolute; top: -2px; right: -2px; background: var(--danger); color: white; font-size: 11px; font-weight: 800; width: 22px; height: 22px; border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
-        .input-box { width: 100%; padding: 14px; margin-top: 5px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; font-family: inherit; font-weight: 500;}
-        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light);}
+        .input-box { width: 100%; padding: 14px; margin-top: 5px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; font-family: inherit; font-weight: 500; }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
         .form-group { margin-top: 15px; }
         
         /* Filter Bar */
         .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; background: #ffffff; padding: 15px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid var(--border); align-items: center; }
         .search-wrapper { flex: 2; position: relative; }
-        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 15px;}
-        .filter-input { width: 100%; padding: 14px 15px 14px 40px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; box-sizing: border-box; font-family: inherit; font-weight: 500;}
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 15px; }
+        .filter-input { width: 100%; padding: 14px 15px 14px 40px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; box-sizing: border-box; font-family: inherit; font-weight: 500; }
         .filter-input:focus { border-color: var(--primary); }
         .filter-actions { display: flex; gap: 10px; flex: 1.5; }
-        .date-input { flex: 1; padding-left: 15px;}
-        .filter-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;}
+        .date-input { flex: 1; padding-left: 15px; }
+        .filter-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 14px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
 
         /* Modals & Bottom Sheets */
         .modal-overlay { width: 90%; max-width: 400px; background: #ffffff; box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-radius: 24px; display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000; padding: 25px; max-height: 85vh; overflow-y: auto; }
-        .close-btn-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; color: #94a3b8; cursor: pointer; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
+        .close-btn-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; color: #94a3b8; cursor: pointer; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 
         .bottom-sheet { position: fixed; bottom: -100%; left: 0; width: 100%; background: #fff; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); z-index: 2001; padding: 30px 25px; transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .bottom-sheet.active { bottom: 0; }
@@ -151,11 +179,8 @@
         .sheet-backdrop.active { display: block; opacity: 1; }
         .sheet-handle { width: 40px; height: 5px; background: #cbd5e1; border-radius: 5px; margin: 0 auto 25px auto; }
 
-        .star-rating { display: flex; justify-content: center; gap: 10px; font-size: 35px; color: #e2e8f0; margin: 20px 0; cursor: pointer; }
-        .star-rating i:hover, .star-rating i.active { color: var(--warning); }
-
         /* ✨ TOAST NOTIFICATION CSS ✨ */
-        #toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none;}
+        #toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
         .toast { background: var(--text-main); color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; animation: slideUpToast 0.4s ease, fadeOutToast 0.4s ease 2.6s forwards; }
         .toast.success { background: var(--success); }
         .toast.error { background: var(--danger); }
@@ -165,44 +190,41 @@
         @keyframes fadeOutToast { from { opacity: 1; } to { opacity: 0; } }
 
         /* ✨ VIP PREMIUM CARD CSS ✨ */
-        .vip-card-wrapper { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 20px;}
+        .vip-card-wrapper { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.85); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 20px; }
         .vip-card-wrapper.active { display: flex; animation: fadeIn 0.3s ease; }
         
-        .premium-vip-card { width: 100%; max-width: 380px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 20px; padding: 25px; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid #334155; transform: scale(1); transition: transform 0.3s;}
-        
-        /* Premium Golden Pattern */
-        .premium-vip-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 60%); pointer-events: none; z-index: 0;}
-        .premium-vip-card::after { content: '👑'; position: absolute; right: -20px; bottom: -30px; font-size: 140px; opacity: 0.03; transform: rotate(-15deg); z-index: 0;}
+        .premium-vip-card { width: 100%; max-width: 380px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 20px; padding: 25px; color: white; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid #334155; transform: scale(1); transition: transform 0.3s; }
+        .premium-vip-card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+        .premium-vip-card::after { content: '👑'; position: absolute; right: -20px; bottom: -30px; font-size: 140px; opacity: 0.03; transform: rotate(-15deg); z-index: 0; }
 
-        .card-header-inner { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; margin-bottom: 25px;}
-        .brand-text { font-size: 20px; font-weight: 900; letter-spacing: 1px; margin: 0; color: #f8fafc;}
+        .card-header-inner { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; margin-bottom: 25px; }
+        .brand-text { font-size: 20px; font-weight: 900; letter-spacing: 1px; margin: 0; color: #f8fafc; }
         .brand-text span { color: #f59e0b; }
-        .chip-icon { width: 45px; height: 35px; background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); border-radius: 6px; position: relative; opacity: 0.9;}
-        .chip-icon::after { content:''; position:absolute; inset: 4px; border: 1px solid rgba(0,0,0,0.2); border-radius: 4px; border-left: none; border-right: none;}
+        .chip-icon { width: 45px; height: 35px; background: linear-gradient(135deg, #fcd34d 0%, #d97706 100%); border-radius: 6px; position: relative; opacity: 0.9; }
+        .chip-icon::after { content:''; position:absolute; inset: 4px; border: 1px solid rgba(0,0,0,0.2); border-radius: 4px; border-left: none; border-right: none; }
         
-        .patient-info-row { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; position: relative; z-index: 1;}
-        .patient-photo { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; background: #334155; padding: 2px;}
-        .patient-details p { margin: 0; line-height: 1.4;}
-        .patient-name-card { font-size: 18px; font-weight: 800; color: #facc15; text-transform: uppercase; letter-spacing: 1px;}
-        .patient-id-card { font-size: 11px; color: #cbd5e1; font-weight: 600; letter-spacing: 2px;}
+        .patient-info-row { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; position: relative; z-index: 1; }
+        .patient-photo { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; border: 2px solid #f59e0b; background: #334155; padding: 2px; }
+        .patient-details p { margin: 0; line-height: 1.4; }
+        .patient-name-card { font-size: 18px; font-weight: 800; color: #facc15; text-transform: uppercase; letter-spacing: 1px; }
+        .patient-id-card { font-size: 11px; color: #cbd5e1; font-weight: 600; letter-spacing: 2px; }
         
-        .members-list { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin-bottom: 20px; position: relative; z-index: 1; border: 1px solid rgba(255,255,255,0.1);}
-        .members-list h5 { margin: 0 0 8px 0; font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;}
-        .members-list p { margin: 0 0 4px 0; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between;}
+        .members-list { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; margin-bottom: 20px; position: relative; z-index: 1; border: 1px solid rgba(255,255,255,0.1); }
+        .members-list h5 { margin: 0 0 8px 0; font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .members-list p { margin: 0 0 4px 0; font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; }
         .members-list p span { color: #f59e0b; font-size: 11px; }
 
-        .card-footer-inner { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1;}
-        .footer-item { display: flex; flex-direction: column; gap: 3px;}
-        .footer-label { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;}
-        .footer-value { font-size: 12px; font-weight: 700; color: #f8fafc;}
-        .ref-box { background: rgba(245, 158, 11, 0.15); border: 1px dashed #f59e0b; padding: 6px 12px; border-radius: 8px; text-align: center;}
+        .card-footer-inner { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1; }
+        .footer-item { display: flex; flex-direction: column; gap: 3px; }
+        .footer-label { font-size: 9px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-value { font-size: 12px; font-weight: 700; color: #f8fafc; }
+        .ref-box { background: rgba(245, 158, 11, 0.15); border: 1px dashed #f59e0b; padding: 6px 12px; border-radius: 8px; text-align: center; }
         
-        .download-btn-wrapper { position: absolute; bottom: -70px; left: 0; width: 100%; display: flex; justify-content: center; gap: 15px;}
-        .btn-card-action { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s;}
+        .download-btn-wrapper { position: absolute; bottom: -70px; left: 0; width: 100%; display: flex; justify-content: center; gap: 15px; }
+        .btn-card-action { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s; }
         .btn-card-action.close { background: #ef4444; }
         .btn-card-action:active { transform: scale(0.95); }
 
-        /* Mobile vs Desktop Display Logic */
         .mobile-only { display: flex; }
         .desktop-only { display: none; }
 
@@ -211,18 +233,17 @@
             .mobile-only { display: none !important; }
             .desktop-only { display: flex; }
             .mobile-header { display: none; }
-            .bottom-nav { flex-direction: column; position: static; width: 260px; justify-content: flex-start; padding: 30px 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.03); border-radius: 0;}
-            .nav-item { flex-direction: row; justify-content: flex-start; gap: 15px; font-size: 14px; padding: 15px 20px; margin-bottom: 8px; width: 100%; border-radius: 14px;}
+            .bottom-nav { flex-direction: column; position: static; width: 260px; justify-content: flex-start; padding: 30px 15px; box-shadow: 2px 0 10px rgba(0,0,0,0.03); border-radius: 0; }
+            .nav-item { flex-direction: row; justify-content: flex-start; gap: 15px; font-size: 14px; padding: 15px 20px; margin-bottom: 8px; width: 100%; border-radius: 14px; }
             .nav-item.active { background: var(--primary-light); }
-            .main-content { padding: 40px; padding-bottom: 40px;}
+            .main-content { padding: 40px; padding-bottom: 40px; }
             .desktop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
             
-            #floatingHelpBtn { bottom: 110px; right: 40px; height: 65px; padding: 0 25px; font-size: 26px;}
-            #floatingHelpBtn .help-text { font-size: 18px; margin-left: 10px;}
-            #floatingCartBtn { bottom: 30px; right: 40px; width: 65px; height: 65px; font-size: 26px;}
+            #floatingHelpBtn { bottom: 110px; right: 40px; height: 65px; padding: 0 25px; font-size: 26px; }
+            #floatingHelpBtn .help-text { font-size: 18px; margin-left: 10px; }
+            #floatingCartBtn { bottom: 30px; right: 40px; width: 65px; height: 65px; font-size: 26px; }
         }
         
-        /* ✨ NAYA MOBILE SPACING LOGIC ✨ */
         @media (max-width: 768px) { 
             .desktop-header { display: none; } 
             .main-content { padding: 12px; padding-bottom: 90px; }
@@ -239,6 +260,8 @@
             .cc-title { font-size: 10px; }
             .cc-value { font-size: 20px; }
             .cc-icon { font-size: 60px; right: -10px; bottom: -15px; }
+
+            .pkg-card { min-width: 82vw; max-width: 330px; padding: 16px; }
             
             .filter-bar { flex-direction: column; padding: 12px; gap: 12px; }
             .search-wrapper { width: 100%; }
@@ -248,17 +271,17 @@
 </head>
 <body>
     
-    <nav class="bottom-nav" id="sidebar">
+    <nav class="bottom-nav" id="sidebar" aria-label="Dashboard Navigation">
         <div class="brand desktop-header" style="padding: 10px 20px 40px 20px; text-align:center;">
-            <h2>Bhavya<span>Care</span></h2>
+            <h2>Bhavya<span>Diagnostics</span></h2>
         </div>
-        <a class="nav-item active" onclick="switchTab('overview')"><i class="fas fa-home"></i> <span>Home</span></a>
-        <a class="nav-item" onclick="switchTab('bookings')"><i class="fas fa-microscope"></i> <span>Tests</span></a>
-        <a class="nav-item" onclick="switchTab('reports')"><i class="fas fa-file-medical-alt"></i> <span>Reports</span></a>
+        <a class="nav-item active" onclick="switchTab('overview', this)"><i class="fas fa-home"></i> <span>Home</span></a>
+        <a class="nav-item" onclick="switchTab('bookings', this)"><i class="fas fa-microscope"></i> <span>Tests</span></a>
+        <a class="nav-item" onclick="switchTab('reports', this)"><i class="fas fa-file-medical-alt"></i> <span>Reports</span></a>
         
         <a class="nav-item mobile-only" onclick="toggleMobileMenu()"><i class="fas fa-layer-group"></i> <span>Menu</span></a>
         
-        <a class="nav-item desktop-only" onclick="switchTab('profile')"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+        <a class="nav-item desktop-only" onclick="switchTab('profile', this)"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
         <a class="nav-item desktop-only" style="color: var(--danger); margin-top: auto;" onclick="logoutDashboard()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </nav>
 
@@ -278,40 +301,40 @@
         </div>
     </div>
 
-    <a href="../contact.html" id="floatingHelpBtn">
+    <a href="../contact.html" id="floatingHelpBtn" aria-label="Help and Support">
         <i class="fas fa-headset"></i><span class="help-text">Help</span>
     </a>
     
-    <div id="floatingCartBtn" onclick="goToGlobalCart()">
+    <div id="floatingCartBtn" onclick="goToGlobalCart()" role="button" aria-label="View Cart">
         <i class="fas fa-shopping-cart"></i>
         <span id="globalCartBadge">0</span>
     </div>
 
-    <div class="main-content">
+    <main class="main-content">
         
         <div id="profileBanner" style="display:none; background: var(--warning-light); color: #b45309; padding: 12px 20px; font-size: 13px; font-weight: 600; text-align: center; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #fcd34d;">
-            ⚠️ <strong>Profile Incomplete!</strong> Complete your details for Report Online, Quick Booking & Home Collection.
+            ⚠️ <strong>Profile Incomplete!</strong> Complete your details for Online Reports, Quick Booking &amp; Home Sample Collection.
             <button onclick="switchTab('profile')" style="background: #b45309; color: white; border: none; padding: 6px 14px; border-radius: 8px; margin-left: 10px; cursor: pointer; font-weight: bold;">Fill Now</button>
         </div>
 
-        <div class="mobile-header">
-            <div class="brand"><h2>Bhavya<span>Care</span></h2></div>
+        <header class="mobile-header">
+            <div class="brand"><h2>Bhavya<span>Diagnostics</span></h2></div>
             <div style="display: flex; align-items: center;">
                 <div class="user-profile-mini" onclick="switchTab('profile')">
                     <div class="greeting"><p style="margin:0;">Hello,</p><p class="name" id="userNameMobile">Loading...</p></div>
-                    <img src="https://ui-avatars.com/api/?name=User&background=e6f0fa&color=0056b3" alt="Profile" class="profile-img" id="mobileProfileImg">
+                    <img src="https://ui-avatars.com/api/?name=User&background=e6f0fa&color=0056b3" alt="Patient Profile" class="profile-img" id="mobileProfileImg">
                 </div>
             </div>
-        </div>
+        </header>
 
         <div class="desktop-header">
             <div>
-                <h3 style="margin: 0; font-size: 26px; color: var(--text-main); font-weight: 800;">Welcome back, <span id="userNameDesktop" style="color: var(--primary);">Patient</span>! 👋</h3>
-                <p style="margin: 5px 0 0 0; color: var(--text-light); font-weight: 500;">Here is your health summary.</p>
+                <h1 style="margin: 0; font-size: 26px; color: var(--text-main); font-weight: 800;">Welcome back, <span id="userNameDesktop" style="color: var(--primary);">Patient</span>! 👋</h1>
+                <p style="margin: 5px 0 0 0; color: var(--text-light); font-weight: 500;">Bhavya Diagnostics Bahadurgarh • Your Health Dashboard</p>
             </div>
             <div style="display: flex; align-items: center;">
                 <div class="user-profile-mini" style="background: white; padding: 6px 16px 6px 6px; border-radius: 30px; border: 1px solid var(--border);" onclick="switchTab('profile')">
-                    <img src="https://ui-avatars.com/api/?name=User&background=e6f0fa&color=0056b3" alt="Profile" class="profile-img" id="desktopProfileImg">
+                    <img src="https://ui-avatars.com/api/?name=User&background=e6f0fa&color=0056b3" alt="Patient Profile" class="profile-img" id="desktopProfileImg">
                     <span style="font-weight: 700; color: var(--text-main); margin-left: 10px;" id="userIdDisplay">Loading...</span>
                 </div>
             </div>
@@ -321,7 +344,7 @@
             
             <div class="global-search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="globalTestSearch" placeholder="Search Lab Tests, Profiles, Scans..." onkeypress="handleGlobalSearch(event)">
+                <input type="search" id="globalTestSearch" aria-label="Search Lab Tests and Health Packages" placeholder="Search CBC, Thyroid, Vitamin D3, Full Body Packages..." onkeypress="handleGlobalSearch(event)">
                 <button class="global-search-btn" onclick="executeGlobalSearch()">Search</button>
             </div>
             
@@ -335,35 +358,27 @@
                 <button class="q-btn" onclick="window.location.href='tel:8950112467'">
                     <div class="icon-circle" style="background:#f3e8ff; color:#2563eb;"><i class="fas fa-phone-alt"></i></div><span>Book by Call</span>
                 </button>
-                <button class="q-btn" onclick="window.open('https://wa.me/918950112467', '_blank')">
+                <button class="q-btn" onclick="window.open('https://wa.me/918950112467', '_blank', 'noopener,noreferrer')">
                     <div class="icon-circle" style="background:#dcfce7; color:#25D366;"><i class="fab fa-whatsapp"></i></div>
                     <span style="line-height: 1.2;">WhatsApp</span>
                 </button>
             </div>
 
-            <div class="data-box" style="padding: 15px 20px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-                <div class="section-title" style="margin-bottom: 15px; color: var(--text-main);">
-                    <span><i class="fas fa-tags" style="color: var(--warning); margin-right: 5px;"></i> Recommended Packages</span>
-                   <span style="font-size: 12px; color: var(--primary); cursor: pointer; font-weight: 700;" onclick="goToDiscountProfiles()">View All <i class="fas fa-chevron-right"></i></span>
+            <!-- ✨ TRENDING HEALTH PACKAGES (SAME AS INDEX.HTML) ✨ -->
+            <div class="data-box" style="padding: 16px 18px; background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);">
+                <div class="section-title" style="margin-bottom: 10px; color: var(--text-main);">
+                    <span><i class="fas fa-heartbeat" style="color: var(--primary); margin-right: 6px;"></i> Trending Health Packages</span>
+                    <span style="font-size: 12px; color: var(--primary); cursor: pointer; font-weight: 700;" onclick="window.location.href='../booking/booking.html'">View All <i class="fas fa-chevron-right"></i></span>
                 </div>
+                <div id="dashPackageCategories" class="dash-cat-nav"></div>
                 <div class="horizontal-slider" id="dashboardDiscountSlider">
-                    <div class="pkg-card" style="min-width: 270px; border-color: transparent; box-shadow: none; background: #fff;">
-                        <div class="dash-skel" style="height: 20px; width: 30%; margin-bottom: 12px;"></div>
-                        <div class="dash-skel" style="height: 18px; width: 70%; margin-bottom: 15px;"></div>
-                        <div class="dash-skel" style="height: 50px; width: 100%; margin-bottom: 15px;"></div>
+                    <div class="pkg-card" style="min-width: 290px; border-color: transparent; box-shadow: none; background: #fff;">
+                        <div class="dash-skel" style="height: 20px; width: 35%; margin-bottom: 10px;"></div>
+                        <div class="dash-skel" style="height: 18px; width: 75%; margin-bottom: 12px;"></div>
+                        <div class="dash-skel" style="height: 60px; width: 100%; margin-bottom: 12px;"></div>
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
                             <div class="dash-skel" style="height: 30px; width: 40%;"></div>
-                            <div class="dash-skel" style="height: 30px; width: 35%; border-radius: 12px;"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="pkg-card" style="min-width: 270px; border-color: transparent; box-shadow: none; background: #fff;">
-                        <div class="dash-skel" style="height: 20px; width: 30%; margin-bottom: 12px;"></div>
-                        <div class="dash-skel" style="height: 18px; width: 70%; margin-bottom: 15px;"></div>
-                        <div class="dash-skel" style="height: 50px; width: 100%; margin-bottom: 15px;"></div>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                            <div class="dash-skel" style="height: 30px; width: 40%;"></div>
-                            <div class="dash-skel" style="height: 30px; width: 35%; border-radius: 12px;"></div>
+                            <div class="dash-skel" style="height: 32px; width: 35%; border-radius: 10px;"></div>
                         </div>
                     </div>
                 </div>
@@ -387,7 +402,7 @@
 
             <div class="data-box" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); padding: 15px; border-color: #bfdbfe; display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <h4 style="margin: 0 0 5px 0; color: #3730a3; font-size: 14px; font-weight: 800;"><i class="fas fa-gift" style="color: #4f46e5;"></i> Refer & Earn</h4>
+                    <h4 style="margin: 0 0 5px 0; color: #3730a3; font-size: 14px; font-weight: 800;"><i class="fas fa-gift" style="color: #4f46e5;"></i> Refer &amp; Earn</h4>
                     <p style="margin: 0; font-size: 11px; color: #4338ca; font-weight: 600;">Share code, get rewards!</p>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; background: white; padding: 8px 12px; border-radius: 10px; border: 1px dashed #818cf8; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
@@ -398,7 +413,7 @@
             </div>
 
             <div id="vipPackageAlert" onclick="claimVipAndGoToCart()">
-                <i class="fas fa-gift" style="font-size: 16px; margin-right: 5px;"></i> Free VIP Package Pending — <span style="text-decoration: underline;">Claim & Book Now!</span>
+                <i class="fas fa-gift" style="font-size: 16px; margin-right: 5px;"></i> Free VIP Package Pending — <span style="text-decoration: underline;">Claim &amp; Book Now!</span>
             </div>
 
             <div class="data-box">
@@ -412,11 +427,11 @@
 
         <div id="bookings" class="tab-content">
             <div class="data-box">
-                <div class="section-title">My Lab Tests</div>
+                <div class="section-title">My Lab Tests &amp; Bookings</div>
                 <div class="filter-bar">
                     <div class="search-wrapper">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="searchBookingText" class="filter-input" placeholder="Search Lab or Test Name..." onkeyup="filterMyBookings()">
+                        <input type="text" id="searchBookingText" class="filter-input" placeholder="Search Lab, Order ID or Test Name..." onkeyup="filterMyBookings()">
                     </div>
                     <div class="filter-actions">
                         <input type="date" id="searchBookingDate" class="filter-input date-input" onchange="filterMyBookings()">
@@ -436,7 +451,7 @@
                  <div class="filter-bar">
                     <div class="search-wrapper">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="searchReportText" class="filter-input" placeholder="Search Test or Lab Name..." onkeyup="filterPatientReports()">
+                        <input type="text" id="searchReportText" class="filter-input" placeholder="Search Test, Order ID or Lab Name..." onkeyup="filterPatientReports()">
                     </div>
                     <div class="filter-actions">
                         <input type="date" id="searchReportDate" class="filter-input date-input" onchange="filterPatientReports()">
@@ -451,7 +466,7 @@
 
         <div id="wallet" class="tab-content">
             <div class="data-box">
-                <div class="section-title">Transaction History</div>
+                <div class="section-title">Wallet Transaction History</div>
                 <div id="walletHistoryContainer">
                     <div class="skel-card skeleton-box" style="height:60px;"></div>
                     <div class="skel-card skeleton-box" style="height:60px;"></div>
@@ -462,12 +477,12 @@
         <div id="profile" class="tab-content">
             <div class="data-box">
                 <div class="section-title" style="align-items: center;">
-                    <span style="font-size: 20px;">My Info</span>
+                    <span style="font-size: 20px;">My Profile Details</span>
                     <button onclick="switchTab('overview')" style="background:none; border:none; color:var(--text-light); font-size:24px; cursor:pointer;"><i class="fas fa-times-circle"></i></button>
                 </div>
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <img id="editProfilePreview" src="https://ui-avatars.com/api/?name=User&background=e6f0fa&color=0056b3" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-light); margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"><br>
-                    <input type="file" id="profileImageInput" accept="image/*" style="font-size: 12px; max-width: 200px;">
+                    <img id="editProfilePreview" src="https://ui-avatars.com/api/?name=User&background=e6f0fa&color=0056b3" alt="Profile Preview" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-light); margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);"><br>
+                    <input type="file" id="profileImageInput" accept="image/*" style="font-size: 12px; max-width: 220px;">
                 </div>
                 <div style="background: var(--bg-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border);">
                     <h5 style="margin: 0 0 10px 0; color: var(--primary); font-size: 13px; text-transform: uppercase;">Account Details</h5>
@@ -476,23 +491,24 @@
                         <div style="flex: 1; min-width: 120px;"><label style="font-size:11px; color:var(--text-light); font-weight:700;">Mobile Number</label><div style="font-weight:800; font-size:14px;" id="infoMobile">Loading...</div></div>
                     </div>
                 </div>
-                <h5 style="margin: 0 0 10px 0; color: var(--primary); font-size: 13px; text-transform: uppercase;">Personal Details</h5>
-                <div class="form-group"><input type="email" id="infoEmail" class="input-box" placeholder="Email Address"></div>
-                <div class="form-group"><input type="text" id="infoAddress" class="input-box" placeholder="Full Address (House, Street)"></div>
+                <h5 style="margin: 0 0 10px 0; color: var(--primary); font-size: 13px; text-transform: uppercase;">Personal &amp; Address Details</h5>
+                <div class="form-group"><input type="email" id="infoEmail" class="input-box" placeholder="Email Address (For Reports & Confirmations)"></div>
+                <div class="form-group"><input type="text" id="infoAddress" class="input-box" placeholder="Full Address (House No, Street, Landmark)"></div>
                 <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;"><input type="text" id="infoCity" class="input-box" placeholder="City/Village"></div>
-                    <div class="form-group" style="flex: 1;"><input type="text" id="infoDistrict" class="input-box" placeholder="District"></div>
+                    <div class="form-group" style="flex: 1;"><input type="text" id="infoCity" class="input-box" placeholder="City / Village (e.g. Bahadurgarh)"></div>
+                    <div class="form-group" style="flex: 1;"><input type="text" id="infoDistrict" class="input-box" placeholder="District (e.g. Jhajjar)"></div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;"><input type="text" id="infoState" class="input-box" placeholder="State"></div>
-                    <div class="form-group" style="flex: 1;"><input type="number" id="infoPincode" class="input-box" placeholder="Pincode"></div>
+                    <div class="form-group" style="flex: 1;"><input type="text" id="infoState" class="input-box" placeholder="State (e.g. Haryana)"></div>
+                    <div class="form-group" style="flex: 1;"><input type="number" id="infoPincode" class="input-box" placeholder="Pincode (e.g. 124507)"></div>
                 </div>
                 <input type="hidden" id="infoImageBase64" value="">
-                <button id="btnSaveProfile" style="background:var(--success); width:100%; color:white; border:none; margin-top:25px; font-weight:800; padding:15px; border-radius:12px; cursor:pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="savePatientProfile()">Save & Update Profile</button>
+                <button id="btnSaveProfile" style="background:var(--success); width:100%; color:white; border:none; margin-top:25px; font-weight:800; padding:15px; border-radius:12px; cursor:pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="savePatientProfile()">Save &amp; Update Profile</button>
             </div>
         </div>
-    </div>
+    </main>
 
+    <!-- VIP DETAILS MODAL -->
     <div id="vip-details-modal" class="modal-overlay">
         <button class="close-btn-modal" onclick="document.getElementById('vip-details-modal').style.display='none'">✖</button>
         <div style="text-align: center; margin-bottom: 15px;">
@@ -513,10 +529,11 @@
         <div style="display:flex; justify-content:space-between; background:white; border:1px solid var(--border); padding:10px 15px; border-radius:10px; align-items:center;" id="vd-mem3"></div>
         
         <button onclick="generateAndShowVipCard()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); width: 100%; color: white; border: none; margin-top: 15px; font-weight: 800; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
-            <i class="fas fa-id-card"></i> View & Download VIP Card
+            <i class="fas fa-id-card"></i> View &amp; Download VIP Card
         </button>
     </div>
 
+    <!-- CANCEL ORDER MODAL -->
     <div id="cancel-order-modal" class="modal-overlay">
         <button class="close-btn-modal" onclick="document.getElementById('cancel-order-modal').style.display='none'">✖</button>
         <div style="text-align: center; margin-bottom: 15px;">
@@ -528,6 +545,7 @@
         <button id="btnConfirmCancel" style="background:var(--danger); width:100%; color:white; border:none; margin-top:20px; font-weight:bold; padding:12px; border-radius:8px; cursor:pointer;" onclick="submitCancelOrder()">Confirm Cancellation</button>
     </div>
 
+    <!-- FEEDBACK MODAL -->
     <div class="modal-overlay" id="feedbackModal">
         <div class="modal" style="max-width: 400px; text-align: center;">
             <button class="close-btn-modal" onclick="document.getElementById('feedbackModal').style.display='none'">✖</button>
@@ -551,17 +569,17 @@
         </div>
     </div>
 
+    <!-- VIP DIGITAL CARD MODAL -->
     <div id="vipCardModal" class="vip-card-wrapper">
         <div style="position: relative;">
-            
             <div id="vipCardElement" class="premium-vip-card">
                 <div class="card-header-inner">
-                    <h3 class="brand-text">Bhavya<span>Care</span> <span style="font-size:10px; font-weight:600; color:#94a3b8; display:block; letter-spacing:2px; font-family:sans-serif;">PREMIUM HEALTHCARE</span></h3>
+                    <h3 class="brand-text">Bhavya<span>Diagnostics</span> <span style="font-size:10px; font-weight:600; color:#94a3b8; display:block; letter-spacing:2px; font-family:sans-serif;">PREMIUM HEALTHCARE</span></h3>
                     <div class="chip-icon"></div>
                 </div>
 
                 <div class="patient-info-row">
-                    <img id="vc-photo" src="" alt="Photo" class="patient-photo" onerror="this.src='https://ui-avatars.com/api/?name=VIP&background=f59e0b&color=fff'">
+                    <img id="vc-photo" src="" alt="VIP Member Photo" class="patient-photo" onerror="this.src='https://ui-avatars.com/api/?name=VIP&background=f59e0b&color=fff'">
                     <div class="patient-details">
                         <p class="patient-name-card" id="vc-name">Loading...</p>
                         <p class="patient-id-card" id="vc-id">ID: ----</p>
@@ -570,8 +588,7 @@
 
                 <div class="members-list">
                     <h5>Covered Members</h5>
-                    <div id="vc-members-container">
-                        </div>
+                    <div id="vc-members-container"></div>
                 </div>
 
                 <div class="card-footer-inner">
@@ -597,7 +614,6 @@
                 <button class="btn-card-action close" onclick="closeVipCardModal()"><i class="fas fa-times"></i> Close</button>
                 <button class="btn-card-action" onclick="downloadVipCard()"><i class="fas fa-download"></i> Download Card</button>
             </div>
-
         </div>
     </div>
 
@@ -611,6 +627,10 @@
         </div>
     </div>
 
+    <!-- Firebase SDKs (Required for Direct Firestore Data & Clean Logout across index.html) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="patient_dashboard.js"></script>
 </body>
 </html>
