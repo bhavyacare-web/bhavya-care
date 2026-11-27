@@ -7,7 +7,6 @@
             const userId = localStorage.getItem("bhavya_user_id");
             const role = localStorage.getItem("bhavya_role");
 
-            // Yeh block strictly check karega ki user genuinely logged in hai ya nahi (Blocks null/empty string bugs)
             const isValidUser = userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "" &&
                                 role && role !== "null" && role !== "undefined" && role.trim() !== "";
 
@@ -19,11 +18,11 @@
         });
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     
     <!-- ✨ BEST LOCAL & DIAGNOSTIC SEO META TAGS ✨ -->
-    <title>Bhavya Diagnostics Bahadurgarh | NABL Lab Blood Tests, Full Body Checkup, ECG & PFT</title>
-    <meta name="description" content="Bhavya Diagnostics, Main Jhajjar Road, Bahadurgarh — Book 700+ NABL certified lab tests (CBC, Thyroid, LFT, KFT, HbA1c, Vitamin D3/B12), Full Body Health Packages starting ₹199, ECG, PFT & Bhavya VIP Membership with free home sample collection. Call/WhatsApp 89501 12467.">
+    <title>Bhavya Diagnostics Bahadurgarh | NABL Lab Blood Tests, Full Body Checkup, ECG &amp; PFT</title>
+    <meta name="description" content="Bhavya Diagnostics, Main Jhajjar Road, Bahadurgarh — Book 700+ NABL certified lab tests (CBC, Thyroid, LFT, KFT, HbA1c, Vitamin D3/B12), Full Body Health Packages starting ₹199, ECG, PFT &amp; Bhavya VIP Membership with free home sample collection. Call/WhatsApp 89501 12467.">
     <meta name="keywords" content="Bhavya Diagnostics, Bhavya Diagnostics Bahadurgarh, blood test lab in Bahadurgarh, NABL lab Bahadurgarh, full body checkup Bahadurgarh, free home sample collection Bahadurgarh, Arogya Health Package 199, Gold Health Package 699, Platinum Health Package 1199, Bhavya VIP Membership, ECG test Bahadurgarh, PFT test Bahadurgarh, CBC LFT KFT Lipid Thyroid HbA1c Vitamin D3 Vitamin B12 test near Main Jhajjar Road Bahadurgarh">
     <meta name="author" content="Bhavya Diagnostics">
     <meta name="robots" content="index, follow, max-image-preview:large">
@@ -40,15 +39,15 @@
     <!-- Open Graph / WhatsApp / Facebook Share Preview -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Bhavya Diagnostics">
-    <meta property="og:title" content="Bhavya Diagnostics Bahadurgarh | NABL Lab Tests & Full Body Packages">
-    <meta property="og:description" content="700+ NABL certified blood tests (20-70% OFF), Full Body Checkups from ₹199, ECG, PFT & Free Home Sample Collection in Bahadurgarh. Call 89501 12467.">
+    <meta property="og:title" content="Bhavya Diagnostics Bahadurgarh | NABL Lab Tests &amp; Full Body Packages">
+    <meta property="og:description" content="700+ NABL certified blood tests (20-70% OFF), Full Body Checkups from ₹199, ECG, PFT &amp; Free Home Sample Collection in Bahadurgarh. Call 89501 12467.">
     <meta property="og:url" content="https://www.bhavyadiagnostics.com/">
     <meta property="og:image" content="https://www.bhavyadiagnostics.com/image/logo.jpeg">
     <meta property="og:locale" content="en_IN">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Bhavya Diagnostics Bahadurgarh | Blood Tests, Health Packages, ECG & PFT">
+    <meta name="twitter:title" content="Bhavya Diagnostics Bahadurgarh | Blood Tests, Health Packages, ECG &amp; PFT">
     <meta name="twitter:description" content="NABL accredited partner labs, Triple Protection accuracy, free home sample collection in Bahadurgarh. Timings: 7:00 AM - 8:00 PM.">
     <meta name="twitter:image" content="https://www.bhavyadiagnostics.com/image/logo.jpeg">
 
@@ -64,7 +63,7 @@
       "logo": "https://www.bhavyadiagnostics.com/image/logo.jpeg",
       "image": "https://www.bhavyadiagnostics.com/image/logo.jpeg",
       "telephone": "+91-8950112467",
-      "email": "diagnosticsbhavya@gmail.com",
+      "email": "contact@bhavyadiagnostics.com",
       "priceRange": "₹199 - ₹3,600",
       "address": {
         "@type": "PostalAddress",
@@ -132,8 +131,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Firebase App, Auth & Firestore SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
         /* === PREMIUM MODERN UI CSS === */
@@ -191,6 +192,7 @@
         .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         .action-btn { width: 100%; background-color: var(--secondary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .action-btn:hover { background-color: #059669; }
+        .action-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         /* 🌟 SECTIONS CSS 🌟 */
         .section-hero { background: linear-gradient(180deg, #e0f2fe 0%, #eff6ff 100%); padding: 20px 20px 40px; text-align: center; border-bottom: 1px solid #e2e8f0; }
@@ -223,18 +225,6 @@
         .wa-btn { background: #10b981; color: white; border: 1px solid #059669; }
         .rx-btn { background: #8b5cf6; color: white; border: 1px solid #7c3aed; }
 
-        /* ✨ COMPACT SERVICES & DISCOUNTS GRID ✨ */
-        .compact-diag-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1050px; margin: 0 auto 25px; text-align: left;}
-        .compact-diag-card { display: flex; align-items: center; gap: 15px; background: white; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.03);}
-        .compact-diag-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(37,99,235,0.1); border-color: #93c5fd;}
-        .cd-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0;}
-        .cd-info { display: flex; flex-direction: column; gap: 4px; }
-        .cd-title { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0;}
-        
-        .cd-tag { font-size: 11px; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 5px; }
-        .cd-tag i { font-size: 12px; }
-        .cd-discount { font-size: 11px; font-weight: 800; color: #059669; background: #d1fae5; padding: 4px 10px; border-radius: 8px; width: max-content; margin-top: 4px;}
-        
         .btn-more-services { display: inline-flex; align-items: center; gap: 8px; background: var(--text-main); color: white; padding: 14px 35px; border-radius: 12px; font-weight: 800; font-size: 15px; text-decoration: none; transition: 0.3s; margin-top: 15px; box-shadow: 0 4px 15px rgba(15,23,42,0.2);}
         .btn-more-services:hover { background: var(--primary); box-shadow: 0 8px 25px rgba(37,99,235,0.3);}
 
@@ -260,9 +250,9 @@
         .slider-wrapper { max-width: 1020px; margin: 0 auto; overflow-x: auto; display: flex; gap: 20px; padding: 15px 10px 30px; cursor: grab; -webkit-overflow-scrolling: touch;}
         .slider-wrapper::-webkit-scrollbar { display: none; }
         
-        .pkg-card { min-width: 330px; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 14px; transition: 0.3s; user-select: none;}
+        .pkg-card { min-width: 330px; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; user-select: none;}
         .pkg-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(37,99,235,0.12); border-color: #93c5fd;}
-        .pkg-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .pkg-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
         .pkg-cat-badge { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
         .pkg-test-count { background: #fef3c7; color: #d97706; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
         .pkg-title { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px; line-height: 1.3;}
@@ -270,8 +260,9 @@
         .pkg-desc ul { margin: 0; padding-left: 18px; font-size: 14px; color: #334155; font-weight: 600; line-height: 1.7;}
         .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: 12px; display: inline-block; margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd;}
 
-        .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
-        .pkg-meta-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 6px; line-height: 1.2; }
+        /* ✨ FASTING & REPORTING TIME BADGES ✨ */
+        .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+        .pkg-meta-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 7px; line-height: 1.25; }
         .pkg-meta-fasting { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
         .pkg-meta-report { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 
@@ -339,7 +330,6 @@
             .section-hero { padding: 15px 15px 25px; }
             .section-diagnostics { padding: 30px 15px; }
 
-            /* ✨ Mobile Compact Header Slider ✨ */
             .header-slider-wrap { margin-bottom: 14px; border-radius: 14px; }
             .header-slide { height: 155px; }
             .hs-arrow { width: 26px; height: 26px; font-size: 11px; }
@@ -349,7 +339,6 @@
             .hs-dot { width: 6px; height: 6px; }
             .hs-dot.active { width: 14px; }
             
-            /* ✨ Trust Stats Mobile Fix ✨ */
             .trust-stats-bar { gap: 15px; margin-top: 20px; padding-top: 20px; justify-content: space-between; }
             .stat-num { font-size: 18px; }
             .stat-text { font-size: 9px; }
@@ -366,16 +355,6 @@
             .hero-title { font-size: 20px; line-height: 1.3; margin-bottom: 10px;}
             .hero-subtitle { font-size: 13px; line-height: 1.5; margin-top: 5px; margin-bottom: 20px;}
 
-            .compact-diag-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0;}
-            .compact-diag-card { padding: 15px 10px; border-radius: 12px; flex-direction: column; text-align: center; gap: 8px;}
-            .cd-icon { width: 45px; height: 45px; font-size: 22px; margin: 0;}
-            .cd-info { align-items: center; }
-            .cd-title { font-size: 13px; line-height: 1.2;}
-            .cd-tag { font-size: 9px; justify-content: center; text-align: center;}
-            .cd-tag i { font-size: 10px; }
-            .cd-discount { font-size: 10px; padding: 3px 8px; margin-top: 2px;}
-            
-            /* ✨ COMPACT & PREMIUM STICKY PACKAGES ✨ */
             .section-packages { 
                 position: -webkit-sticky; 
                 position: sticky; 
@@ -390,23 +369,21 @@
             .section-packages .section-heading h2 { font-size: 20px; margin-bottom: 2px; }
             .section-packages .section-heading p { display: none; } 
             
-            /* Categories Scroll Fix */
             .home-cat-nav { margin: 0 auto 10px; padding: 5px 0; gap: 8px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start;}
             .home-cat-btn { padding: 6px 16px; font-size: 12px; border-radius: 20px; background: #f1f5f9; border: 1px solid #e2e8f0; flex: 0 0 auto;}
             .home-cat-btn.active { background: var(--primary); color: white; border: none; box-shadow: 0 4px 10px rgba(37,99,235,0.3);}
             
-            /* Package Scroll Fix */
             .slider-wrapper { 
                 margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; width: calc(100% + 20px);
                 scroll-snap-type: x mandatory; padding-bottom: 15px; gap: 15px; overflow-x: auto; flex-wrap: nowrap;
             }
-            .pkg-card { min-width: 85vw; max-width: 340px; padding: 18px; gap: 12px; border-radius: 18px; scroll-snap-align: start; background: #ffffff; flex: 0 0 auto;}
-            .pkg-title { font-size: 17px; margin-bottom: 4px;}
+            .pkg-card { min-width: 85vw; max-width: 340px; padding: 18px; gap: 10px; border-radius: 18px; scroll-snap-align: start; background: #ffffff; flex: 0 0 auto;}
+            .pkg-title { font-size: 17px; margin-bottom: 2px;}
             .pkg-test-count { font-size: 12.5px; padding: 5px 11px; }
-            .pkg-desc { padding: 12px 14px; border-radius: 12px; background: #f8fafc; margin-bottom: 4px;}
+            .pkg-desc { padding: 12px 14px; border-radius: 12px; background: #f8fafc; margin-bottom: 2px;}
             .pkg-desc ul { font-size: 13.5px; line-height: 1.65; }
             .pkg-param-pill { font-size: 12.5px; padding: 6px 13px; margin-top: 10px; }
-            .pkg-meta-badge { font-size: 9.5px; padding: 3px 7px; }
+            .pkg-meta-badge { font-size: 10px; padding: 3px 8px; }
             .pkg-basic-price { font-size: 18px; }
             .btn-add-cart { padding: 6px 14px; font-size: 12px; border-radius: 8px;}
             .qty-control { height: 30px; }
@@ -465,13 +442,12 @@
                     <button class="user-profile-btn" onclick="toggleMenu()">My Account</button>
                 </div>
                 <div id="myDropdown" class="dropdown-content">
-                    <!-- Dashboard link is strictly controlled by script now -->
                     <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;"><i class="fas fa-chart-line" style="color: var(--secondary); width: 20px;"></i> My Dashboard</a>
                     <a href="prescription.html"><i class="fas fa-upload" style="color: #8b5cf6; width: 20px;"></i> Upload Prescription</a>
-                    <a href="terms.html"><i class="fas fa-file-contract" style="color: #64748b; width: 20px;"></i> Terms & Conditions</a>
+                    <a href="terms.html"><i class="fas fa-file-contract" style="color: #64748b; width: 20px;"></i> Terms &amp; Conditions</a>
                     <a href="privacy.html"><i class="fas fa-user-shield" style="color: #64748b; width: 20px;"></i> Privacy Policy</a>
                     <a href="refund.html"><i class="fas fa-undo" style="color: #64748b; width: 20px;"></i> Refund Policy</a>
-                    <a href="contact.html"><i class="fas fa-headset" style="color: #64748b; width: 20px;"></i> Help & Support</a>
+                    <a href="contact.html"><i class="fas fa-headset" style="color: #64748b; width: 20px;"></i> Help &amp; Support</a>
                     <hr>
                     <a href="#" id="menu-logout" onclick="logoutUser()" style="display: none; color: #e74c3c;"><i class="fas fa-sign-out-alt" style="width: 20px;"></i> Logout</a>
                 </div>
@@ -486,7 +462,6 @@
         <div id="phone-section">
             <div id="partner-role-container" style="display: none; margin-bottom: 15px;">
                 <p style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Select Partner Type:</p>
-                <!-- Dhyan dijiye yahan se Hospital aur Executive options hta diye hain -->
                 <select id="partnerRole" class="input-box" onchange="updateNameLabel()">
                     <option value="lab" selected>Lab</option>
                 </select>
@@ -503,7 +478,7 @@
             <input type="tel" id="otpCode" class="input-box" placeholder="6-digit OTP" maxlength="6">
             <button class="action-btn" style="background-color: #0056b3;" onclick="verifyOTP()">Verify Mobile</button>
         </div>
-        <p class="support-text">Need help? Email us at diagnosticsbhavya@gmail.com</p>
+        <p class="support-text" style="font-size:12px; color:#64748b; margin-top:12px;">Need help? Email us at contact@bhavyadiagnostics.com</p>
     </div>
 
     <!-- ✨ ADMIN PASSWORD MODAL ✨ -->
@@ -719,10 +694,10 @@
             </div>
 
             <div class="footer-col">
-                <h3>Legal & Policies</h3>
-                <a href="terms.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Terms & Conditions</a>
+                <h3>Legal &amp; Policies</h3>
+                <a href="terms.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Terms &amp; Conditions</a>
                 <a href="privacy.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Privacy Policy</a>
-                <a href="refund.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Refund & Cancellation</a>
+                <a href="refund.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Refund &amp; Cancellation</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -785,7 +760,6 @@
                 dotsBox.appendChild(dot);
             }
 
-            // Touch swipe support for mobile
             let touchStartX = 0;
             wrap.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
             wrap.addEventListener('touchend', (e) => {
@@ -818,34 +792,10 @@
             }, 3500);
         }
 
-        // ✨ STRICT DASHBOARD NAVIGATION BUTTON FIX ✨
-        function goToDashboard() {
-            const userId = localStorage.getItem("bhavya_user_id");
-            const role = localStorage.getItem("bhavya_role");
-
-            // Strictly check if actual user data is present, otherwise block navigation
-            const isValidUser = userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "" &&
-                                role && role !== "null" && role !== "undefined" && role.trim() !== "";
-
-            if (!isValidUser) {
-                showHomeToast("Please Login First to access Dashboard!", "error");
-                if (typeof openPatientLogin === "function") {
-                    openPatientLogin(); // Show login popup
-                }
-                return;
-            }
-
-            // Route to correct dashboard only if valid
-            if (role === "lab") window.location.href = "Lab/lab_dashboard.html"; 
-            else if (role === "patient") window.location.href = "patient_dashboard/patient_dashboard.html";
-            else if (role === "admin") window.location.href = "admin/admin_dashboard.html"; 
-        }
-
         // ✨ AUTO OPEN VIP MODAL, SLIDER & DYNAMIC STATS LOGIC ✨
         document.addEventListener("DOMContentLoaded", () => {
             initHeaderSlider();
 
-            // ✨ VIP POPUP LOGIC ✨
             if (!sessionStorage.getItem('vipPopupShown')) {
                 setTimeout(() => {
                     openVipImageModal();
@@ -853,17 +803,13 @@
                 }, 800); 
             }
 
-            // ✨ DYNAMIC TIME-BASED HAPPY PATIENTS ✨
             updateHappyPatients();
         });
 
         function updateHappyPatients() {
-            // Base date set to May 1, 2026 (20,000 patients base line)
             const baseDate = new Date("2026-05-01T00:00:00").getTime(); 
             const now = new Date().getTime();
             const diffInMinutes = Math.max(0, (now - baseDate) / (1000 * 60));
-            
-            // Har 15 minute mein 1 naya patient badhega automatically!
             const extraPatients = Math.floor(diffInMinutes / 15);
             const totalPatients = 20000 + extraPatients;
             
@@ -891,9 +837,8 @@
             else { showHomeToast("Incorrect Password! Access Denied.", "error"); }
         }
 
-        // ✨ VIP CLICK LOGIC WITH LOGIN CHECK ✨
         function handleVipRateClick(event) {
-            if(event) event.stopPropagation(); // Prevents double clicking if clicked inside a card
+            if(event) event.stopPropagation();
             const userId = localStorage.getItem("bhavya_user_id");
             if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") { 
                 window.location.href = 'vip/vip_member.html'; 
@@ -924,7 +869,7 @@
             let descRaw = String(service.description || '');
             let formattedDesc = "<p style='text-align:center;'>No details available.</p>";
             if (descRaw.trim() !== "") {
-                let items = descRaw.split(/<br>|\n/).filter(i => i.trim() !== '');
+                let items = descRaw.split(/<br\s*\/?>|\n/i).filter(i => i.trim() !== '');
                 formattedDesc = "<ul>" + items.map(i => `<li style="margin-bottom:6px; border-bottom:1px dashed #eee; padding-bottom:4px;">${homeFormatText(i.trim())}</li>`).join('') + "</ul>";
                 if (service.number_of_test) {
                     formattedDesc = `<div style="background:#e0f2fe; color:#0284c7; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; margin-bottom:15px; display:inline-block;"><i class="fas fa-microscope"></i> Includes ${service.number_of_test} Parameters</div>` + formattedDesc;
@@ -947,10 +892,6 @@
             }
         }
 
-        function searchAndGo(category) {
-            window.location.href = `booking/booking.html?search=${encodeURIComponent(category)}`;
-        }
-        
         function executeHomeSearch() {
             let query = document.getElementById("globalSearchInput").value.trim();
             if (query) { window.location.href = `booking/booking.html?search=${encodeURIComponent(query)}`; }
@@ -972,7 +913,8 @@
             });
         }
 
-        const HOME_GAS_URL = "https://script.google.com/macros/s/AKfycbz_leCWfb7HNhh4BLGLMqhM8dF9jCKpvmqIZkijnzEJl__E3dZftwl3z-hZ7mmzYtrHSA/exec";
+        // Updated to the latest deployed Apps Script URL returning fasting & reporting_time
+        const HOME_GAS_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
         let homeAllServices = [];
         let homeCurrentSubCat = 'all';
         let homePageCart = [];
@@ -982,10 +924,14 @@
                 let stored = localStorage.getItem('bhavyaCart');
                 if (stored) { homePageCart = JSON.parse(stored); }
 
-                let cachedServices = localStorage.getItem('bhavyaServicesCache');
+                let cachedServices = localStorage.getItem('bhavya_services_cache') || localStorage.getItem('bhavyaServicesCache');
                 if (cachedServices) {
-                    homeAllServices = JSON.parse(cachedServices);
-                    renderHomePackages();
+                    const parsed = JSON.parse(cachedServices);
+                    // Only use cache if it already contains the new fasting/reporting_time fields
+                    if (Array.isArray(parsed) && parsed.length > 0 && ('fasting' in parsed[0] || 'reporting_time' in parsed[0])) {
+                        homeAllServices = parsed;
+                        renderHomePackages();
+                    }
                 }
             } catch (e) { homePageCart = []; }
 
@@ -993,11 +939,13 @@
             .then(r => r.json()).then(res => {
                 if(res.status === "success") {
                     homeAllServices = res.data.services || [];
-                    try { localStorage.setItem('bhavyaServicesCache', JSON.stringify(homeAllServices)); } catch (e) {}
+                    try {
+                        localStorage.setItem('bhavya_services_cache', JSON.stringify(homeAllServices));
+                        localStorage.setItem('bhavyaServicesCache', JSON.stringify(homeAllServices));
+                    } catch (e) {}
                     renderHomePackages(); 
                     enableDragScroll('.slider-wrapper');
                     enableDragScroll('.home-cat-nav');
-                    enableDragScroll('.compact-diag-grid'); 
                     enableDragScroll('#reviewsSlider');
 
                     if (document.activeElement && document.activeElement.id === "globalSearchInput") {
@@ -1008,20 +956,6 @@
             
             updateHomeCartBadge(); 
         });
-
-        function getPkgField(obj, keywords) {
-            if (!obj) return "";
-            for (const key of Object.keys(obj)) {
-                const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (keywords.some(kw => normKey.includes(kw))) {
-                    const val = String(obj[key] || '').trim();
-                    if (val !== "" && val.toLowerCase() !== "undefined" && val.toLowerCase() !== "null") {
-                        return val;
-                    }
-                }
-            }
-            return "";
-        }
 
         function renderHomePackages(subCat = homeCurrentSubCat) {
             homeCurrentSubCat = subCat;
@@ -1042,7 +976,7 @@
                 if(c === "") return;
                 let activeClass = c === homeCurrentSubCat ? "active" : "";
                 let displayName = c === 'all' ? "All" : homeFormatText(c);
-                navHtml += `<button class="home-cat-btn ${activeClass}" onclick="renderHomePackages('${c}')">${displayName}</button>`;
+                navHtml += `<button class="home-cat-btn ${activeClass}" onclick="renderHomePackages('${c.replace(/'/g, "\\'")}')">${displayName}</button>`;
             });
             nav.innerHTML = navHtml;
 
@@ -1078,8 +1012,8 @@
                 }
 
                 // Fasting (Column L) aur Reporting Time (Column N)
-                let fastingVal = getPkgField(pkg, ['fasting', 'empty', 'stomach', 'prep']);
-                let reportVal = getPkgField(pkg, ['reporting', 'reporttime', 'reporttiming', 'reporttat', 'timing', 'tat']);
+                let fastingVal = String(pkg.fasting || '').trim();
+                let reportVal = String(pkg.reporting_time || '').trim();
                 let fastingLabel = fastingVal
                     ? (fastingVal.toLowerCase().includes('fast') || fastingVal.toLowerCase().includes('empty') ? fastingVal : `Fasting: ${fastingVal}`)
                     : "";
@@ -1095,7 +1029,6 @@
                     </div>`;
                 }
 
-                // Upar ke 2 aur niche ke 2 test show karne ka logic
                 let descRaw = String(pkg.description || '');
                 let descPreviewHtml = "";
                 if (descRaw.trim() !== "") {
@@ -1192,7 +1125,7 @@
 
                 html += `<div style="padding:10px 18px; background:#f8fafc; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; border-bottom:1px solid #e2e8f0; border-top-left-radius:16px; border-top-right-radius:16px;">🔥 Popular Tests</div>`;
                 popular.forEach(s => { html += renderSearchRow(s, isPkgType(s)); });
-                html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="window.location.href='booking/booking.html'">View all tests & packages <i class="fas fa-arrow-right"></i></div>`;
+                html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="window.location.href='booking/booking.html'">View all tests &amp; packages <i class="fas fa-arrow-right"></i></div>`;
             } else {
                 const matchesQuery = (s) => {
                     const name = String(s.service_name || '').toLowerCase();
@@ -1244,7 +1177,15 @@
                 homePageCart[index].qty += change;
                 if (homePageCart[index].qty <= 0) { homePageCart.splice(index, 1); showHomeToast("Item removed from Cart.", "info"); }
             } else if (change > 0) { 
-                homePageCart.push({ service_id: id, service_name: name, price: price, qty: 1, service_type: type }); 
+                const svcObj = homeAllServices.find(s => String(s.service_id) === id);
+                homePageCart.push({
+                    service_id: id,
+                    service_name: name,
+                    price: price,
+                    qty: 1,
+                    service_type: type,
+                    labs: svcObj ? (svcObj.labs || "") : ""
+                }); 
                 showHomeToast("Item Added to Cart! 🛒", "success");
             }
             localStorage.setItem('bhavyaCart', JSON.stringify(homePageCart));
