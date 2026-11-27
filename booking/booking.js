@@ -152,6 +152,21 @@ let userWalletBalance = 0;
 let finalBill = { subtotal: 0, collectionCharge: 0, walletUsed: 0, refDiscount: 0, totalPayable: 0, refCode: "" };
 let labSlots = {}; 
 
+// =======================================================
+// CHECK SERVICEABLE PINCODES FROM services_rule SHEET
+// =======================================================
+function isPincodeServiceable(pincode) {
+    const rawPins = String(appRules.serviceable_pincodes || "").trim();
+    if (!rawPins) return true; // Agar sheet me rule blank/inactive hai to sab allow rahega
+    const allowedList = rawPins.split(',').map(p => p.trim()).filter(Boolean);
+    if (allowedList.length === 0) return true;
+    return allowedList.includes(String(pincode || "").trim());
+}
+
+function showHomeUnavailableAlert() {
+    alert(`Home Sample Collection is currently not available for Pincode ${bookingData.pincode}. Please select Center Visit to proceed.`);
+}
+
 window.onload = async () => {
     updateCartUI(); 
     await syncFirebasePatientState();
@@ -1169,10 +1184,19 @@ async function savePatientInfo() {
 
     savePatientToFirebase(updateObj);
 
+    const canHomeCollect = isPincodeServiceable(pin);
     cart.forEach(item => {
         let type = (item.service_type || "pathology").toLowerCase().trim();
-        if(!item.fulfillment) item.fulfillment = homeServiceCategories.includes(type) ? "home" : "center";
+        if (!canHomeCollect && item.service_id !== "VIP-FREE-001") {
+            item.fulfillment = "center";
+        } else {
+            item.fulfillment = homeServiceCategories.includes(type) ? "home" : "center";
+        }
     });
+
+    if (!canHomeCollect) {
+        showToast(`Home collection unavailable at ${pin}. Center Visit selected.`, "error");
+    }
 
     document.getElementById('step1-nav').classList.add('completed');
     document.getElementById('step2-nav').classList.add('active');
@@ -1219,6 +1243,10 @@ function autoAssignGroupLabs() {
 
         let type = (item.service_type || "pathology").toLowerCase().trim();
         let eligibleLabs = getLabsForService(item);
+
+        if (!isPincodeServiceable(bookingData.pincode)) {
+            item.fulfillment = "center";
+        }
 
         if (eligibleLabs.length > 0) {
             if (!assignedLabs[type]) {
@@ -1304,12 +1332,23 @@ function renderGroupedCart() {
         }
 
         let isHomeEligible = homeServiceCategories.includes(type);
-        let isHome = group.fulfillment === "home";
+        let canHomeAtPincode = isPincodeServiceable(bookingData.pincode);
+        let isHome = canHomeAtPincode && (group.fulfillment === "home");
 
-        if(isHomeEligible) {
+        if (isHomeEligible) {
+            let homeClickAction = canHomeAtPincode
+                ? `changeGroupFulfill('${type.replace(/'/g, "\\'")}', 'home')`
+                : `showHomeUnavailableAlert()`;
+            let homeBtnStyle = canHomeAtPincode
+                ? ""
+                : "opacity: 0.6; cursor: not-allowed; background: #f8fafc;";
+            let lockIcon = canHomeAtPincode
+                ? ""
+                : ' <i class="fas fa-lock" style="font-size:11px; margin-left:4px;"></i>';
+
             html += `
                 <div class="service-toggle-box" style="margin-bottom:15px;">
-                    <button class="toggle-btn ${isHome ? 'active' : ''}" onclick="changeGroupFulfill('${type.replace(/'/g, "\\'")}', 'home')"><i class="fas fa-home"></i> Home Collection</button>
+                    <button class="toggle-btn ${isHome ? 'active' : ''}" style="${homeBtnStyle}" onclick="${homeClickAction}"><i class="fas fa-home"></i> Home Collection${lockIcon}</button>
                     <button class="toggle-btn ${!isHome ? 'active' : ''}" onclick="changeGroupFulfill('${type.replace(/'/g, "\\'")}', 'center')"><i class="fas fa-hospital"></i> Center Visit</button>
                 </div>`;
         } else {
@@ -1357,6 +1396,10 @@ function renderGroupedCart() {
 }
 
 function changeGroupFulfill(type, fulfillment) {
+    if (fulfillment === "home" && !isPincodeServiceable(bookingData.pincode)) {
+        showHomeUnavailableAlert();
+        return;
+    }
     cart.forEach(item => {
         if ((item.service_type || "pathology").toLowerCase().trim() === type) item.fulfillment = fulfillment;
     });
