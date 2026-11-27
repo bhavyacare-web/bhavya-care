@@ -157,7 +157,7 @@ let labSlots = {};
 // =======================================================
 function isPincodeServiceable(pincode) {
     const rawPins = String(appRules.serviceable_pincodes || "").trim();
-    if (!rawPins) return true; // Agar sheet me rule blank/inactive hai to sab allow rahega
+    if (!rawPins) return true;
     const allowedList = rawPins.split(',').map(p => p.trim()).filter(Boolean);
     if (allowedList.length === 0) return true;
     return allowedList.includes(String(pincode || "").trim());
@@ -604,7 +604,8 @@ function updateQty(id, change, price, name, type) {
             price: price,
             qty: 1,
             service_type: type,
-            labs: svcObj ? (svcObj.labs || "") : ""
+            labs: svcObj ? (svcObj.labs || "") : "",
+            lab_cost: svcObj ? (Number(svcObj.lab_cost) || 0) : 0
         }); 
         showToast("Item added to cart!", "success");
     }
@@ -1039,7 +1040,7 @@ function handleHomeNavigation() {
 }
 
 // =======================================================
-// 🌟 CART & CHECKOUT PAGE LOGIC (100% Firebase + Column R Labs) 🌟
+// 🌟 CART & CHECKOUT PAGE LOGIC (100% Firebase + Column R Labs + Column S Lab Cost) 🌟
 // =======================================================
 function initCartPage() {
     let s2 = document.getElementById('step2-card');
@@ -1973,7 +1974,19 @@ async function processOrderSubmission(userId) {
         const orderId = "ORD-" + Date.now().toString().slice(-6);
         const customUserId = localStorage.getItem("bhavya_user_id") || generateCustomUserId(bookingData.name, bookingData.mobile);
 
-        // 1. Save Booking in Firebase 'bookings' collection
+        // Ensure every cart item carries its B2B lab_cost from Column S (with live catalog fallback)
+        const enrichedCart = cart.map(item => {
+            const liveSvc = allServices.find(s => String(s.service_id) === String(item.service_id));
+            const unitLabCost = Number(item.lab_cost ?? (liveSvc ? liveSvc.lab_cost : 0)) || 0;
+            return {
+                ...item,
+                lab_cost: unitLabCost
+            };
+        });
+
+        const totalLabCost = enrichedCart.reduce((sum, item) => sum + ((Number(item.lab_cost) || 0) * (Number(item.qty) || 1)), 0);
+
+        // 1. Save Booking in Firebase 'bookings' collection (including B2B lab_cost for Profit & Loss)
         await db.collection("bookings").doc(orderId).set({
             order_id: orderId,
             uid: authUser.uid,
@@ -1984,9 +1997,9 @@ async function processOrderSubmission(userId) {
             city: bookingData.city,
             pincode: bookingData.pincode,
             address: bookingData.address,
-            cart_items: cart,
+            cart_items: enrichedCart,
             lab_slots: labSlots,
-            fulfillment: cart.some(c => c.fulfillment === "home") ? "home" : "center",
+            fulfillment: enrichedCart.some(c => c.fulfillment === "home") ? "home" : "center",
             subtotal: finalBill.subtotal,
             collection_charge: finalBill.collectionCharge,
             wallet_used: finalBill.walletUsed,
@@ -1994,6 +2007,7 @@ async function processOrderSubmission(userId) {
             total_discount: (finalBill.walletUsed + finalBill.refDiscount),
             referral_code: finalBill.refCode,
             final_total: finalBill.totalPayable,
+            lab_cost: totalLabCost,
             report_url: "",
             status: "Pending",
             payment_status: "DUE",
@@ -2031,7 +2045,7 @@ async function processOrderSubmission(userId) {
 
         await savePatientToFirebase(patientUpdateObj);
 
-        // 3. Credit Referral Bonus (e.g. ₹50 from services_rule) to Referrer's Firebase Wallet
+        // 3. Credit Referral Bonus (from services_rule) to Referrer's Firebase Wallet
         if (finalBill.refCode && validReferrerUid && validReferrerUid !== authUser.uid) {
             try {
                 const bonusAmt = Number(appRules.referral_bonus || 50);
@@ -2063,7 +2077,7 @@ async function processOrderSubmission(userId) {
         validReferrerUid = "";
 
         // 4. Automatic Booking Confirmation Email (booking@bhavyadiagnostics.com)
-        const itemsRowsHtml = cart.map(i => `
+        const itemsRowsHtml = enrichedCart.map(i => `
             <tr>
                 <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(i.service_name)} (x${i.qty || 1})<br><small style="color:#64748b;">Lab: ${escapeHtml(i.selected_lab_name || "Bhavya Diagnostics")} (${escapeHtml(i.fulfillment || "home")})</small></td>
                 <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;">₹${Number(i.price || 0) * Number(i.qty || 1)}</td>
@@ -2305,7 +2319,8 @@ function addSurpriseToCart() {
         service_type: "surprise_package", 
         selected_lab_id: "BHAVYACARE-INTERNAL",
         selected_lab_name: "Bhavya Diagnostics Nodal Center",
-        fulfillment: "center"
+        fulfillment: "center",
+        lab_cost: Number(surpriseService.lab_cost) || 0
     });
 
     localStorage.setItem('bhavyaCart', JSON.stringify(cart));
