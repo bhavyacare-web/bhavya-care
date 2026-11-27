@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Admin &amp; Operations Panel | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="image/logo.jpeg" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0056b3; --primary-light: #e6f0fa; --primary-hover: #004494;
+            --success: #10b981; --success-soft: #d1fae5;
+            --warning: #f59e0b; --warning-soft: #fef3c7;
+            --danger: #ef4444; --danger-soft: #fee2e2;
+            --bg-color: #f1f5f9; --card-bg: #ffffff;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 0; background: var(--bg-color); color: var(--text-main); }
+
+        /* LOGIN GATE OVERLAY */
+        #adminLoginGate { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: white; width: 100%; max-width: 390px; border-radius: 22px; padding: 32px 26px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.35); }
+        .login-card img { height: 55px; border-radius: 10px; margin-bottom: 12px; }
+
+        /* NAVBAR */
+        .navbar { background: #ffffff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+        .brand-wrap { display: flex; align-items: center; gap: 10px; }
+        .brand-wrap img { height: 40px; border-radius: 8px; }
+        .brand-wrap h1 { font-size: 19px; font-weight: 800; margin: 0; color: var(--primary); }
+        .brand-wrap span { color: var(--success); }
+        .role-pill { background: var(--primary-light); color: var(--primary); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .btn-sm { border: none; padding: 9px 14px; border-radius: 9px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-refresh { background: var(--primary-light); color: var(--primary); }
+        .btn-logout { background: var(--danger-soft); color: var(--danger); }
+
+        /* MAIN TABS BAR */
+        .main-tabs { background: #ffffff; padding: 10px 24px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        .main-tabs::-webkit-scrollbar { display: none; }
+        .main-tab-btn { background: #f8fafc; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: 0.2s; }
+        .main-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
+
+        .container { max-width: 1320px; margin: 22px auto; padding: 0 20px 60px; }
+        .section-panel { display: none; }
+        .section-panel.active { display: block; }
+
+        /* KPI SUMMARY CARDS */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 22px; }
+        .kpi-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .kpi-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .kpi-val { font-size: 26px; font-weight: 800; color: var(--text-main); }
+        .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
+
+        /* TOOLBAR & FILTERS */
+        .toolbar { background: white; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .input-ctrl { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; font-size: 13.5px; font-weight: 600; outline: none; background: #f8fafc; color: var(--text-main); }
+        .input-ctrl:focus { border-color: var(--primary); background: white; }
+        .search-grow { flex: 1; min-width: 220px; }
+
+        /* TABLES */
+        .table-card { background: white; border-radius: 16px; border: 1px solid var(--border); overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+        th, td { padding: 13px 15px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: middle; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 800; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--border); }
+        tr:hover { background: #f8fafc; }
+
+        /* BADGES & BUTTONS */
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; text-transform: uppercase; }
+        .b-pending { background: var(--warning-soft); color: #b45309; }
+        .b-confirmed { background: var(--primary-light); color: var(--primary); }
+        .b-completed { background: var(--success-soft); color: #065f46; }
+        .b-cancelled { background: var(--danger-soft); color: #991b1b; }
+
+        .btn-act { border: none; padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin: 2px; }
+        .btn-blue { background: var(--primary); color: white; }
+        .btn-green { background: var(--success); color: white; }
+        .btn-amber { background: var(--warning); color: #1e293b; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn-gray { background: #e2e8f0; color: var(--text-main); }
+
+        .sub-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
+        .sub-tab { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--text-muted); }
+        .sub-tab.active { background: #0f172a; color: white; border-color: #0f172a; }
+
+        /* MODALS */
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 2000; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: white; width: 100%; max-width: 560px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+        .modal-close { position: absolute; right: 16px; top: 16px; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; color: var(--text-muted); }
+        .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin: 12px 0 5px; }
+        .full-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; outline: none; }
+        .full-input:focus { border-color: var(--primary); }
+
+        .patient-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+
+    <!-- SECURE FIREBASE ADMIN / STAFF LOGIN GATE -->
+    <div id="adminLoginGate">
+        <div class="login-card">
+            <img src="image/logo.jpeg" alt="Bhavya Diagnostics">
+            <h2 style="margin:0 0 6px; font-size:22px; color:#0f172a;">Admin &amp; Staff Portal</h2>
+            <p style="margin:0 0 20px; font-size:13px; color:#64748b;">Bhavya Diagnostics Bahadurgarh • Authorized Access Only</p>
+            <input type="email" id="gateEmail" class="full-input" placeholder="Staff / Admin Email" style="margin-bottom:12px;">
+            <input type="password" id="gatePassword" class="full-input" placeholder="Password" onkeypress="if(event.key==='Enter') handleGateLogin()" style="margin-bottom:16px;">
+            <button id="btnGateLogin" onclick="handleGateLogin()" class="btn-act btn-blue" style="width:100%; justify-content:center; padding:14px; font-size:15px;">Sign In <i class="fas fa-arrow-right"></i></button>
+            <p style="margin:16px 0 0; font-size:12px;"><a href="index.html" style="color:#64748b; text-decoration:none;">← Back to Website Home</a></p>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN APP -->
+    <div id="adminAppWrapper" style="display:none;">
+        <header class="navbar">
+            <div class="brand-wrap">
+                <img src="image/logo.jpeg" alt="Bhavya Diagnostics">
+                <div>
+                    <h1>Bhavya <span>Diagnostics</span></h1>
+                    <div style="font-size:11px; color:var(--text-muted); font-weight:600;" id="loggedStaffEmail">-</div>
+                </div>
+                <span class="role-pill" id="loggedStaffRole">ADMIN</span>
+            </div>
+            <div class="nav-right">
+                <button class="btn-sm btn-refresh" onclick="refreshAllAdminData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn-sm btn-logout" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- ROLE-CONTROLLED NAVIGATION TABS -->
+        <nav class="main-tabs" id="adminMainTabs">
+            <button class="main-tab-btn active" data-tab="bookings" onclick="switchMainTab('bookings')"><i class="fas fa-microscope"></i> Bookings &amp; Reports</button>
+            <button class="main-tab-btn" data-tab="patients" onclick="switchMainTab('patients')"><i class="fas fa-crown"></i> Patients &amp; VIP</button>
+            <button class="main-tab-btn" data-tab="withdrawals" onclick="switchMainTab('withdrawals')"><i class="fas fa-wallet"></i> Wallet &amp; Withdrawals</button>
+            <button class="main-tab-btn" data-tab="support" onclick="switchMainTab('support')"><i class="fas fa-file-prescription"></i> Prescriptions &amp; Support</button>
+            <button class="main-tab-btn" data-tab="pnl" onclick="switchMainTab('pnl')"><i class="fas fa-chart-line"></i> Profit &amp; Loss</button>
+            <button class="main-tab-btn" data-tab="staff" onclick="switchMainTab('staff')"><i class="fas fa-user-lock"></i> Staff &amp; Passwords</button>
+        </nav>
+
+        <main class="container">
+
+            <!-- =================================================== -->
+            <!-- TAB 1: BOOKINGS & REPORT PDF UPLOAD                 -->
+            <!-- =================================================== -->
+            <section id="panel-bookings" class="section-panel active">
+                <div class="kpi-grid">
+                    <div class="kpi-card"><div class="kpi-label">Total Bookings</div><div class="kpi-val" id="kpiTotalOrders">0</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Pending / Confirmed</div><div class="kpi-val" style="color:var(--warning);" id="kpiPendingOrders">0</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Completed &amp; Reported</div><div class="kpi-val" style="color:var(--success);" id="kpiCompletedOrders">0</div></div>
+                </div>
+
+                <div class="toolbar">
+                    <input type="text" id="bookingSearchInput" class="input-ctrl search-grow" placeholder="🔍 Search Order ID, Patient Name, Mobile, or Test..." onkeyup="renderBookingsTable()">
+                    <select id="bookingStatusFilter" class="input-ctrl" onchange="renderBookingsTable()">
+                        <option value="ALL">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <input type="date" id="bookingDateFilter" class="input-ctrl" onchange="renderBookingsTable()">
+                    <button class="btn-act btn-gray" onclick="clearBookingFilters()">Clear</button>
+                </div>
+
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID &amp; Date</th>
+                                <th>Patient Details</th>
+                                <th>Tests / Packages &amp; Lab</th>
+                                <th>Slot &amp; Mode</th>
+                                <th>Billing &amp; Lab Cost</th>
+                                <th>Status &amp; Report</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsTableBody">
+                            <tr><td colspan="7" style="text-align:center; padding:30px;">Loading bookings from Firebase...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 2: PATIENTS & VIP MEMBERSHIP APPROVALS          -->
+            <!-- =================================================== -->
+            <section id="panel-patients" class="section-panel">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" id="subtab-vip" onclick="switchPatientSubTab('vip')">👑 VIP Applications</button>
+                    <button class="sub-tab" id="subtab-allpatients" onclick="switchPatientSubTab('allpatients')">👥 All Registered Patients</button>
+                </div>
+
+                <!-- VIP Applications Sub-panel -->
+                <div id="subpanel-vip">
+                    <div class="toolbar">
+                        <select id="vipStatusFilter" class="input-ctrl" onchange="renderVipTable()">
+                            <option value="ALL">All VIP Requests</option>
+                            <option value="pending" selected>Pending Approval</option>
+                            <option value="active">Approved (Active)</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="table-card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Applicant &amp; Family</th>
+                                    <th>Referrer</th>
+                                    <th>Payment &amp; Screenshot</th>
+                                    <th>Amount</th>
+                                    <th>Status &amp; Validity</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vipTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- All Patients Sub-panel -->
+                <div id="subpanel-allpatients" style="display:none;">
+                    <div class="toolbar">
+                        <input type="text" id="patientMasterSearch" class="input-ctrl search-grow" placeholder="🔍 Search Patient by Name, User ID, or Mobile..." onkeyup="renderPatientsMasterTable()">
+                    </div>
+                    <div class="table-card">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>User ID</th>
+                                    <th>Name &amp; Contact</th>
+                                    <th>Address</th>
+                                    <th>Wallet (₹)</th>
+                                    <th>Plan</th>
+                                    <th>Withdraw</th>
+                                    <th>Status</th>
+                                    <th>Manage</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientsMasterBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 3: WALLET & WITHDRAWALS (SUPER ADMIN ONLY)      -->
+            <!-- =================================================== -->
+            <section id="panel-withdrawals" class="section-panel">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" id="subtab-kyc" onclick="switchWithdrawSubTab('kyc')">1. KYC Profile Approvals</button>
+                    <button class="sub-tab" id="subtab-payouts" onclick="switchWithdrawSubTab('payouts')">2. Money Payout Requests</button>
+                </div>
+
+                <div class="toolbar">
+                    <select id="withdrawStatusFilter" class="input-ctrl" onchange="renderWithdrawalsTable()">
+                        <option value="ALL">Show All</option>
+                        <option value="Pending" selected>Show Pending</option>
+                        <option value="Approved">Show Approved / Paid</option>
+                    </select>
+                </div>
+
+                <div class="table-card">
+                    <table>
+                        <thead id="withdrawTableHead"></thead>
+                        <tbody id="withdrawTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 4: PRESCRIPTIONS & SUPPORT QUERIES              -->
+            <!-- =================================================== -->
+            <section id="panel-support" class="section-panel">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" id="subtab-rx" onclick="switchSupportSubTab('rx')">📄 Uploaded Prescriptions</button>
+                    <button class="sub-tab" id="subtab-tickets" onclick="switchSupportSubTab('tickets')">🎧 Support Queries</button>
+                </div>
+
+                <div id="subpanel-rx" class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>RX ID &amp; Date</th>
+                                <th>Patient Info</th>
+                                <th>Prescription File</th>
+                                <th>Notes</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rxTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="subpanel-tickets" class="table-card" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ticket ID &amp; Date</th>
+                                <th>User Info</th>
+                                <th>Issue Type &amp; Order</th>
+                                <th>Message</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="supportTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 5: PROFIT & LOSS ACCOUNTING (SUPER ADMIN ONLY)  -->
+            <!-- =================================================== -->
+            <section id="panel-pnl" class="section-panel">
+                <div class="toolbar">
+                    <strong style="font-size:14px;">Period:</strong>
+                    <select id="pnlPeriodFilter" class="input-ctrl" onchange="toggleCustomPnlDates(); calculateProfitAndLoss();">
+                        <option value="today">Today</option>
+                        <option value="month" selected>This Month</option>
+                        <option value="all">All Time</option>
+                        <option value="custom">Custom Date Range</option>
+                    </select>
+                    <input type="date" id="pnlStartDate" class="input-ctrl" style="display:none;" onchange="calculateProfitAndLoss()">
+                    <input type="date" id="pnlEndDate" class="input-ctrl" style="display:none;" onchange="calculateProfitAndLoss()">
+                    <button class="btn-act btn-blue" style="margin-left:auto;" onclick="openAddExpenseModal()"><i class="fas fa-plus-circle"></i> Add Clinic Expense</button>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card" style="border-left: 4px solid var(--primary);">
+                        <div class="kpi-label">Total Revenue (Bookings + VIP)</div>
+                        <div class="kpi-val" style="color:var(--primary);">₹<span id="pnlRevenue">0</span></div>
+                        <div class="kpi-sub" id="pnlRevenueBreakup">Bookings: ₹0 | VIP: ₹0</div>
+                    </div>
+                    <div class="kpi-card" style="border-left: 4px solid var(--warning);">
+                        <div class="kpi-label">B2B Lab Cost (Outsource)</div>
+                        <div class="kpi-val" style="color:#b45309;">₹<span id="pnlLabCost">0</span></div>
+                        <div class="kpi-sub">Paid to Partner Labs (CRL/VED)</div>
+                    </div>
+                    <div class="kpi-card" style="border-left: 4px solid #8b5cf6;">
+                        <div class="kpi-label">Clinic &amp; Daily Expenses</div>
+                        <div class="kpi-val" style="color:#6d28d9;">₹<span id="pnlExpenses">0</span></div>
+                        <div class="kpi-sub">Collection, Vials, Rent, Staff, Ads</div>
+                    </div>
+                    <div class="kpi-card" id="pnlNetCard" style="border-left: 4px solid var(--success); background: #f0fdf4;">
+                        <div class="kpi-label">Net Profit / Loss</div>
+                        <div class="kpi-val" style="color:var(--success);">₹<span id="pnlNetProfit">0</span></div>
+                        <div class="kpi-sub" id="pnlNetStatus">Net Profit after all costs</div>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <div style="padding:15px 18px; border-bottom:1px solid var(--border); font-weight:800; font-size:15px;">Daily Expenses Ledger</div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description / Notes</th>
+                                <th>Amount (₹)</th>
+                                <th>Added By</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 6: STAFF & PASSWORDS (SUPER ADMIN ONLY)         -->
+            <!-- =================================================== -->
+            <section id="panel-staff" class="section-panel">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+                    <div class="kpi-card">
+                        <h3 style="margin-top:0; color:var(--primary); font-size:17px;"><i class="fas fa-user-plus"></i> Create Staff / Member Login</h3>
+                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Assign separate Email, Password &amp; Role to your Report Team (3 members), Booking Desk, or VIP Desk.</p>
+
+                        <label class="form-label">Staff Member Name</label>
+                        <input type="text" id="newStaffName" class="full-input" placeholder="e.g. Rohit (Report Desk 1)">
+
+                        <label class="form-label">Login Email ID</label>
+                        <input type="email" id="newStaffEmail" class="full-input" placeholder="e.g. report1@bhavyadiagnostics.com">
+
+                        <label class="form-label">Password (Min 6 characters)</label>
+                        <input type="text" id="newStaffPass" class="full-input" placeholder="e.g. Report@2026">
+
+                        <label class="form-label">Access Role</label>
+                        <select id="newStaffRole" class="full-input">
+                            <option value="report_staff">Report Team (Only Bookings &amp; Report PDF Upload)</option>
+                            <option value="booking_staff">Booking Staff (Bookings, Prescriptions &amp; Support)</option>
+                            <option value="vip_staff">VIP Desk (Only Patients &amp; VIP Applications)</option>
+                            <option value="super_admin">Super Admin (Full Access + Profit &amp; Loss)</option>
+                        </select>
+
+                        <button id="btnCreateStaff" onclick="createStaffAccount()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:13px; margin-top:16px; font-size:14px;">
+                            <i class="fas fa-key"></i> Create Staff Account
+                        </button>
+                    </div>
+
+                    <div class="table-card">
+                        <div style="padding:15px 18px; border-bottom:1px solid var(--border); font-weight:800; font-size:15px;">Authorized Team Members &amp; Roles</div>
+                        <table style="min-width: 520px;">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL 1: UPLOAD REPORT PDF & AUTO-EMAIL PATIENT     -->
+    <!-- =================================================== -->
+    <div class="modal-backdrop" id="reportUploadModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <h3 style="margin-top:0; color:var(--primary);"><i class="fas fa-file-medical"></i> Upload &amp; Send Diagnostic Report</h3>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">
+                Order: <strong id="repModalOrderId">-</strong> | Patient: <strong id="repModalPatientName">-</strong>
+            </p>
+            <input type="hidden" id="repModalOrderDocId">
+
+            <label class="form-label">1. Upload Report PDF File (Stored in Firebase Storage)</label>
+            <input type="file" id="repPdfFileInput" accept="application/pdf,image/*" class="full-input">
+
+            <label class="form-label">2. Or Paste Partner Lab Report Link (Optional)</label>
+            <input type="url" id="repExternalUrlInput" class="full-input" placeholder="https://...">
+
+            <label class="form-label">3. Physical / In-Hand Reports Note (Optional)</label>
+            <input type="text" id="repHandNoteInput" class="full-input" placeholder="e.g. ECG Graph / X-Ray Film collected at center">
+
+            <label class="form-label">4. B2B Partner Lab Cost (₹) — For Profit &amp; Loss Calculation</label>
+            <input type="number" id="repLabCostInput" class="full-input" placeholder="e.g. 250">
+
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:10px; font-size:12px; color:#166534; margin-top:14px;">
+                <i class="fas fa-envelope"></i> Saving will mark order <strong>Completed</strong> and automatically send the report email from <strong>report@bhavyadiagnostics.com</strong>.
+            </div>
+
+            <button id="btnSubmitReport" onclick="submitOrderReport()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:14px; margin-top:16px; font-size:15px;">
+                <i class="fas fa-paper-plane"></i> Save Report &amp; Email Patient
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL 2: VIP APPROVAL / REJECTION                   -->
+    <!-- =================================================== -->
+    <div class="modal-backdrop" id="vipActionModal">
+        <div class="modal-box" style="max-width:440px;">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <h3 style="margin-top:0; color:var(--primary);"><i class="fas fa-crown" style="color:var(--warning);"></i> Review VIP Application</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Applicant: <strong id="vipModalApplicant">-</strong></p>
+            <input type="hidden" id="vipModalUid">
+
+            <div id="vipModalScreenshotBox" style="margin:12px 0; text-align:center;"></div>
+
+            <label class="form-label">Admin Remarks (Mandatory if rejecting)</label>
+            <textarea id="vipModalRemarks" rows="3" class="full-input" placeholder="e.g. Payment verified / Invalid UTR"></textarea>
+
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button id="btnApproveVip" onclick="processVipApproval('active')" class="btn-act btn-green" style="flex:1; justify-content:center; padding:12px;">Approve &amp; Credit Cashback</button>
+                <button id="btnRejectVip" onclick="processVipApproval('rejected')" class="btn-act btn-red" style="flex:1; justify-content:center; padding:12px;">Reject</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL 3: PATIENT WALLET ADJUSTMENT (SUPER ADMIN)    -->
+    <!-- =================================================== -->
+    <div class="modal-backdrop" id="walletModal">
+        <div class="modal-box" style="max-width:420px;">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <h3 style="margin-top:0; color:var(--primary);">Adjust Patient Wallet</h3>
+            <p style="font-size:13px; color:var(--text-muted);">Patient: <strong id="walModalPatientName">-</strong> | Current: ₹<strong id="walModalCurrentBal">0</strong></p>
+            <input type="hidden" id="walModalUid">
+
+            <label class="form-label">Action Type</label>
+            <select id="walModalType" class="full-input">
+                <option value="credit">Add Funds (+ Credit)</option>
+                <option value="debit">Deduct Funds (- Debit)</option>
+            </select>
+
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" id="walModalAmount" class="full-input" placeholder="e.g. 100">
+
+            <label class="form-label">Reason</label>
+            <input type="text" id="walModalReason" class="full-input" placeholder="e.g. Refund / Promotional Bonus">
+
+            <button id="btnSaveWalletAdj" onclick="submitAdminWalletAdjustment()" class="btn-act btn-blue" style="width:100%; justify-content:center; padding:13px; margin-top:16px;">Update Wallet</button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL 4: ADD CLINIC EXPENSE (PROFIT & LOSS)         -->
+    <!-- =================================================== -->
+    <div class="modal-backdrop" id="expenseModal">
+        <div class="modal-box" style="max-width:430px;">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <h3 style="margin-top:0; color:var(--primary);"><i class="fas fa-receipt"></i> Add Clinic / Daily Expense</h3>
+
+            <label class="form-label">Date</label>
+            <input type="date" id="expDateInput" class="full-input">
+
+            <label class="form-label">Expense Category</label>
+            <select id="expCategoryInput" class="full-input">
+                <option value="Sample Collection / Petrol">Sample Collection / Petrol</option>
+                <option value="Lab Consumables (Vials/Syringes)">Lab Consumables (Vials / Syringes)</option>
+                <option value="Staff Salary">Staff Salary</option>
+                <option value="Center Rent / Electricity / Internet">Center Rent / Electricity / Internet</option>
+                <option value="Marketing & Printing">Marketing &amp; Printing</option>
+                <option value="Other Clinic Expense">Other Clinic Expense</option>
+            </select>
+
+            <label class="form-label">Amount (₹)</label>
+            <input type="number" id="expAmountInput" class="full-input" placeholder="e.g. 500">
+
+            <label class="form-label">Notes / Details</label>
+            <input type="text" id="expNoteInput" class="full-input" placeholder="e.g. Vacutainer tubes & needles">
+
+            <button id="btnSaveExpense" onclick="saveClinicExpense()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:13px; margin-top:16px;">Save Expense</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
