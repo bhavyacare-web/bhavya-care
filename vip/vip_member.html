@@ -2,132 +2,226 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP Membership - BhavyaCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Bhavya VIP Family Membership | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="description" content="Activate Bhavya VIP Family Membership at Bhavya Diagnostics Bahadurgarh — Get up to 50% OFF on NABL lab blood tests, full body health packages, ECG &amp; PFT for your entire family.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://www.bhavyadiagnostics.com/vip/vip_member.html">
+    <link rel="icon" href="../image/logo.jpeg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="../image/logo.jpeg">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #0056b3; --success: #28a745; --warning: #ffc107; --danger: #dc3545; --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #333333; --text-light: #777777; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-        .header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
-        .back-btn { color: var(--text-main); font-size: 18px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: bold;}
-        .main-content { padding: 20px; overflow-y: auto; flex-grow: 1; }
-        .card { background: var(--card-bg); padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 20px; }
-        .input-box { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; outline: none; }
+        :root {
+            --primary: #0056b3; --primary-light: #e6f0fa;
+            --success: #10b981; --success-light: #d1fae5;
+            --warning: #f59e0b; --warning-light: #fef3c7;
+            --danger: #ef4444; --danger-light: #fee2e2;
+            --bg-color: #f4f7f6; --card-bg: #ffffff;
+            --text-main: #0f172a; --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; color: var(--text-main); }
+
+        .header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .back-btn { color: var(--text-main); font-size: 15px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 700; }
+        .back-btn:hover { color: var(--primary); }
+
+        .main-content { padding: 20px; flex-grow: 1; max-width: 560px; width: 100%; margin: 0 auto; padding-bottom: 50px; }
+        .card { background: var(--card-bg); padding: 22px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 18px; border: 1px solid var(--border); }
+        .input-box { width: 100%; padding: 13px 14px; margin-top: 6px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; outline: none; background: #f8fafc; color: var(--text-main); transition: 0.2s; }
+        .input-box:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px var(--primary-light); }
+        .input-box[readonly] { background: #e2e8f0; color: var(--text-light); cursor: not-allowed; }
         .form-group { margin-bottom: 15px; }
-        .radio-group { display: flex; gap: 15px; margin-top: 10px; }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        #vip-form-container, #vip-pending-container, #vip-active-container, #vip-rejected-container, #vip-pincode-container { display: none; }
+
+        .radio-group { display: flex; gap: 12px; margin-top: 10px; }
+        .radio-option { flex: 1; display: flex; align-items: center; gap: 8px; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; background: #f8fafc; }
+        .radio-option:has(input:checked) { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.25s; box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2); }
+        .btn-primary:hover:not(:disabled) { background: #004494; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #vip-form-container, #vip-pending-container, #vip-active-container, #vip-rejected-container, #vip-pincode-container, #vip-incomplete-profile-container { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <a href="../patient_dashboard/patient_dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-        <h3 style="margin: 0; color: var(--primary);">VIP <span>Family Plan</span></h3>
-    </div>
+    <header class="header">
+        <a href="../patient_dashboard/patient_dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <h1 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--primary);">Bhavya <span style="color: var(--warning);">VIP Plan</span></h1>
+    </header>
 
-    <div class="main-content">
+    <main class="main-content">
+        <!-- LOADING STATE -->
+        <div id="vip-loading-container" style="text-align: center; padding: 70px 20px;">
+            <div style="width: 48px; height: 48px; border: 5px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 15px;"></div>
+            <p style="font-size: 14px; font-weight: 700; color: var(--text-light);">Checking your VIP membership status...</p>
+        </div>
+
+        <!-- PROFILE INCOMPLETE WARNING -->
+        <div id="vip-incomplete-profile-container">
+            <div class="card" style="text-align: center; border-color: #fde68a; background: #fffbeb;">
+                <div style="background: #fef3c7; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                    <i class="fas fa-user-edit" style="font-size: 26px; color: #d97706;"></i>
+                </div>
+                <h3 style="margin: 0 0 8px 0; color: #92400e;">Complete Your Profile First</h3>
+                <p style="font-size: 13px; color: #b45309; line-height: 1.5; margin-bottom: 20px;">
+                    VIP Membership lene ke liye pehle apna <strong>Email, Full Address, City aur Pincode</strong> update karna zaroori hai.
+                </p>
+                <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary" style="background: #d97706;">
+                    Complete Profile in Dashboard <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 1: PINCODE AVAILABILITY -->
         <div id="vip-pincode-container">
             <div class="card" style="text-align: center;">
-                <div style="background: #e6f0fa; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
+                <div style="background: var(--primary-light); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
                     <i class="fas fa-map-marker-alt" style="font-size: 26px; color: var(--primary);"></i>
                 </div>
-                <h3 style="margin:0; color: var(--text-main);">Check Availability</h3>
-                <p style="font-size:13px; color:var(--text-light); margin-top:5px; margin-bottom: 20px;">Enter your pincode to get the VIP Plan</p>
+                <h2 style="margin:0; font-size: 20px; color: var(--text-main);">Check VIP Availability</h2>
+                <p style="font-size:13px; color:var(--text-light); margin-top:6px; margin-bottom: 20px;">Enter your 6-digit area pincode to unlock Bhavya VIP Family Plan</p>
                 
                 <div class="form-group">
-                    <input type="number" id="checkPincodeInput" class="input-box" placeholder="Enter 6-digit Pincode">
+                    <input type="number" id="checkPincodeInput" class="input-box" placeholder="e.g. 124507" style="text-align: center; font-size: 18px; letter-spacing: 2px;">
                 </div>
-                <button id="btnCheckPincode" class="btn-primary" style="margin-top:10px;" onclick="verifyPincodeAndProceed()">Check & Proceed</button>
+                <button id="btnCheckPincode" class="btn-primary" style="margin-top:10px;" onclick="verifyPincodeAndProceed()">Check &amp; Proceed <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
-        <div id="vip-pending-container" style="text-align: center; padding: 40px 10px;">
-            <i class="fas fa-hourglass-half" style="font-size: 60px; color: #f57c00; margin-bottom: 20px;"></i>
-            <h3 style="color: var(--text-main);">Application Under Review</h3>
-            <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary" style="margin-top: 30px; background: #555;">Go to Dashboard</button>
+        <!-- STATUS: UNDER REVIEW / PENDING -->
+        <div id="vip-pending-container" style="text-align: center; padding: 20px 0;">
+            <div class="card" style="border-color: #fed7aa; background: #fff7ed;">
+                <i class="fas fa-hourglass-half" style="font-size: 54px; color: #ea580c; margin-bottom: 16px;"></i>
+                <h2 style="margin: 0 0 8px 0; color: #9a3412; font-size: 20px;">Application Under Review</h2>
+                <p style="font-size: 13px; color: #c2410c; line-height: 1.6; margin: 0 0 18px 0;">
+                    Your VIP Family Plan application is currently being verified by our team. Meanwhile, <strong>VIP discounted rates are already unlocked</strong> for your bookings!
+                </p>
+                <div id="pendingSummaryBox" style="background: #ffffff; border-radius: 12px; padding: 14px; text-align: left; font-size: 13px; border: 1px solid #ffedd5; margin-bottom: 20px;"></div>
+                <button onclick="window.location.href='../booking/booking.html'" class="btn-primary" style="background: var(--success); margin-bottom: 10px;">
+                    Book Tests at VIP Rates <i class="fas fa-microscope"></i>
+                </button>
+                <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary" style="background: #475569;">
+                    Go to Dashboard
+                </button>
+            </div>
         </div>
 
+        <!-- STATUS: ACTIVE -->
         <div id="vip-active-container" style="text-align: center;">
-            <div class="card" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border: 1px solid #a5d6a7;">
-                <i class="fas fa-check-circle" style="font-size: 60px; color: #2e7d32; margin-bottom: 15px;"></i>
-                <h3 style="color: #1b5e20; margin: 0;">VIP Plan Active</h3>
-                <div style="background: white; border-radius: 12px; padding: 15px; margin-top: 25px; text-align: left;">
-                    <p style="margin: 0 0 10px 0; font-size: 14px;"><strong>Start Date:</strong> <span id="activeStartDate" style="float:right; font-weight:bold;">-</span></p>
-                    <p style="margin: 0; font-size: 14px;"><strong>End Date:</strong> <span id="activeEndDate" style="float:right; font-weight:bold;">-</span></p>
+            <div class="card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7;">
+                <i class="fas fa-crown" style="font-size: 54px; color: #059669; margin-bottom: 12px;"></i>
+                <h2 style="color: #065f46; margin: 0; font-size: 22px;">VIP Family Plan Active</h2>
+                <p style="font-size: 13px; color: #047857; margin: 6px 0 0 0;">Enjoy up to 50% OFF on lab tests &amp; free home sample collection.</p>
+                <div style="background: white; border-radius: 12px; padding: 16px; margin-top: 20px; text-align: left; border: 1px solid #a7f3d0;">
+                    <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Start Date:</strong> <span id="activeStartDate" style="float:right; font-weight:800;">-</span></p>
+                    <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Valid Till:</strong> <span id="activeEndDate" style="float:right; font-weight:800; color: var(--danger);">-</span></p>
+                    <p style="margin: 0; font-size: 13px;"><strong>Covered Members:</strong> <span id="activeMembersList" style="float:right; font-weight:700; color: var(--primary);">-</span></p>
                 </div>
             </div>
-            <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary" style="margin-top: 10px;">Go to Dashboard</button>
+            <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary">Go to Dashboard &amp; Download VIP Card</button>
         </div>
 
-        <div id="vip-rejected-container" style="text-align: center; padding: 20px 10px;">
-            <i class="fas fa-times-circle" style="font-size: 60px; color: var(--danger); margin-bottom: 15px;"></i>
-            <h3 style="color: var(--danger);">Application Rejected</h3>
-            <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: left;">
-                <strong>Admin Remarks:</strong> <br><span id="rejectedRemarks"></span>
+        <!-- STATUS: REJECTED -->
+        <div id="vip-rejected-container" style="text-align: center; padding: 10px 0;">
+            <div class="card" style="border-color: #fecaca;">
+                <i class="fas fa-times-circle" style="font-size: 54px; color: var(--danger); margin-bottom: 12px;"></i>
+                <h2 style="color: var(--danger); margin: 0; font-size: 20px;">Application Rejected</h2>
+                <div style="background: var(--danger-light); color: #991b1b; padding: 14px; border-radius: 10px; margin-top: 16px; text-align: left; font-size: 13px;">
+                    <strong>Admin Remarks:</strong> <br><span id="rejectedRemarks"></span>
+                </div>
+                <button onclick="showVipPincodeCheck()" class="btn-primary" style="margin-top: 20px;">Re-Apply for VIP Plan</button>
             </div>
-            <button onclick="showVipPincodeCheck()" class="btn-primary" style="margin-top: 30px;">Re-Apply</button>
         </div>
 
+        <!-- STEP 2: VIP APPLICATION FORM -->
         <div id="vip-form-container">
-            <div class="card" style="text-align: center; background: linear-gradient(135deg, #fff8e1 0%, #ffe0b2 100%);">
-                <i class="fas fa-crown" style="font-size: 40px; color: #f57c00; margin-bottom: 10px;"></i>
-                <h3 style="margin: 0; color: #e65100;">BhavyaCare VIP</h3>
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border: none;">
+                <i class="fas fa-crown" style="font-size: 38px; color: var(--warning); margin-bottom: 8px;"></i>
+                <h2 style="margin: 0; color: #facc15; font-size: 20px;">Bhavya Diagnostics VIP</h2>
+                <p style="margin: 6px 0 0 0; font-size: 12px; color: #cbd5e1;">Up to 50% OFF on Blood Tests • Free Home Collection • Family Coverage</p>
             </div>
 
             <div class="card">
-                <h4 style="margin: 0 0 15px 0;">Family Members</h4>
-                <div class="form-group"><label style="font-size:12px; font-weight:600;">Member 1 (Self)</label><input type="text" id="mem1Name" class="input-box" readonly style="background:#f9f9f9;"></div>
-                <div class="form-group"><label style="font-size:12px; font-weight:600;">Member 2 (Optional)</label><input type="text" id="mem2Name" class="input-box" placeholder="Enter Full Name"></div>
-                <div class="form-group"><label style="font-size:12px; font-weight:600;">Member 3 (Optional)</label><input type="text" id="mem3Name" class="input-box" placeholder="Enter Full Name"></div>
-            </div>
-
-            <div class="card" style="background:#f9f9f9;">
-                <label style="font-size:12px; font-weight:600;">Referral Code</label>
-                <div style="display:flex; gap:10px; margin-top:5px;">
-                    <input type="text" id="refCodeInput" class="input-box" placeholder="Enter Code" style="margin-top:0; text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
-                    <button id="btn-apply-ref" type="button" onclick="verifyReferral()" style="background:var(--text-main); color:white; border:none; border-radius:8px; padding:0 15px; font-weight:bold;">Apply</button>
+                <h3 style="margin: 0 0 14px 0; font-size: 15px;"><i class="fas fa-users" style="color: var(--primary); margin-right: 6px;"></i> Covered Family Members (Up to 3)</h3>
+                <div class="form-group">
+                    <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 1 (Primary / Self)</label>
+                    <input type="text" id="mem1Name" class="input-box" readonly>
                 </div>
-                <small id="refMsg" style="display:none; font-weight:bold; margin-top:8px;"></small>
+                <div class="form-group">
+                    <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 2 Full Name (Optional)</label>
+                    <input type="text" id="mem2Name" class="input-box" placeholder="Enter Family Member 2 Name">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 3 Full Name (Optional)</label>
+                    <input type="text" id="mem3Name" class="input-box" placeholder="Enter Family Member 3 Name">
+                </div>
+            </div>
+
+            <div class="card" style="background:#f8fafc;">
+                <label style="font-size:12px; font-weight:700; color: var(--text-main);">Have a Referral Code?</label>
+                <div style="display:flex; gap:10px; margin-top:6px;">
+                    <input type="text" id="refCodeInput" class="input-box" placeholder="e.g. DHE8888" style="margin-top:0; text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+                    <button id="btn-apply-ref" type="button" onclick="verifyReferral()" style="background:var(--text-main); color:white; border:none; border-radius:10px; padding:0 18px; font-weight:800; cursor:pointer;">Apply</button>
+                </div>
+                <small id="refMsg" style="display:none; font-weight:700; margin-top:8px; font-size: 12px;"></small>
             </div>
 
             <div class="card">
-                <h4 style="margin: 0 0 15px 0;">Payment Method</h4>
+                <h3 style="margin: 0 0 12px 0; font-size: 15px;"><i class="fas fa-wallet" style="color: var(--primary); margin-right: 6px;"></i> Payment Method</h3>
                 <div class="radio-group">
-                    <label><input type="radio" name="payMode" value="cash" onchange="togglePaymentMode()" checked> Cash to Lab</label>
-                    <label><input type="radio" name="payMode" value="online" onchange="togglePaymentMode()"> Online UPI</label>
+                    <label class="radio-option"><input type="radio" name="payMode" value="online" onchange="togglePaymentMode()" checked> Online UPI</label>
+                    <label class="radio-option"><input type="radio" name="payMode" value="cash" onchange="togglePaymentMode()"> Cash at Center</label>
                 </div>
 
-                <div id="online-pay-section" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <p style="font-size: 14px; font-weight: bold; color: var(--primary);">Pay directly using any UPI App</p>
-                        <button type="button" onclick="payViaUPI()" style="background: #28a745; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 10px auto;">
-                            <i class="fas fa-mobile-alt"></i> Pay via UPI App
+                <div id="online-pay-section" style="margin-top: 18px; border-top: 1px dashed var(--border); padding-top: 16px;">
+                    <div style="text-align: center; margin-bottom: 16px; background: var(--primary-light); padding: 14px; border-radius: 12px;">
+                        <p style="font-size: 13px; font-weight: 800; color: var(--primary); margin: 0 0 8px 0;">Pay directly using GPay, PhonePe or Paytm</p>
+                        <button type="button" onclick="payViaUPI()" style="background: var(--success); color: white; border: none; padding: 12px 22px; border-radius: 10px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;">
+                            <i class="fas fa-mobile-alt"></i> Pay ₹<span id="upiBtnAmt">3000</span> via UPI App
                         </button>
-                        <p style="font-size: 12px; color: var(--text-light); margin-top: 5px;">UPI ID: <strong>8950112467@ptsbi</strong></p>
+                        <p style="font-size: 12px; color: var(--text-main); margin: 10px 0 0 0;">
+                            UPI ID: <strong>8950112467@ptsbi</strong>
+                            <button type="button" onclick="copyUpiId()" style="background:white; border:1px solid #cbd5e1; border-radius:6px; padding:2px 8px; font-size:11px; font-weight:700; cursor:pointer; margin-left:6px;">Copy</button>
+                        </p>
                     </div>
                     <div class="form-group">
-                        <label style="font-size:12px; font-weight:600;">Transaction UTR / Payment ID</label>
-                        <input type="text" id="payId" class="input-box" placeholder="e.g. 123456789012">
+                        <label style="font-size:12px; font-weight:700;">Transaction UTR / Reference ID (Optional)</label>
+                        <input type="text" id="payId" class="input-box" placeholder="e.g. 12-digit UTR number">
                     </div>
-                    <div class="form-group">
-                        <label style="font-size:12px; font-weight:600;">Upload Screenshot</label>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size:12px; font-weight:700;">Upload Payment Screenshot <span style="color:var(--danger);">*</span></label>
                         <input type="file" id="payScreenshot" accept="image/*" class="input-box">
                     </div>
                     <input type="hidden" id="payScreenshotBase64" value="">
                 </div>
             </div>
 
-            <div class="card" style="display:flex; justify-content: space-between; align-items: center; background:#e8f5e9;">
-                <span style="font-size: 15px; font-weight: 600;">Total Payable</span>
-                <span style="font-size: 22px; font-weight:800; color:#2e7d32;">₹<span id="finalPayable">0</span></span>
+            <div class="card" style="display:flex; justify-content: space-between; align-items: center; background: var(--success-light); border-color: #6ee7b7;">
+                <span style="font-size: 15px; font-weight: 800; color: #065f46;">Total Payable</span>
+                <span style="font-size: 24px; font-weight:900; color:#047857;">₹<span id="finalPayable">3000</span></span>
             </div>
-            <button id="btn-submit" class="btn-primary" onclick="submitVIP()">Submit Application</button>
-        </div>
-    </div>
 
+            <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-light); margin-bottom:16px; cursor:pointer; line-height:1.45;">
+                <input type="checkbox" id="vipConsentCheckbox" checked style="margin-top:3px; width:16px; height:16px; cursor:pointer;">
+                <span>I agree to the Bhavya Diagnostics VIP Membership <a href="../terms.html" target="_blank" rel="noopener noreferrer" style="color:var(--primary); font-weight:700;">Terms &amp; Conditions</a> and <a href="../privacy.html" target="_blank" rel="noopener noreferrer" style="color:var(--primary); font-weight:700;">Privacy Policy</a>.</span>
+            </label>
+
+            <button id="btn-submit" class="btn-primary" onclick="submitVIP()">Submit VIP Application <i class="fas fa-arrow-right"></i></button>
+        </div>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="vip_member.js"></script>
 </body>
 </html>
