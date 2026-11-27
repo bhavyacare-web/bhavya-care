@@ -2,37 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bhavya Care - Wallet Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Partner &amp; Wallet Withdrawals | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="description" content="Manage your Bhavya Diagnostics wallet balance, complete KYC setup, and withdraw referral earnings directly to your UPI ID.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="canonical" href="https://www.bhavyadiagnostics.com/withdraw.html">
+    <link rel="icon" href="image/logo.jpeg" type="image/jpeg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: #ffffff; width: 100%; max-width: 500px; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f0f4f8; padding-bottom: 15px; margin-bottom: 20px; }
-        h2 { margin: 0; color: #333; font-size: 22px; }
-        label { display: block; margin-top: 15px; font-weight: 600; color: #555; font-size: 14px; }
-        input[type="text"], input[type="number"], input[type="file"], select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        input:focus { border-color: #007bff; outline: none; box-shadow: 0 0 5px rgba(0,123,255,0.3); }
-        .submit-btn { margin-top: 25px; width: 100%; padding: 12px; background: #007bff; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
-        .submit-btn:hover { background: #0056b3; }
-        .submit-btn:disabled { background: #999; cursor: not-allowed; }
-        
+        :root {
+            --primary: #0056b3; --primary-light: #e6f0fa; --primary-hover: #004494;
+            --success: #10b981; --success-soft: #d1fae5;
+            --warning: #f59e0b; --warning-soft: #fef3c7;
+            --danger: #ef4444; --danger-soft: #fee2e2;
+            --bg-color: #f0f4f8; --card-bg: #ffffff;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); margin: 0; padding: 16px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; color: var(--text-main); }
+        .container { background: var(--card-bg); width: 100%; max-width: 520px; padding: 26px; border-radius: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.07); border: 1px solid var(--border); margin: 16px auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 14px; margin-bottom: 18px; gap: 10px; }
+        h2 { margin: 0; color: var(--primary); font-size: 20px; font-weight: 800; }
+        label { display: block; margin-top: 14px; font-weight: 700; color: var(--text-main); font-size: 13px; }
+        input[type="text"], input[type="number"], input[type="file"], select { width: 100%; padding: 12px; margin-top: 6px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; background: #f8fafc; color: var(--text-main); }
+        input:focus, select:focus { border-color: var(--primary); background: #ffffff; outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
+        input[readonly] { background: #e2e8f0; color: var(--text-muted); cursor: not-allowed; }
+
+        .submit-btn { margin-top: 22px; width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.25s; box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
+        .submit-btn:hover:not(:disabled) { background: var(--primary-hover); }
+        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+
         /* Loader & Status */
-        #loaderSection, #statusSection { text-align: center; padding: 40px 20px; }
-        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #007bff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
+        #loaderSection, #statusSection { text-align: center; padding: 40px 15px; }
+        .spinner { border: 4px solid var(--primary-light); border-top: 4px solid var(--primary); border-radius: 50%; width: 42px; height: 42px; animation: spin 0.9s linear infinite; margin: 0 auto 18px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .status-msg { color: #28a745; font-size: 20px; font-weight: bold; margin-bottom: 20px;}
-        .dash-btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; display: inline-block;}
+        .status-msg { color: #b45309; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+        .dash-btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 700; font-size: 14px; }
 
         /* Wallet Dashboard Styles */
-        .wallet-card { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
-        .wallet-card h1 { margin: 10px 0 0 0; font-size: 36px; }
-        .wallet-card p { margin: 0; opacity: 0.8; font-size: 14px;}
-        .action-box { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; }
-        .txn-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        .txn-table th, .txn-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-        .txn-table th { background: #e9ecef; }
-        .text-green { color: #28a745; font-weight: bold; }
-        .text-red { color: #dc3545; font-weight: bold; }
+        .wallet-card { background: linear-gradient(135deg, #0056b3 0%, #0284c7 100%); color: white; padding: 22px; border-radius: 16px; text-align: center; margin-bottom: 18px; box-shadow: 0 8px 20px rgba(0,86,179,0.2); }
+        .wallet-card h1 { margin: 8px 0 0 0; font-size: 36px; font-weight: 800; }
+        .wallet-card p { margin: 0; opacity: 0.9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .action-box { background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .txn-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+        .txn-table th, .txn-table td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f5f9; }
+        .txn-table th { background: #f8fafc; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+        .text-green { color: var(--success); font-weight: 800; }
+        .text-red { color: var(--danger); font-weight: 800; }
+        .nav-link { color: var(--primary); text-decoration: none; font-weight: 700; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -42,91 +62,101 @@
         <!-- 1. Loading Screen -->
         <div id="loaderSection">
             <div class="spinner"></div>
-            <h3 style="color: #666;">Checking your details...</h3>
+            <h3 style="color: var(--text-muted); font-size: 15px; margin: 0;">Checking your wallet &amp; KYC status...</h3>
         </div>
 
         <!-- 2. Already In Process Screen -->
         <div id="statusSection" style="display: none;">
-            <div class="status-msg">Withdrawal Request in Process</div>
-            <p style="color: #666; margin-bottom: 20px;">Your request is currently being reviewed by the admin.</p>
-            <a href="index.html" class="dash-btn">Go to Home</a>
+            <div style="background: var(--warning-soft); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                <i class="fas fa-hourglass-half" style="font-size: 28px; color: #d97706;"></i>
+            </div>
+            <div class="status-msg">KYC Request Under Review</div>
+            <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin-bottom: 22px;">
+                Your wallet withdrawal profile is currently being verified by our admin team. Once approved, you can transfer earnings directly to your UPI ID.
+            </p>
+            <a href="patient_dashboard/patient_dashboard.html" class="dash-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
 
         <!-- 3. Wallet Dashboard (Shown if Approved) -->
         <div id="walletDashboardSection" style="display: none;">
             <div class="header">
-                <h2>My Wallet</h2>
-                <a href="index.html" style="color:#007bff; text-decoration:none; font-weight:bold;">Home</a>
+                <h2><i class="fas fa-wallet"></i> My Wallet</h2>
+                <a href="patient_dashboard/patient_dashboard.html" class="nav-link"><i class="fas fa-arrow-left"></i> Dashboard</a>
             </div>
             
             <div class="wallet-card">
-                <p>Available Balance</p>
+                <p>Available Withdrawable Balance</p>
                 <h1 id="displayBalance">₹0</h1>
+                <div id="savedUpiDisplay" style="font-size: 12px; margin-top: 8px; opacity: 0.95;"></div>
             </div>
 
             <div class="action-box">
-                <h3 style="margin-top:0; color:#333; font-size:16px;">Withdraw Money</h3>
-                <p id="limitMsg" style="color: #666; font-size: 12px; margin-bottom: 10px;">Minimum limit: ₹500</p>
-                <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw">
-                <button class="submit-btn" id="requestMoneyBtn" onclick="requestMoney()" style="margin-top: 10px; padding: 10px;">Withdraw Now</button>
+                <h3 style="margin: 0 0 4px 0; color: var(--text-main); font-size: 15px;">Withdraw Money to UPI</h3>
+                <p id="limitMsg" style="color: var(--text-muted); font-size: 12px; margin: 0 0 10px 0;">Minimum withdrawal limit: ₹500</p>
+                <input type="number" id="withdrawAmount" placeholder="Enter amount (₹)">
+                <button class="submit-btn" id="requestMoneyBtn" onclick="requestMoney()" style="margin-top: 12px; padding: 12px; background: var(--success);">Withdraw Now <i class="fas fa-paper-plane"></i></button>
             </div>
 
-            <!-- Withdrawal Status Table -->
-            <h3 style="font-size: 16px; margin-bottom: 5px; margin-top: 15px;">Withdrawal Status</h3>
-            <div style="max-height: 150px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #eee; border-radius: 5px;">
+            <!-- Withdrawal Payout Status Table -->
+            <h3 style="font-size: 14px; margin: 16px 0 6px; color: var(--text-main);">Withdrawal Payout Requests</h3>
+            <div style="max-height: 170px; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px;">
                 <table class="txn-table">
-                    <thead><tr><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
-                    <tbody id="payoutBody">
-                        <!-- Payout status will load here -->
-                    </tbody>
+                    <thead><tr><th>Date</th><th>Amount</th><th>Status / UTR</th></tr></thead>
+                    <tbody id="payoutBody"></tbody>
                 </table>
             </div>
 
-            <h3 style="font-size: 16px; margin-bottom: 5px;">Recent Transactions</h3>
-            <div style="max-height: 200px; overflow-y: auto;">
+            <!-- Wallet Transactions Table -->
+            <h3 style="font-size: 14px; margin: 0 0 6px; color: var(--text-main);">Recent Wallet Transactions</h3>
+            <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px;">
                 <table class="txn-table">
                     <thead><tr><th>Date</th><th>Detail</th><th>Amount</th></tr></thead>
-                    <tbody id="txnBody">
-                        <!-- Transcations will load here -->
-                    </tbody>
+                    <tbody id="txnBody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- 4. Main Profile Form Screen (Shown if Not Applied) -->
+        <!-- 4. Main KYC Profile Form Screen (Shown if Not Applied or Rejected) -->
         <div id="formSection" style="display: none;">
             <div class="header">
-                <h2 id="formTitle">Wallet Withdrawal Setup</h2>
-                <select id="langSelect" onchange="changeLanguage()">
+                <div>
+                    <h2 id="formTitle">Wallet Withdrawal Setup</h2>
+                    <a href="patient_dashboard/patient_dashboard.html" class="nav-link" style="font-size: 12px;">← Back to Dashboard</a>
+                </div>
+                <select id="langSelect" onchange="changeLanguage()" style="width: auto; padding: 7px 10px; margin: 0;">
                     <option value="en" selected>English</option>
                     <option value="hi">हिंदी</option>
                 </select>
             </div>
+
+            <div id="rejectedAlertBox" style="display: none; background: var(--danger-soft); color: #991b1b; padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 14px; border: 1px solid #fecaca;"></div>
             
             <form id="withdrawForm">
-                <input type="hidden" id="userId" value=""> 
-                
                 <label id="lblFullName">Full Name *</label>
-                <input type="text" id="fullName" required>
+                <input type="text" id="fullName" required placeholder="Enter your full name">
                 
                 <label id="lblUserImage">Upload Your Photo *</label>
                 <input type="file" id="userImage" accept="image/*" required>
                 
                 <label id="lblProfession">Profession (What work do you do?) *</label>
-                <input type="text" id="profession" required>
+                <input type="text" id="profession" required placeholder="e.g. Clinic Staff, Medical Representative, Health Advisor">
                 
-                <label id="lblProfDoc">Upload Profession Document/Visiting Card *</label>
-                <input type="file" id="profDoc" accept="image/*,.pdf" required>
+                <label id="lblProfDoc">Upload Profession Document / Visiting Card *</label>
+                <input type="file" id="profDoc" accept="image/*,application/pdf" required>
                 
-                <label id="lblNetwork">Network Capacity (How many people can you join?) *</label>
-                <input type="number" id="networkCapacity" required>
+                <label id="lblNetwork">Network Capacity (How many patients can you refer/month?) *</label>
+                <input type="number" id="networkCapacity" required placeholder="e.g. 20">
                 
-                <!-- NOTE: Required has been removed from UPI ID and QR Code -->
                 <label id="lblUpiId">UPI ID (Optional if QR is uploaded)</label>
-                <input type="text" id="upiId">
+                <input type="text" id="upiId" placeholder="e.g. mobile@upi">
                 
                 <label id="lblQrCode">Upload UPI QR Code (Optional if UPI ID is given)</label>
                 <input type="file" id="qrCode" accept="image/*">
+
+                <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text-muted); font-weight:500; margin-top:16px; cursor:pointer;">
+                    <input type="checkbox" id="kycConsent" checked style="margin-top:2px; width:15px; height:15px;">
+                    <span>I confirm the above details are accurate and consent to KYC verification as per Bhavya Diagnostics <a href="privacy.html" target="_blank" style="color:var(--primary); font-weight:700;">Privacy Policy</a>.</span>
+                </label>
                 
                 <button type="submit" id="submitBtn" class="submit-btn">Submit Details</button>
             </form>
@@ -134,228 +164,469 @@
 
     </div>
 
-    <script>
-        // TODO: अपना Google Web App URL यहाँ डालें ⬇️
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec';
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-        let currentUserId = localStorage.getItem("bhavya_user_id") || localStorage.getItem("bhavya_mobile");
+    <script>
+        // =======================================================
+        // 1. FIREBASE CONFIGURATION & INITIALIZATION
+        // =======================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2nYH22wkYDhh-BWfHvkT-bQvdKLCxask",
+            authDomain: "bhavya-care.firebaseapp.com",
+            projectId: "bhavya-care",
+            storageBucket: "bhavya-care.firebasestorage.app",
+            messagingSenderId: "979254809111",
+            appId: "1:979254809111:web:0181e0c97277a5d0d9c252",
+            measurementId: "G-G82G4VWGGT"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const db = firebase.firestore();
+        const storage = (typeof firebase.storage === "function") ? firebase.storage() : null;
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec';
+
+        let currentUser = null;
+        let currentPatientDoc = {};
+        let currentKycDoc = {};
         let walletBalance = 0;
         let minLimit = 500;
 
-        window.onload = async function() {
-            if (!currentUserId || currentUserId === "") {
-                alert("Please login first to access this page.");
-                window.location.href = "index.html"; 
-                return; 
-            }
-            document.getElementById('userId').value = currentUserId;
-            checkExistingRequest(currentUserId);
-        };
+        function escapeHtml(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
 
-        async function checkExistingRequest(uid) {
+        function formatDateStr(val) {
+            if (!val) return "N/A";
             try {
-                let response = await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "checkWithdrawStatus", userId: uid })
-                });
-                let data = await response.json();
-                
-                document.getElementById('loaderSection').style.display = 'none';
+                let d = (typeof val.toDate === "function") ? val.toDate() : (val.seconds ? new Date(val.seconds * 1000) : new Date(val));
+                if (isNaN(d.getTime())) return String(val);
+                return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+            } catch (e) { return String(val); }
+        }
 
-                if(data.status === 'pending') {
-                    document.getElementById('statusSection').style.display = 'block';
-                } else if(data.status === 'active') {
-                    loadWalletDashboard(uid);
-                } else {
-                    document.getElementById('formSection').style.display = 'block';
+        function getTimeMillis(val) {
+            if (!val) return 0;
+            try {
+                if (typeof val.toMillis === "function") return val.toMillis();
+                if (val.seconds) return val.seconds * 1000;
+                const t = new Date(val).getTime();
+                return isNaN(t) ? 0 : t;
+            } catch (e) { return 0; }
+        }
+
+        async function sendAutoEmail({ to, subject, html }) {
+            if (!to) return;
+            const recipients = (Array.isArray(to) ? to : [to]).filter(e => e && String(e).includes("@"));
+            if (recipients.length === 0) return;
+
+            return db.collection("mail").add({
+                from: "Bhavya Diagnostics <contact@bhavyadiagnostics.com>",
+                replyTo: "contact@bhavyadiagnostics.com",
+                to: recipients,
+                message: { subject: subject, html: html }
+            }).catch(err => console.error("Email trigger error:", err));
+        }
+
+        // =======================================================
+        // 2. AUTH & INITIAL STATUS CHECK
+        // =======================================================
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (!user) {
+                alert("Please login first to access Wallet & Withdrawals.");
+                window.location.replace("index.html");
+                return;
+            }
+            currentUser = user;
+            await loadRulesFromSheet();
+            await checkExistingRequest(user);
+        });
+
+        async function loadRulesFromSheet() {
+            try {
+                const res = await fetch(GAS_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "getBookingData", user_id: "" })
+                });
+                const json = await res.json();
+                if (json.status === "success" && json.data && json.data.rules) {
+                    const r = json.data.rules;
+                    const limitVal = r.min_withdrawal_limit || r.minimum_withdrawal_limit || r.withdrawal_min_limit;
+                    if (limitVal && !isNaN(limitVal)) {
+                        minLimit = Number(limitVal);
+                    }
                 }
-            } catch(e) {
-                alert("Error connecting to server.");
+            } catch (e) {
+                console.warn("Using default withdrawal limit:", minLimit);
             }
         }
 
-        async function loadWalletDashboard(uid) {
+        async function checkExistingRequest(user) {
+            try {
+                const [patientSnap, kycSnap] = await Promise.all([
+                    db.collection("patients").doc(user.uid).get(),
+                    db.collection("withdrawal_profiles").doc(user.uid).get()
+                ]);
+
+                currentPatientDoc = patientSnap.exists ? patientSnap.data() : {};
+                currentKycDoc = kycSnap.exists ? kycSnap.data() : {};
+
+                const withdrawFlag = String(currentPatientDoc.withdraw || "inactive").toLowerCase().trim();
+                const kycStatus = String(currentKycDoc.status || "").toLowerCase().trim();
+
+                document.getElementById('loaderSection').style.display = 'none';
+
+                if (withdrawFlag === 'active' || kycStatus === 'approved') {
+                    await loadWalletDashboard(user);
+                } else if (kycStatus === 'pending') {
+                    document.getElementById('statusSection').style.display = 'block';
+                } else {
+                    if (kycStatus === 'rejected') {
+                        const alertBox = document.getElementById('rejectedAlertBox');
+                        alertBox.style.display = 'block';
+                        alertBox.innerHTML = `<strong>Previous KYC Rejected:</strong> ${escapeHtml(currentKycDoc.remarks || "Please upload clear documents and re-submit.")}`;
+                    }
+                    const defaultName = currentPatientDoc.name || currentPatientDoc.patient_name || localStorage.getItem("bhavya_name") || "";
+                    if (defaultName) document.getElementById('fullName').value = defaultName;
+                    document.getElementById('formSection').style.display = 'block';
+                }
+            } catch (e) {
+                console.error("Status check error:", e);
+                document.getElementById('loaderSection').style.display = 'none';
+                document.getElementById('formSection').style.display = 'block';
+            }
+        }
+
+        // =======================================================
+        // 3. LOAD WALLET DASHBOARD FROM FIREBASE
+        // =======================================================
+        async function loadWalletDashboard(user) {
             document.getElementById('loaderSection').style.display = 'block';
             document.getElementById('formSection').style.display = 'none';
             document.getElementById('statusSection').style.display = 'none';
 
             try {
-                let response = await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "getWalletDashboardData", userId: uid })
-                });
-                let data = await response.json();
+                const [pSnap, kycSnap, paySnap, txnSnap] = await Promise.all([
+                    db.collection("patients").doc(user.uid).get(),
+                    db.collection("withdrawal_profiles").doc(user.uid).get(),
+                    db.collection("payout_requests").where("uid", "==", user.uid).get(),
+                    db.collection("wallet_transactions").where("uid", "==", user.uid).get()
+                ]);
+
+                currentPatientDoc = pSnap.exists ? pSnap.data() : {};
+                currentKycDoc = kycSnap.exists ? kycSnap.data() : {};
+
+                walletBalance = Number(currentPatientDoc.current_wallet_balance ?? currentPatientDoc.wallet_balance ?? 0);
 
                 document.getElementById('loaderSection').style.display = 'none';
                 document.getElementById('walletDashboardSection').style.display = 'block';
 
-                walletBalance = Number(data.balance);
-                minLimit = Number(data.limit);
-
-                document.getElementById('displayBalance').innerText = '₹' + walletBalance;
+                document.getElementById('displayBalance').innerText = '₹' + walletBalance.toFixed(2);
                 document.getElementById('limitMsg').innerText = `Minimum withdrawal limit: ₹${minLimit}`;
+                if (currentKycDoc.upi_id) {
+                    document.getElementById('savedUpiDisplay').innerHTML = `Registered UPI: <b>${escapeHtml(currentKycDoc.upi_id)}</b>`;
+                }
 
-                // Payout Status
+                // Render Payout Requests
+                let payouts = [];
+                paySnap.forEach(d => {
+                    const data = d.data();
+                    payouts.push({ ...data, ts: getTimeMillis(data.created_at || data.timestamp) });
+                });
+                payouts.sort((a, b) => b.ts - a.ts);
+
                 let pBody = document.getElementById('payoutBody');
                 pBody.innerHTML = '';
-                if(!data.payouts || data.payouts.length === 0) {
-                    pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">No requests yet</td></tr>';
+                if (payouts.length === 0) {
+                    pBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888; padding:16px;">No withdrawal requests yet</td></tr>';
                 } else {
-                    data.payouts.forEach(req => {
-                        let d = new Date(req.date).toLocaleDateString();
-                        let statusColor = req.status.toLowerCase() === 'paid' ? 'color: #28a745;' : (req.status.toLowerCase() === 'rejected' ? 'color: #dc3545;' : 'color: #fd7e14;');
-                        let remarksHtml = req.remarks ? `<br><small style="color:gray;">${req.remarks}</small>` : '';
-                        
+                    payouts.forEach(req => {
+                        const st = String(req.status || "Pending");
+                        const stLow = st.toLowerCase();
+                        const statusColor = stLow === 'paid' ? 'color: #10b981;' : (stLow === 'rejected' ? 'color: #ef4444;' : 'color: #f59e0b;');
+                        const utrText = req.txn_id || req.remarks || "";
+                        const remarksHtml = utrText ? `<br><small style="color:#64748b;">UTR: ${escapeHtml(utrText)}</small>` : '';
+
                         pBody.innerHTML += `<tr>
-                            <td>${d}</td>
-                            <td><b>₹${req.amount}</b></td>
-                            <td><span style="font-weight:bold; ${statusColor}">${req.status}</span>${remarksHtml}</td>
+                            <td>${formatDateStr(req.created_at || req.timestamp)}</td>
+                            <td><b>₹${Number(req.amount || 0)}</b></td>
+                            <td><span style="font-weight:800; ${statusColor}">${escapeHtml(st)}</span>${remarksHtml}</td>
                         </tr>`;
                     });
                 }
 
-                // Normal Transactions
+                // Render Wallet Transactions
+                let txns = [];
+                txnSnap.forEach(d => {
+                    const data = d.data();
+                    txns.push({ ...data, ts: getTimeMillis(data.created_at || data.date) });
+                });
+                txns.sort((a, b) => b.ts - a.ts);
+
                 let tbody = document.getElementById('txnBody');
                 tbody.innerHTML = '';
-                if(!data.transactions || data.transactions.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888;">No transactions yet</td></tr>';
+                if (txns.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#888; padding:16px;">No transactions yet</td></tr>';
                 } else {
-                    data.transactions.forEach(txn => {
-                        let d = new Date(txn.date).toLocaleDateString();
-                        let isCredit = txn.type.toLowerCase() === 'credit';
-                        let colorClass = isCredit ? 'text-green' : 'text-red';
-                        let sign = isCredit ? '+' : '-';
+                    txns.forEach(txn => {
+                        const isCredit = String(txn.type || "").toLowerCase() === 'credit';
+                        const colorClass = isCredit ? 'text-green' : 'text-red';
+                        const sign = isCredit ? '+' : '-';
                         tbody.innerHTML += `<tr>
-                            <td>${d}</td>
-                            <td>${txn.desc}</td>
-                            <td class="${colorClass}">${sign}₹${txn.amount}</td>
+                            <td>${formatDateStr(txn.created_at || txn.date)}</td>
+                            <td>${escapeHtml(txn.description || "-")}</td>
+                            <td class="${colorClass}">${sign}₹${Number(txn.amount || 0)}</td>
                         </tr>`;
                     });
                 }
-            } catch(e) {
-                alert("Error loading wallet data.");
+            } catch (e) {
+                console.error("Wallet dashboard error:", e);
+                alert("Error loading wallet data: " + e.message);
                 document.getElementById('loaderSection').style.display = 'none';
             }
         }
 
+        // =======================================================
+        // 4. REQUEST PAYOUT TO UPI (SAVES IN FIREBASE + EMAIL)
+        // =======================================================
         async function requestMoney() {
-            let amt = document.getElementById('withdrawAmount').value;
-            if(!amt || amt < minLimit) {
+            const amt = Number(document.getElementById('withdrawAmount').value || 0);
+            if (!amt || amt < minLimit) {
                 alert(`Please enter an amount of at least ₹${minLimit}`);
                 return;
             }
-            if(amt > walletBalance) {
+            if (amt > walletBalance) {
                 alert("Insufficient wallet balance!");
                 return;
             }
+            if (!currentUser) return;
 
-            let btn = document.getElementById('requestMoneyBtn');
+            const btn = document.getElementById('requestMoneyBtn');
             btn.innerText = "Processing...";
             btn.disabled = true;
 
             try {
-                let response = await fetch(scriptURL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: "submitPayoutRequest", userId: currentUserId, amount: amt })
+                const pName = currentPatientDoc.name || currentPatientDoc.patient_name || currentKycDoc.full_name || "Patient";
+                const pUserId = currentPatientDoc.user_id || localStorage.getItem("bhavya_user_id") || currentUser.uid;
+                const pEmail = currentPatientDoc.email || "";
+                const upiId = currentKycDoc.upi_id || "QR Code Uploaded";
+                const newBal = Math.max(0, walletBalance - amt);
+
+                // 1. Deduct balance from patient wallet
+                await db.collection("patients").doc(currentUser.uid).update({
+                    current_wallet_balance: newBal,
+                    wallet_balance: newBal
                 });
-                let data = await response.json();
-                
-                if(data.status === 'success') {
-                    alert("Withdrawal Request Submitted Successfully!");
-                    document.getElementById('withdrawAmount').value = '';
-                    loadWalletDashboard(currentUserId); 
-                } else {
-                    throw new Error(data.message);
+
+                // 2. Create Payout Request for Admin Panel
+                await db.collection("payout_requests").add({
+                    uid: currentUser.uid,
+                    user_id: pUserId,
+                    patient_name: pName,
+                    email: pEmail,
+                    amount: amt,
+                    upi_id: upiId,
+                    qr_code: currentKycDoc.qr_code || "",
+                    status: "Pending",
+                    txn_id: "",
+                    remarks: "",
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 3. Record Debit in Wallet Transactions
+                await db.collection("wallet_transactions").add({
+                    uid: currentUser.uid,
+                    user_id: pUserId,
+                    type: "debit",
+                    amount: amt,
+                    description: `Withdrawal Request to ${upiId}`,
+                    reference: "PAYOUT-REQ",
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 4. Send Automatic Emails via contact@bhavyadiagnostics.com
+                await sendAutoEmail({
+                    to: "contact@bhavyadiagnostics.com",
+                    subject: `New Wallet Withdrawal Request: ₹${amt} - ${pName} (${pUserId})`,
+                    html: `<p>New payout request submitted:</p>
+                           <ul>
+                             <li><b>Name:</b> ${escapeHtml(pName)} (${escapeHtml(pUserId)})</li>
+                             <li><b>Amount:</b> ₹${amt}</li>
+                             <li><b>UPI ID:</b> ${escapeHtml(upiId)}</li>
+                           </ul>`
+                });
+
+                if (pEmail && pEmail.includes("@")) {
+                    await sendAutoEmail({
+                        to: pEmail,
+                        subject: `Withdrawal Request of ₹${amt} Received - Bhavya Diagnostics`,
+                        html: `<p>Dear <b>${escapeHtml(pName)}</b>,</p><p>Your withdrawal request of <b>₹${amt}</b> to UPI ID <b>${escapeHtml(upiId)}</b> has been received and will be processed shortly.</p>`
+                    });
                 }
-            } catch(e) {
-                alert(e.message || "Error submitting request");
+
+                alert("🎉 Withdrawal Request Submitted Successfully!");
+                document.getElementById('withdrawAmount').value = '';
+                await loadWalletDashboard(currentUser);
+            } catch (e) {
+                alert("Error submitting request: " + e.message);
             } finally {
-                btn.innerText = "Withdraw Now";
+                btn.innerHTML = 'Withdraw Now <i class="fas fa-paper-plane"></i>';
                 btn.disabled = false;
             }
         }
 
+        // =======================================================
+        // 5. LANGUAGE TOGGLE & KYC FILE UPLOAD TO FIREBASE STORAGE
+        // =======================================================
         const translations = { 
             hi: { 
-                formTitle: "वॉलेट सेटअप", lblFullName: "पूरा नाम *", lblUserImage: "अपनी फोटो *", lblProfession: "पेशा *", lblProfDoc: "विज़िटिंग कार्ड *", lblNetwork: "नेटवर्क क्षमता *", 
+                formTitle: "वॉलेट सेटअप (KYC)", lblFullName: "पूरा नाम *", lblUserImage: "अपनी फोटो *", lblProfession: "पेशा *", lblProfDoc: "विज़िटिंग कार्ड / डॉक्यूमेंट *", lblNetwork: "नेटवर्क क्षमता (महीने में कितने मरीज़ जोड़ सकते हैं?) *", 
                 lblUpiId: "यूपीआई आईडी (QR नहीं है तो भरें)", lblQrCode: "QR कोड (UPI ID नहीं है तो अपलोड करें)", submitBtn: "सबमिट करें" 
             },
             en: { 
-                formTitle: "Wallet Setup", lblFullName: "Full Name *", lblUserImage: "Photo *", lblProfession: "Profession *", lblProfDoc: "Document/Card *", lblNetwork: "Network Capacity *", 
+                formTitle: "Wallet Withdrawal Setup", lblFullName: "Full Name *", lblUserImage: "Upload Your Photo *", lblProfession: "Profession (What work do you do?) *", lblProfDoc: "Upload Profession Document / Visiting Card *", lblNetwork: "Network Capacity (How many patients can you refer/month?) *", 
                 lblUpiId: "UPI ID (Optional if QR is uploaded)", lblQrCode: "Upload UPI QR Code (Optional if UPI ID is given)", submitBtn: "Submit Details" 
             }
         };
 
         function changeLanguage() {
-            let t = translations[document.getElementById("langSelect").value];
-            document.getElementById("formTitle").innerText = t.formTitle; document.getElementById("lblFullName").innerText = t.lblFullName; document.getElementById("lblUserImage").innerText = t.lblUserImage; document.getElementById("lblProfession").innerText = t.lblProfession; document.getElementById("lblProfDoc").innerText = t.lblProfDoc; document.getElementById("lblNetwork").innerText = t.lblNetwork; document.getElementById("lblUpiId").innerText = t.lblUpiId; document.getElementById("lblQrCode").innerText = t.lblQrCode; document.getElementById("submitBtn").innerText = t.submitBtn;
+            const lang = document.getElementById("langSelect").value;
+            const t = translations[lang];
+            document.getElementById("formTitle").innerText = t.formTitle;
+            document.getElementById("lblFullName").innerText = t.lblFullName;
+            document.getElementById("lblUserImage").innerText = t.lblUserImage;
+            document.getElementById("lblProfession").innerText = t.lblProfession;
+            document.getElementById("lblProfDoc").innerText = t.lblProfDoc;
+            document.getElementById("lblNetwork").innerText = t.lblNetwork;
+            document.getElementById("lblUpiId").innerText = t.lblUpiId;
+            document.getElementById("lblQrCode").innerText = t.lblQrCode;
+            document.getElementById("submitBtn").innerText = t.submitBtn;
         }
 
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                if (!file) { resolve(""); return; }
-                const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result.split(',')[1]); reader.onerror = error => reject(error);
+        function compressImageToBlob(file) {
+            return new Promise((resolve) => {
+                if (!file || !file.type.startsWith("image/")) {
+                    resolve(file);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        const maxW = 800;
+                        const scale = img.width > maxW ? (maxW / img.width) : 1;
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob((blob) => resolve(blob || file), "image/jpeg", 0.75);
+                    };
+                };
             });
+        }
+
+        async function uploadFileToStorage(file, folderPath) {
+            if (!file || !storage) return "";
+            const uploadPayload = await compressImageToBlob(file);
+            const cleanName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+            const ref = storage.ref().child(`${folderPath}/${cleanName}`);
+            const snap = await ref.put(uploadPayload);
+            return await snap.ref.getDownloadURL();
         }
 
         document.getElementById('withdrawForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // CUSTOM VALIDATION FOR UPI / QR CODE
-            let upiVal = document.getElementById('upiId').value.trim();
-            let qrFile = document.getElementById('qrCode').files[0];
+            if (!currentUser) return;
+
+            const lang = document.getElementById("langSelect").value;
+            const upiVal = document.getElementById('upiId').value.trim();
+            const qrFile = document.getElementById('qrCode').files[0];
 
             if (!upiVal && !qrFile) {
-                let currentLang = document.getElementById("langSelect").value;
-                if (currentLang === 'hi') {
-                    alert("कृपया यूपीआई आईडी या क्यूआर कोड में से कम से कम कोई एक ज़रूर दें!");
-                } else {
-                    alert("Please provide either a UPI ID or upload a QR Code!");
-                }
-                return; // फॉर्म सबमिट होने से रोकें
+                alert(lang === 'hi'
+                    ? "कृपया यूपीआई आईडी या क्यूआर कोड में से कम से कम कोई एक ज़रूर दें!"
+                    : "Please provide either a UPI ID or upload a QR Code!");
+                return;
+            }
+
+            if (!document.getElementById('kycConsent').checked) {
+                alert("Please accept the privacy consent checkbox.");
+                return;
             }
 
             const btn = document.getElementById('submitBtn');
-            btn.innerText = "Submitting Please Wait..."; btn.disabled = true;
+            btn.innerText = lang === 'hi' ? "अपलोड हो रहा है..." : "Uploading & Submitting...";
+            btn.disabled = true;
 
             try {
-                // सुरक्षित तरीके से फाइल चेक करना 
-                let userImageFile = document.getElementById('userImage').files[0];
-                let profDocFile = document.getElementById('profDoc').files[0];
+                const userImageFile = document.getElementById('userImage').files[0];
+                const profDocFile = document.getElementById('profDoc').files[0];
 
-                const formData = {
-                    action: "submitWithdrawRequest", 
-                    userId: document.getElementById('userId').value, 
-                    fullName: document.getElementById('fullName').value, 
-                    profession: document.getElementById('profession').value, 
-                    networkCapacity: document.getElementById('networkCapacity').value, 
-                    upiId: upiVal,
-                    
-                    userImageBase64: await getBase64(userImageFile), 
-                    userImageName: userImageFile ? userImageFile.name : "", 
-                    userImageType: userImageFile ? userImageFile.type : "",
-                    
-                    profDocBase64: await getBase64(profDocFile), 
-                    profDocName: profDocFile ? profDocFile.name : "", 
-                    profDocType: profDocFile ? profDocFile.type : "",
-                    
-                    qrCodeBase64: await getBase64(qrFile), 
-                    qrCodeName: qrFile ? qrFile.name : "", 
-                    qrCodeType: qrFile ? qrFile.type : ""
-                };
+                const basePath = `kyc_docs/${currentUser.uid}`;
+                const [userImageUrl, profDocUrl, qrCodeUrl] = await Promise.all([
+                    uploadFileToStorage(userImageFile, basePath),
+                    uploadFileToStorage(profDocFile, basePath),
+                    uploadFileToStorage(qrFile, basePath)
+                ]);
 
-                const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(formData) });
-                const data = await response.json();
-                
-                if(data.status === 'success') {
-                    alert("Profile submitted for Admin Approval!");
-                    window.location.href = "index.html";
-                } else throw new Error(data.message);
-            } catch (error) { 
-                alert("Server Error! Please try again later."); 
-            } finally { 
-                btn.innerText = translations[document.getElementById("langSelect").value].submitBtn; 
-                btn.disabled = false; 
+                const fullName = document.getElementById('fullName').value.trim();
+                const profession = document.getElementById('profession').value.trim();
+                const networkCapacity = Number(document.getElementById('networkCapacity').value || 0);
+                const pUserId = currentPatientDoc.user_id || localStorage.getItem("bhavya_user_id") || currentUser.uid;
+
+                // Save in Firestore 'withdrawal_profiles/{uid}'
+                await db.collection("withdrawal_profiles").doc(currentUser.uid).set({
+                    uid: currentUser.uid,
+                    user_id: pUserId,
+                    full_name: fullName,
+                    mobile: currentPatientDoc.mobile || currentUser.phoneNumber || "",
+                    email: currentPatientDoc.email || "",
+                    profession: profession,
+                    network_capacity: networkCapacity,
+                    upi_id: upiVal,
+                    user_image: userImageUrl,
+                    prof_doc: profDocUrl,
+                    qr_code: qrCodeUrl,
+                    status: "Pending",
+                    remarks: "",
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Send Admin Notification Email
+                await sendAutoEmail({
+                    to: "contact@bhavyadiagnostics.com",
+                    subject: `New Wallet KYC Request: ${fullName} (${pUserId})`,
+                    html: `<p>New Wallet Withdrawal KYC submitted:</p>
+                           <ul>
+                             <li><b>Name:</b> ${escapeHtml(fullName)} (${escapeHtml(pUserId)})</li>
+                             <li><b>Profession:</b> ${escapeHtml(profession)}</li>
+                             <li><b>Network Capacity:</b> ${networkCapacity}</li>
+                             <li><b>UPI ID:</b> ${escapeHtml(upiVal || "QR Uploaded")}</li>
+                           </ul>`
+                });
+
+                alert(lang === 'hi' ? "आपका विवरण एडमिन अप्रूवल के लिए भेज दिया गया है!" : "Profile submitted for Admin Approval!");
+                window.location.reload();
+            } catch (error) {
+                console.error("KYC submit error:", error);
+                alert("Error submitting details: " + error.message);
+            } finally {
+                btn.innerText = translations[lang].submitBtn;
+                btn.disabled = false;
             }
         });
     </script>
