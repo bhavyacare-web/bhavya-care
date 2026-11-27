@@ -1064,12 +1064,73 @@ function initCartPage() {
     }
 }
 
-async function fetchProfile() {
-    let skel = document.getElementById('checkoutFormSkeleton');
-    let form = document.getElementById('actualCheckoutForm');
-    if(skel) skel.style.display = 'block';
-    if(form) form.style.display = 'none';
+function applyProfileToCheckoutForm(data) {
+    if (!data) return;
+    bookingData.mobile = String(data.mobile || data.mobile_number || "").replace(/^\+91/, '');
+    bookingData.email = data.email || "";
+    const planStr = String(data.current_plan_status || data.plan || "basic").toLowerCase();
+    bookingData.isVip = (planStr === "vip" || planStr === "pending" || data.isVip === true);
+    welcomeEmailAlreadySent = !!data.welcome_email_sent;
 
+    const uMob = document.getElementById('uMobile');
+    if (uMob && bookingData.mobile) {
+        uMob.value = bookingData.mobile;
+        uMob.setAttribute("readonly", true);
+    }
+    const uEmail = document.getElementById('uEmail');
+    if (uEmail && data.email) uEmail.value = data.email;
+
+    const uPin = document.getElementById('uPincode');
+    if (uPin && data.pincode) uPin.value = data.pincode;
+
+    const uAddr = document.getElementById('uAddress');
+    if (uAddr && data.address) uAddr.value = data.address;
+
+    const uCity = document.getElementById('uCity');
+    if (uCity && (data.city || data.city_village)) uCity.value = data.city || data.city_village;
+
+    const nameBox = document.getElementById('nameInputBox');
+    if (nameBox) {
+        if (bookingData.isVip && Array.isArray(data.vipMembers) && data.vipMembers.length > 0) {
+            const badge = document.getElementById('vipBadge');
+            if (badge) badge.innerHTML = '<span style="background:var(--warning); color:white; font-size:10px; padding:4px 8px; border-radius:12px; margin-left: 10px;"><i class="fas fa-crown"></i> VIP Active</span>';
+            const opts = data.vipMembers.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+            nameBox.innerHTML = `<select id="uName" class="form-input">${opts}</select>`;
+        } else {
+            nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${escapeHtml(data.name || data.patient_name || '')}" placeholder="Patient Name">`;
+        }
+    }
+
+    userWalletBalance = Number(data.current_wallet_balance ?? data.wallet_balance ?? 0);
+    const walletTxt = document.getElementById('walletBalTxt');
+    if (walletTxt) walletTxt.innerText = userWalletBalance;
+    calculateFinalBill();
+}
+
+async function fetchProfile() {
+    const skel = document.getElementById('checkoutFormSkeleton');
+    const form = document.getElementById('actualCheckoutForm');
+    const loader = document.getElementById('loadingOverlay');
+
+    // 1. Instant 0ms load from localStorage cache if available
+    let usedCache = false;
+    try {
+        const cachedProfile = localStorage.getItem('bhavya_profile_cache');
+        if (cachedProfile) {
+            applyProfileToCheckoutForm(JSON.parse(cachedProfile));
+            if (loader) loader.style.display = 'none';
+            if (skel) skel.style.display = 'none';
+            if (form) form.style.display = 'block';
+            usedCache = true;
+        }
+    } catch (e) {}
+
+    if (!usedCache) {
+        if (skel) skel.style.display = 'block';
+        if (form) form.style.display = 'none';
+    }
+
+    // 2. Sync latest data from Firebase in background
     if (db) {
         try {
             const authUser = await getAuthUser();
@@ -1077,45 +1138,8 @@ async function fetchProfile() {
                 const doc = await db.collection("patients").doc(authUser.uid).get();
                 if (doc.exists) {
                     const data = doc.data();
-                    bookingData.mobile = String(data.mobile || data.mobile_number || "").replace(/^\+91/, '');
-                    bookingData.email = data.email || "";
-                    const planStr = String(data.current_plan_status || data.plan || "basic").toLowerCase();
-                    bookingData.isVip = (planStr === "vip" || planStr === "pending" || data.isVip === true);
-                    welcomeEmailAlreadySent = !!data.welcome_email_sent;
-
-                    let uMob = document.getElementById('uMobile');
-                    if (uMob && bookingData.mobile) {
-                        uMob.value = bookingData.mobile;
-                        uMob.setAttribute("readonly", true);
-                    }
-                    let uEmail = document.getElementById('uEmail');
-                    if (uEmail && data.email) uEmail.value = data.email;
-
-                    let uPin = document.getElementById('uPincode');
-                    if (uPin && data.pincode) uPin.value = data.pincode;
-
-                    let uAddr = document.getElementById('uAddress');
-                    if (uAddr && data.address) uAddr.value = data.address;
-
-                    let uCity = document.getElementById('uCity');
-                    if (uCity && (data.city || data.city_village)) uCity.value = data.city || data.city_village;
-
-                    const nameBox = document.getElementById('nameInputBox');
-                    if (nameBox) {
-                        if (bookingData.isVip && Array.isArray(data.vipMembers) && data.vipMembers.length > 0) {
-                            let badge = document.getElementById('vipBadge');
-                            if(badge) badge.innerHTML = '<span style="background:var(--warning); color:white; font-size:10px; padding:4px 8px; border-radius:12px; margin-left: 10px;"><i class="fas fa-crown"></i> VIP Active</span>';
-                            let opts = data.vipMembers.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
-                            nameBox.innerHTML = `<select id="uName" class="form-input">${opts}</select>`;
-                        } else {
-                            nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${escapeHtml(data.name || data.patient_name || '')}" placeholder="Patient Name">`;
-                        }
-                    }
-
-                    userWalletBalance = Number(data.current_wallet_balance ?? data.wallet_balance ?? 0);
-                    let walletTxt = document.getElementById('walletBalTxt');
-                    if (walletTxt) walletTxt.innerText = userWalletBalance;
-                    calculateFinalBill();
+                    localStorage.setItem('bhavya_profile_cache', JSON.stringify(data));
+                    applyProfileToCheckoutForm(data);
                 }
             }
         } catch (fbErr) {
@@ -1123,12 +1147,10 @@ async function fetchProfile() {
         }
     }
 
-    let loader = document.getElementById('loadingOverlay');
     if (loader) loader.style.display = 'none';
     if (skel) skel.style.display = 'none';
     if (form) form.style.display = 'block';
 }
-
 async function savePatientInfo() {
     const name = document.getElementById('uName').value.trim();
     const mobile = document.getElementById('uMobile').value.trim();
