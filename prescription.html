@@ -2,259 +2,419 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Upload Prescription - BhavyaCare</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+    <!-- ✨ LOCAL & DIAGNOSTIC SEO META TAGS ✨ -->
+    <title>Upload Doctor Prescription for Lab Tests | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="description" content="Upload your doctor's prescription online at Bhavya Diagnostics, Main Jhajjar Road, Bahadurgarh. Our diagnostic team will call you with NABL lab test prices &amp; free home sample collection. Call/WhatsApp 89501 12467.">
+    <meta name="keywords" content="upload prescription blood test Bahadurgarh, Bhavya Diagnostics prescription upload, order lab test by prescription Bahadurgarh, home sample collection Bahadurgarh">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.bhavyadiagnostics.com/prescription.html">
+    <link rel="icon" href="image/logo.jpeg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="image/logo.jpeg">
+
+    <!-- Open Graph / WhatsApp Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Bhavya Diagnostics">
+    <meta property="og:title" content="Upload Prescription | Bhavya Diagnostics Bahadurgarh">
+    <meta property="og:description" content="Upload a photo or PDF of your prescription and get instant quote &amp; home sample collection in Bahadurgarh.">
+    <meta property="og:url" content="https://www.bhavyadiagnostics.com/prescription.html">
+    <meta property="og:image" content="https://www.bhavyadiagnostics.com/image/logo.jpeg">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
-        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --success: #10b981; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --border: #e2e8f0; }
+        :root {
+            --primary: #0056b3; --primary-light: #e6f0fa; --primary-hover: #004494;
+            --success: #10b981; --success-soft: #d1fae5;
+            --warning: #f59e0b; --danger: #ef4444;
+            --bg-color: #f0f4f8; --card-bg: #ffffff;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-color); margin: 0; padding-bottom: 40px; color: var(--text-main); }
-        
-        .header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);}
-        .back-btn { background: #eff6ff; color: var(--primary); border: none; padding: 10px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 14px;}
-        
-        .container { max-width: 600px; margin: 30px auto; padding: 0 20px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border); }
-        
-        h2 { margin: 0 0 10px 0; font-size: 24px; font-weight: 800; color: var(--primary); text-align: center; }
-        p.subtitle { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 25px; }
+        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
 
-        .form-group { margin-bottom: 20px; }
-        label { font-weight: 700; display: block; margin-bottom: 8px; font-size: 13px; color: #475569; }
-        input[type="tel"], textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: #f8fafc; transition: 0.3s; }
-        input:focus, textarea:focus { border-color: var(--primary); background: white; }
+        /* HEADER */
+        .navbar { background: #ffffff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand img { height: 42px; border-radius: 8px; }
+        .brand h2 { margin: 0; font-size: 20px; font-weight: 800; color: var(--primary); }
+        .brand span { color: var(--success); }
+        .back-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 9px 15px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 
-        .file-upload-box { border: 2px dashed #94a3b8; border-radius: 12px; padding: 30px 20px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s; position: relative; }
-        .file-upload-box:hover { border-color: var(--primary); background: #eff6ff; }
-        .file-upload-box i { font-size: 40px; color: var(--primary); margin-bottom: 15px; }
-        .file-upload-box p { margin: 0; font-size: 14px; font-weight: 600; color: #475569; }
-        .file-upload-box input[type="file"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        #fileName { display: block; margin-top: 10px; font-size: 12px; color: var(--success); font-weight: 800; }
+        /* MAIN CONTAINER */
+        .container { max-width: 540px; width: 100%; margin: 24px auto 60px; padding: 0 16px; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 26px; box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 1px solid var(--border); }
 
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); margin-top: 10px;}
-        .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
+        .hero-badge { background: #f3e8ff; color: #7c3aed; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
+        h1 { margin: 0 0 8px 0; font-size: 22px; font-weight: 800; color: var(--text-main); line-height: 1.3; }
+        .subtitle { margin: 0 0 20px 0; font-size: 13.5px; color: var(--text-muted); line-height: 1.55; }
 
-        /* Toast CSS */
-        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none;}
-        .toast { background: #1e293b; color: white; padding: 14px 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; animation: slideUpToast 0.4s ease, fadeOutToast 0.4s ease 2.6s forwards; }
-        .toast.success { background: var(--success); } .toast.error { background: #ef4444; }
-        @keyframes slideUpToast { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOutToast { from { opacity: 1; } to { opacity: 0; } }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 11px; font-size: 14px; font-weight: 600; background: #f8fafc; color: var(--text-main); outline: none; transition: 0.2s; }
+        .form-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px var(--primary-light); }
+
+        /* DROPZONE UPLOAD BOX */
+        .upload-zone { border: 2px dashed #93c5fd; background: #eff6ff; border-radius: 16px; padding: 24px 16px; text-align: center; cursor: pointer; transition: 0.25s; position: relative; }
+        .upload-zone:hover { border-color: var(--primary); background: #dbeafe; }
+        .upload-zone i { font-size: 36px; color: var(--primary); margin-bottom: 8px; }
+        .upload-zone h4 { margin: 0 0 4px 0; font-size: 15px; font-weight: 800; color: var(--text-main); }
+        .upload-zone p { margin: 0; font-size: 12px; color: var(--text-muted); }
+        .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+        .file-preview-box { display: none; margin-top: 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 12px; align-items: center; justify-content: space-between; gap: 10px; }
+        .file-preview-box.active { display: flex; }
+
+        .btn-submit { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.25s; box-shadow: 0 6px 16px rgba(0,86,179,0.22); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-submit:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        /* SUCCESS STATE */
+        #successCard { display: none; text-align: center; padding: 34px 22px; }
+        .success-icon { width: 72px; height: 72px; border-radius: 50%; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto 16px; }
+
+        /* HOW IT WORKS MINI STEPS */
+        .steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .step-mini { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 14px 10px; text-align: center; }
+        .step-mini i { font-size: 18px; color: var(--primary); margin-bottom: 6px; }
+        .step-mini p { margin: 0; font-size: 11px; font-weight: 700; color: var(--text-main); line-height: 1.35; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <a href="index.html" class="back-btn" id="backLink"><i class="fas fa-arrow-left"></i> Back</a>
-    <h3 style="margin:0; font-size:18px; color:var(--text-main);">BhavyaCare</h3>
-</div>
+    <header class="navbar">
+        <a href="index.html" class="brand">
+            <img src="image/logo.jpeg" alt="Bhavya Diagnostics Logo">
+            <h2>Bhavya <span>Diagnostics</span></h2>
+        </a>
+        <a id="navBackLink" href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+    </header>
 
-<div class="container">
-    <div class="card">
-        <h2><i class="fas fa-file-prescription"></i> Upload Prescription</h2>
-        <p class="subtitle">Have a doctor's prescription? Upload it here and we will arrange your medicines or lab tests.</p>
+    <main class="container">
+        <!-- UPLOAD FORM CARD -->
+        <div class="card" id="uploadFormCard">
+            <span class="hero-badge"><i class="fas fa-file-prescription"></i> Quick Rx Booking</span>
+            <h1>Upload Doctor's Prescription</h1>
+            <p class="subtitle">Share a clear photo or PDF of your prescription. Our diagnostic team at Bhavya Diagnostics Bahadurgarh will review it and call you with NABL lab test prices &amp; home collection details.</p>
 
-        <form id="prescriptionForm">
-            <!-- Naya Name Field add kiya gaya hai -->
-            <div class="form-group">
-                <label>Patient Name *</label>
-                <input type="text" id="patientName" placeholder="Enter patient name" required>
-            </div>
-
-            <div class="form-group">
-                <label>Mobile Number * <span style="font-weight:normal; font-size:11px;">(We will contact you on this number)</span></label>
-                <input type="tel" id="mobileNumber" placeholder="10-digit mobile number" maxlength="10" required>
-            </div>
-
-            <div class="form-group">
-                <label>Upload File (Image or PDF) *</label>
-                <div class="file-upload-box">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>Tap to select or take a photo</p>
-                    <input type="file" id="rxFile" accept="image/*,.pdf" required onchange="showFileName()">
-                    <span id="fileName"></span>
+            <form id="rxUploadForm">
+                <div class="form-group">
+                    <label class="form-label">Patient Full Name <span style="color:var(--danger);">*</span></label>
+                    <input type="text" id="rxPatientName" class="form-input" placeholder="Enter patient name" required>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">10-Digit Mobile Number <span style="color:var(--danger);">*</span></label>
+                    <input type="tel" id="rxMobile" class="form-input" maxlength="10" placeholder="e.g. 8950112467" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address (Optional — For Quote &amp; Updates)</label>
+                    <input type="email" id="rxEmail" class="form-input" placeholder="e.g. name@gmail.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Prescription Photo or PDF <span style="color:var(--danger);">*</span></label>
+                    <div class="upload-zone" id="uploadDropZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h4>Tap to Upload Prescription</h4>
+                        <p>Supports JPG, PNG, WEBP or PDF (Max 10 MB)</p>
+                        <input type="file" id="rxFileInput" accept="image/*,application/pdf" required>
+                    </div>
+                    <div class="file-preview-box" id="filePreviewBox">
+                        <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
+                            <i class="fas fa-file-medical" style="font-size:22px; color:var(--primary);"></i>
+                            <div style="overflow:hidden;">
+                                <div id="selectedFileName" style="font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">file.jpg</div>
+                                <div id="selectedFileSize" style="font-size:11px; color:var(--text-muted);">0 KB</div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="clearSelectedFile()" style="background:#fee2e2; color:var(--danger); border:none; width:28px; height:28px; border-radius:50%; cursor:pointer; font-weight:bold;">&times;</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Additional Notes / Preferred Collection Time (Optional)</label>
+                    <textarea id="rxNotes" class="form-input" rows="2" placeholder="e.g. Morning fasting sample required, Sector 6 Bahadurgarh" style="resize:none;"></textarea>
+                </div>
+
+                <label style="display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--text-muted); margin-bottom:18px; cursor:pointer; line-height:1.45;">
+                    <input type="checkbox" id="rxConsent" checked style="margin-top:2px; width:16px; height:16px;">
+                    <span>I consent to share this prescription with Bhavya Diagnostics for test estimation &amp; booking as per our <a href="privacy.html" target="_blank" style="color:var(--primary); font-weight:700;">Privacy Policy</a>.</span>
+                </label>
+
+                <button type="submit" id="btnSubmitRx" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Submit Prescription
+                </button>
+            </form>
+        </div>
+
+        <!-- SUCCESS CONFIRMATION CARD -->
+        <div class="card" id="successCard">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h2 style="margin:0 0 8px; font-size:22px; color:var(--text-main);">Prescription Uploaded!</h2>
+            <p style="font-size:13.5px; color:var(--text-muted); line-height:1.6; margin:0 0 16px;">
+                Your Prescription ID is <strong id="displayRxId" style="color:var(--primary);">RX-000000</strong>.<br>
+                Our diagnostic team will review your tests and contact you shortly on <strong id="displayRxMobile">-</strong>.
+            </p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <a href="https://wa.me/918950112467" target="_blank" rel="noopener noreferrer" class="btn-submit" style="background:var(--success); text-decoration:none;">
+                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp (89501 12467)
+                </a>
+                <a id="successHomeBtn" href="index.html" class="btn-submit" style="background:#334155; text-decoration:none;">
+                    Back to Home
+                </a>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>Any special instructions? (Optional)</label>
-                <textarea id="patientNotes" rows="3" placeholder="E.g., I only need medicines for 5 days..."></textarea>
-            </div>
+        <!-- 3 QUICK STEPS -->
+        <div class="steps-row">
+            <div class="step-mini"><i class="fas fa-camera"></i><p>1. Upload Photo / PDF</p></div>
+            <div class="step-mini"><i class="fas fa-phone-volume"></i><p>2. Get Price Call in 15 Min</p></div>
+            <div class="step-mini"><i class="fas fa-home"></i><p>3. Free Home Collection</p></div>
+        </div>
+    </main>
 
-            <button type="submit" class="btn-submit" id="btnSubmit">Securely Upload</button>
-        </form>
-    </div>
-</div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-<div id="toast-container"></div>
-
-<script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_leCWfb7HNhh4BLGLMqhM8dF9jCKpvmqIZkijnzEJl__E3dZftwl3z-hZ7mmzYtrHSA/exec";
-
-    document.addEventListener("DOMContentLoaded", async () => {
-        const userId = localStorage.getItem("bhavya_user_id");
-        
-        // Helper function to get exact 10 digits
-        const getClean10DigitMobile = (rawNum) => {
-            if(!rawNum) return "";
-            let clean = rawNum.toString().replace(/\D/g, ''); // Remove spaces, +, -, etc.
-            if(clean.length > 10) clean = clean.slice(-10); // Hamesha last 10 digits lega
-            return clean;
+    <script>
+        // =======================================================
+        // 1. FIREBASE CONFIGURATION & INITIALIZATION
+        // =======================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyC2nYH22wkYDhh-BWfHvkT-bQvdKLCxask",
+            authDomain: "bhavya-care.firebaseapp.com",
+            projectId: "bhavya-care",
+            storageBucket: "bhavya-care.firebasestorage.app",
+            messagingSenderId: "979254809111",
+            appId: "1:979254809111:web:0181e0c97277a5d0d9c252",
+            measurementId: "G-G82G4VWGGT"
         };
 
-        if (userId) {
-            const backLink = document.getElementById("backLink");
-            if(backLink) {
-                backLink.href = "patient_dashboard/patient_dashboard.html";
-            }
-
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: "getPatientProfile", user_id: userId }) 
-                });
-                const resData = await response.json();
-
-                if (resData.status === "success") {
-                    const patient = resData.data;
-                    
-                    // Auto-fill and lock Name
-                    const nameInput = document.getElementById("patientName");
-                    nameInput.value = patient.patient_name;
-                    nameInput.readOnly = true;
-                    nameInput.style.backgroundColor = "#e2e8f0";
-
-                    // Auto-fill and lock Mobile (Fixed 10 digit logic)
-                    const mobileInput = document.getElementById("mobileNumber");
-                    mobileInput.value = getClean10DigitMobile(patient.mobile_number);
-                    mobileInput.readOnly = true;
-                    mobileInput.style.backgroundColor = "#e2e8f0";
-                }
-            } catch(e) {
-                console.log("Could not auto-fill from sheet. Falling back to local storage.");
-                const savedName = localStorage.getItem("bhavya_name");
-                const savedMobile = localStorage.getItem("bhavya_mobile");
-                if(savedName) {
-                    let n = document.getElementById("patientName");
-                    n.value = savedName; n.readOnly = true; n.style.backgroundColor = "#e2e8f0";
-                }
-                if(savedMobile) {
-                    let m = document.getElementById("mobileNumber");
-                    m.value = getClean10DigitMobile(savedMobile); m.readOnly = true; m.style.backgroundColor = "#e2e8f0";
-                }
-            }
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-        document.getElementById("prescriptionForm").addEventListener("submit", handleUpload);
-    });
 
-    function showToast(message, type = 'success') {
-        let container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
-    }
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-    function showFileName() {
-        const fileInput = document.getElementById("rxFile");
-        if (fileInput.files.length > 0) {
-            document.getElementById("fileName").innerText = "Selected: " + fileInput.files[0].name;
+        let loggedInUid = "";
+        let loggedInUserId = "GUEST";
+
+        function escapeHtml(str) {
+            return String(str || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
         }
-    }
 
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            if (!file.type.startsWith('image/')) {
-                if(file.size > 5 * 1024 * 1024) return reject("PDF size cannot exceed 5MB.");
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result.split(',')[1]); 
-                reader.onerror = error => reject(error);
+        async function sendAutoEmail({ to, subject, html }) {
+            if (!to) return;
+            const recipients = (Array.isArray(to) ? to : [to]).filter(e => e && String(e).includes("@"));
+            if (recipients.length === 0) return;
+
+            return db.collection("mail").add({
+                from: "Bhavya Diagnostics Booking <booking@bhavyadiagnostics.com>",
+                replyTo: "booking@bhavyadiagnostics.com",
+                to: recipients,
+                message: { subject: subject, html: html }
+            }).catch(err => console.error("Email trigger error:", err));
+        }
+
+        // =======================================================
+        // 2. AUTO-FILL PATIENT DETAILS IF LOGGED IN
+        // =======================================================
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                loggedInUid = user.uid;
+                if (localStorage.getItem("bhavya_role") === "patient") {
+                    document.getElementById("navBackLink").href = "patient_dashboard/patient_dashboard.html";
+                    document.getElementById("successHomeBtn").href = "patient_dashboard/patient_dashboard.html";
+                    document.getElementById("successHomeBtn").innerText = "Go to Patient Dashboard";
+                }
+
+                try {
+                    const snap = await db.collection("patients").doc(user.uid).get();
+                    if (snap.exists) {
+                        const d = snap.data();
+                        loggedInUserId = d.user_id || localStorage.getItem("bhavya_user_id") || user.uid;
+                        const name = d.name || d.patient_name || localStorage.getItem("bhavya_name") || "";
+                        const mobile = String(d.mobile || d.mobile_number || user.phoneNumber || "").replace(/\D/g, "").slice(-10);
+                        const email = d.email || "";
+
+                        if (name) document.getElementById("rxPatientName").value = name;
+                        if (mobile.length === 10) document.getElementById("rxMobile").value = mobile;
+                        if (email) document.getElementById("rxEmail").value = email;
+                    }
+                } catch (e) {
+                    console.warn("Autofill error:", e);
+                }
+            }
+        });
+
+        // =======================================================
+        // 3. FILE SELECTION & IMAGE COMPRESSION
+        // =======================================================
+        const fileInput = document.getElementById("rxFileInput");
+        fileInput.addEventListener("change", () => {
+            if (!fileInput.files || fileInput.files.length === 0) return;
+            const file = fileInput.files[0];
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert("File size exceeds 10 MB. Please upload a smaller image or PDF.");
+                clearSelectedFile();
                 return;
             }
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let ctx = canvas.getContext('2d');
-                    let width = img.width, height = img.height;
-                    const MAX_DIM = 1200; 
-                    if (width > height && width > MAX_DIM) { height *= MAX_DIM / width; width = MAX_DIM; } 
-                    else if (height > MAX_DIM) { width *= MAX_DIM / height; height = MAX_DIM; }
-                    canvas.width = width; canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL(file.type, 0.7).split(',')[1]); 
-                };
-            };
-            reader.onerror = error => reject(error);
+
+            document.getElementById("selectedFileName").innerText = file.name;
+            document.getElementById("selectedFileSize").innerText = (file.size / 1024).toFixed(1) + " KB";
+            document.getElementById("filePreviewBox").classList.add("active");
         });
-    }
 
-    async function handleUpload(e) {
-        e.preventDefault();
-        
-        const name = document.getElementById("patientName").value.trim();
-        const mobile = document.getElementById("mobileNumber").value.trim();
-        const fileInput = document.getElementById("rxFile");
-        const notes = document.getElementById("patientNotes").value.trim();
-        const btn = document.getElementById("btnSubmit");
-
-        if(mobile.length !== 10 || isNaN(mobile)) { showToast("Enter a valid 10 digit mobile number.", "error"); return; }
-        if(!fileInput.files || fileInput.files.length === 0) { showToast("Please attach a file.", "error"); return; }
-
-        btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Uploading...`;
-        btn.disabled = true;
-
-        try {
-            const file = fileInput.files[0];
-            const base64Data = await getBase64(file);
-            const userId = localStorage.getItem("bhavya_user_id") || "GUEST";
-
-            const payload = {
-                action: "uploadPatientPrescription",
-                user_id: userId,
-                patient_name: name,
-                mobile: mobile,
-                notes: notes,
-                file_base64: base64Data,
-                mime_type: file.type,
-                file_name: file.name
-            };
-
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-            });
-
-            const resData = await response.json();
-
-            if(resData.status === "success") {
-                showToast("Prescription uploaded! We will contact you soon.", "success");
-                document.getElementById("prescriptionForm").reset();
-                document.getElementById("fileName").innerText = "";
-                
-                if (userId) {
-                    document.getElementById("patientName").value = name;
-                    document.getElementById("mobileNumber").value = mobile;
-                }
-            } else {
-                showToast("Error: " + resData.message, "error");
-            }
-        } catch(err) {
-            showToast("Network error. Please try again.", "error");
-        } finally {
-            btn.innerHTML = "Securely Upload";
-            btn.disabled = false;
+        function clearSelectedFile() {
+            fileInput.value = "";
+            document.getElementById("filePreviewBox").classList.remove("active");
         }
-    }
-</script>
+
+        function compressImageIfNeeded(file) {
+            return new Promise((resolve) => {
+                if (!file || !file.type.startsWith("image/")) {
+                    resolve(file);
+                    return;
+                }
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        const maxW = 1200;
+                        const scale = img.width > maxW ? (maxW / img.width) : 1;
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob((blob) => resolve(blob || file), "image/jpeg", 0.8);
+                    };
+                };
+            });
+        }
+
+        // =======================================================
+        // 4. UPLOAD TO FIREBASE STORAGE + SAVE IN FIRESTORE + EMAIL
+        // =======================================================
+        document.getElementById("rxUploadForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById("rxPatientName").value.trim();
+            const rawMobile = document.getElementById("rxMobile").value.trim();
+            const cleanMobile = rawMobile.replace(/\D/g, "").slice(-10);
+            const email = document.getElementById("rxEmail").value.trim().toLowerCase();
+            const notes = document.getElementById("rxNotes").value.trim();
+
+            if (!name || cleanMobile.length !== 10) {
+                alert("Please enter a valid Name and 10-digit Mobile Number.");
+                return;
+            }
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Please select a prescription photo or PDF file.");
+                return;
+            }
+            if (!document.getElementById("rxConsent").checked) {
+                alert("Please accept the privacy consent checkbox.");
+                return;
+            }
+
+            const btn = document.getElementById("btnSubmitRx");
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Prescription...';
+            btn.disabled = true;
+
+            try {
+                const rawFile = fileInput.files[0];
+                const uploadBlob = await compressImageIfNeeded(rawFile);
+                const rxId = "RX-" + Date.now().toString().slice(-6);
+                const safeFileName = `${rxId}_${rawFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+
+                // 1. Upload to Firebase Storage
+                const storageRef = storage.ref().child(`prescriptions/${safeFileName}`);
+                const snap = await storageRef.put(uploadBlob);
+                const downloadUrl = await snap.ref.getDownloadURL();
+
+                // 2. Save in Firestore 'prescriptions' collection (linked directly to Admin Panel)
+                await db.collection("prescriptions").doc(rxId).set({
+                    prescription_id: rxId,
+                    uid: loggedInUid || "",
+                    user_id: loggedInUserId || "GUEST",
+                    patient_name: name,
+                    mobile: cleanMobile,
+                    mobile_number: cleanMobile,
+                    email: email,
+                    prescription_url: downloadUrl,
+                    file_name: rawFile.name,
+                    notes: notes,
+                    patient_notes: notes,
+                    status: "Pending",
+                    linked_order_id: "",
+                    created_at: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // 3. Send Automatic Emails via booking@bhavyadiagnostics.com
+                const adminHtml = `
+                    <div style="font-family:Arial,sans-serif;max-width:580px;margin:auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+                        <div style="background:#0056b3;color:white;padding:16px 22px;">
+                            <h2 style="margin:0;font-size:19px;">New Prescription Uploaded (${escapeHtml(rxId)})</h2>
+                        </div>
+                        <div style="padding:20px 22px;color:#1e293b;">
+                            <p><b>Patient Name:</b> ${escapeHtml(name)} (${escapeHtml(loggedInUserId)})</p>
+                            <p><b>Mobile:</b> +91 ${escapeHtml(cleanMobile)}</p>
+                            <p><b>Notes:</b> ${escapeHtml(notes || "None")}</p>
+                            <p style="margin:20px 0;">
+                                <a href="${escapeHtml(downloadUrl)}" style="background:#10b981;color:white;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:bold;display:inline-block;">📄 View / Download Prescription</a>
+                            </p>
+                        </div>
+                    </div>`;
+
+                await sendAutoEmail({
+                    to: "booking@bhavyadiagnostics.com",
+                    subject: `New Prescription Uploaded: ${rxId} - ${name} (${cleanMobile})`,
+                    html: adminHtml
+                });
+
+                if (email && email.includes("@")) {
+                    await sendAutoEmail({
+                        to: email,
+                        subject: `Prescription Received (${rxId}) - Bhavya Diagnostics`,
+                        html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">
+                                <h2 style="color:#0056b3;margin-top:0;">Prescription Received</h2>
+                                <p>Dear <b>${escapeHtml(name)}</b>,</p>
+                                <p>We have received your prescription (<b>${escapeHtml(rxId)}</b>). Our diagnostic team will review the tests and call you shortly on <b>+91 ${escapeHtml(cleanMobile)}</b> with discounted NABL lab rates.</p>
+                                <p style="font-size:12px;color:#64748b;">Bhavya Diagnostics • Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh • Helpline: 89501 12467</p>
+                               </div>`
+                    });
+                }
+
+                // Show Success Card
+                document.getElementById("uploadFormCard").style.display = "none";
+                document.getElementById("displayRxId").innerText = rxId;
+                document.getElementById("displayRxMobile").innerText = "+91 " + cleanMobile;
+                document.getElementById("successCard").style.display = "block";
+            } catch (err) {
+                console.error("Prescription upload error:", err);
+                alert("Upload failed: " + err.message);
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Prescription';
+                btn.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
