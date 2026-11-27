@@ -23,6 +23,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8R
 const SUPER_ADMIN_EMAILS = [
     "admin@bhavyadiagnostics.com",
     "contact@bhavyadiagnostics.com",
+    "diagnosticsbhavya@gmail.com",
     "bhavyacare1@gmail.com"
 ];
 
