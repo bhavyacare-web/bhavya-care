@@ -143,6 +143,7 @@ let currentVipAmount = 3000;
 let baseVipPrice = 3000;
 let vipDiscount = 500;
 let validReferrerId = "";
+let validReferrerUid = "";
 
 let bookingData = { name: "", mobile: "", email: "", city: "", pincode: "", address: "", isVip: false };
 let cartConfirmationResult; 
@@ -170,16 +171,32 @@ async function syncFirebasePatientState() {
     try {
         const authUser = await getAuthUser();
         if (!authUser) return;
-        const doc = await db.collection("patients").doc(authUser.uid).get();
+        const patientRef = db.collection("patients").doc(authUser.uid);
+        const doc = await patientRef.get();
         if (doc.exists) {
             const data = doc.data();
+            const pName = data.name || data.patient_name || localStorage.getItem("bhavya_name") || "Patient";
+            const pMobile = data.mobile || data.mobile_number || authUser.phoneNumber || "";
+            const shortId = generateCustomUserId(pName, pMobile);
+
+            let pUserId = data.user_id || "";
+            if (!pUserId || pUserId === authUser.uid || pUserId.length > 12) pUserId = shortId;
+
+            let pRefCode = data.referral_code || "";
+            if (!pRefCode || pRefCode === authUser.uid || pRefCode.length > 12) pRefCode = pUserId;
+
+            if (data.user_id !== pUserId || data.referral_code !== pRefCode) {
+                await patientRef.set({ user_id: pUserId, referral_code: pRefCode }, { merge: true });
+            }
+
             const plan = String(data.current_plan_status || data.plan || "basic").toLowerCase();
             userPlanStatus = plan;
             localStorage.setItem("bhavya_plan_cache", plan);
-            if (data.name) localStorage.setItem("bhavya_name", data.name);
-            userWalletBalance = Number(data.current_wallet_balance || data.wallet_balance || 0);
+            localStorage.setItem("bhavya_user_id", pUserId);
+            if (pName) localStorage.setItem("bhavya_name", pName);
+            userWalletBalance = Number(data.current_wallet_balance ?? data.wallet_balance ?? 0);
             welcomeEmailAlreadySent = !!data.welcome_email_sent;
-            patientProfileComplete = !!(data.name && data.mobile && data.city && data.pincode && data.address);
+            patientProfileComplete = !!(pName && pMobile && data.city && data.pincode && data.address);
             isVipPkgPending = (plan === "vip" && data.vip_package_claimed !== true);
             handleBannerDisplay();
         }
@@ -212,7 +229,6 @@ function formatPrice(price) { return (!price || isNaN(price)) ? 0 : parseFloat(N
 
 // =======================================================
 // PARSE LABS FROM SERVICES SHEET COLUMN R
-// e.g. "CRL DIAGNOSTICS (NABL) , VED DIAGNOSTICS (URGENT)"
 // =======================================================
 function parseLabsFromColumnR(labsRawString) {
     const raw = String(labsRawString || "").trim();
@@ -366,7 +382,7 @@ function filterServices() {
     searchTimeout = setTimeout(() => { renderServices(document.getElementById("searchInput").value.toLowerCase()); }, 250); 
 }
 
-// 🌟 SMART SEARCH (Matching index.html: name, second_name, category, description + Tests/Packages split) 🌟
+// 🌟 SMART SEARCH 🌟
 function matchesServiceQuery(s, query) {
     const name = String(s.service_name || '').toLowerCase();
     const secondName = String(s.second_name || '').toLowerCase();
@@ -527,7 +543,6 @@ function renderServices(searchQuery = "") {
             }
         }
 
-        // Fasting (Col L) & Reporting Time (Col N) Badges
         let fastingVal = service.fasting ? String(service.fasting).trim() : "";
         let reportVal = service.reporting_time ? String(service.reporting_time).trim() : "";
         let metaHtml = "";
@@ -668,7 +683,6 @@ function openVipFormModal() {
 }
 function closeVipFormModal() { document.getElementById("vipFormModal").classList.remove("active"); }
 
-// Safe UPI Link Handler for Play Store WebView / TWA
 function openSafeUpiLink(e) {
     const upiUrl = `upi://pay?pa=8950112467@ptsbi&pn=Bhavya%20Diagnostics&am=${currentVipAmount}&cu=INR&tn=VIP%20Membership`;
     const link = document.getElementById("upiPaymentBtn");
@@ -744,7 +758,6 @@ function verifyOTP() {
                 created_at: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Admin alert on new patient registration
             await sendAutoEmail({
                 type: "contact",
                 to: "contact@bhavyadiagnostics.com",
@@ -777,7 +790,6 @@ async function handleVipActivationFlow() {
     if (!patientProfileComplete) {
         alert("VIP Membership lene ke liye pehle apni Patient Details (Email, City, Pincode aur Complete Address) fill karein.");
         if (cart.length === 0) {
-            // Open checkout step 1 or redirect to dashboard profile
             window.location.href = "../patient_dashboard/patient_dashboard.html";
         } else {
             toggleView('cart');
@@ -836,6 +848,23 @@ async function applyVipPromo() {
     if (!code) { msg.style.display="block"; msg.style.color="var(--danger)"; msg.innerText="Enter code first!"; return; }
     
     try {
+        if (db) {
+            const snap = await db.collection("patients").where("referral_code", "==", code).limit(1).get();
+            if (!snap.empty) {
+                const refDoc = snap.docs[0];
+                const authUser = await getAuthUser();
+                if (authUser && refDoc.id === authUser.uid) {
+                    msg.style.display="block"; msg.style.color="var(--danger)"; msg.innerHTML=`<i class="fas fa-times-circle"></i> Self referral not allowed.`;
+                    return;
+                }
+                validReferrerId = refDoc.data().user_id || refDoc.id;
+                currentVipAmount = baseVipPrice - vipDiscount;
+                updateVipPayableUI();
+                msg.style.display="block"; msg.style.color="var(--success)"; msg.innerHTML=`<i class="fas fa-check-circle"></i> ₹${vipDiscount} discount applied!`;
+                return;
+            }
+        }
+
         const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getVipRulesAndReferral", user_id: localStorage.getItem("bhavya_user_id"), referral_code: code }) });
         const data = await res.json();
         if (data.status === "success" && data.data.validReferral) {
@@ -924,7 +953,6 @@ async function submitVipApplicationForm() {
 
         await savePatientToFirebase(vipPayload);
 
-        // Save in vip_requests collection for Admin Panel review
         await db.collection("vip_requests").doc(authUser.uid).set({
             uid: authUser.uid,
             user_id: pData.user_id || authUser.uid,
@@ -940,7 +968,6 @@ async function submitVipApplicationForm() {
             created_at: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        // Send confirmation email to Patient (if email exists) & Admin
         if (pData.email && pData.email.includes("@")) {
             await sendAutoEmail({
                 type: "contact",
@@ -1069,7 +1096,7 @@ async function fetchProfile() {
                         }
                     }
 
-                    userWalletBalance = Number(data.current_wallet_balance || data.wallet_balance || 0);
+                    userWalletBalance = Number(data.current_wallet_balance ?? data.wallet_balance ?? 0);
                     let walletTxt = document.getElementById('walletBalTxt');
                     if (walletTxt) walletTxt.innerText = userWalletBalance;
                     calculateFinalBill();
@@ -1161,7 +1188,6 @@ async function savePatientInfo() {
     const s2 = document.getElementById('step2-card');
     s2.style.display = 'block'; s2.style.opacity = '1'; s2.style.pointerEvents = 'auto';
     
-    // Instant Step 2 rendering directly from Column R labs (No network call needed!)
     autoAssignGroupLabs();
     renderGroupedCart();
 }
@@ -1290,7 +1316,6 @@ function renderGroupedCart() {
             html += `<div class="center-only-badge"><i class="fas fa-info-circle"></i> Center Visit Required</div>`;
         }
 
-        // Merge unique labs from Column R for all items in this group
         const labMap = new Map();
         group.items.forEach(item => {
             getLabsForService(item).forEach(l => {
@@ -1517,7 +1542,10 @@ function selectLabTime(labId, timeStr) {
     validateCheckout();
 }
 
-function applyReferral() {
+// =======================================================
+// REFERRAL CODE VERIFICATION (Firebase First + Sheet Fallback)
+// =======================================================
+async function applyReferral() {
     let code = document.getElementById('refCodeInput').value.trim().toUpperCase();
     let msg = document.getElementById('refMessage');
     let btn = document.getElementById('applyRefBtn');
@@ -1543,32 +1571,71 @@ function applyReferral() {
         msg.style.color = "var(--danger)"; return;
     }
 
-    let minOrder = appRules.min_order_for_referral || 300;
+    let minOrder = Number(appRules.min_order_for_referral || 300);
     if(eligibleSubtotal < minOrder) {
         msg.innerText = `Minimum eligible order ₹${minOrder} required.`;
         msg.style.color = "var(--danger)"; return;
     }
 
-    const userId = localStorage.getItem("bhavya_user_id") || "GUEST"; 
+    const myCustomId = (localStorage.getItem("bhavya_user_id") || "").toUpperCase();
+    const allowSelf = String(appRules.allow_self_referral || "FALSE").toUpperCase() === "TRUE";
+    if (!allowSelf && myCustomId && code === myCustomId) {
+        msg.innerHTML = `<i class="fas fa-times-circle"></i> You cannot use your own referral code.`;
+        msg.style.color = "var(--danger)";
+        return;
+    }
+
     btn.innerText = "Wait..."; btn.disabled = true;
 
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "verifyReferralCode", user_id: userId, referral_code: code }) })
-    .then(res => res.json())
-    .then(res => {
+    try {
+        // 1. Check Firebase 'patients' collection first
+        if (db) {
+            const snap = await db.collection("patients").where("referral_code", "==", code).limit(1).get();
+            if (!snap.empty) {
+                const refDoc = snap.docs[0];
+                const authUser = await getAuthUser();
+                if (!allowSelf && authUser && refDoc.id === authUser.uid) {
+                    btn.innerText = "Apply"; btn.disabled = false;
+                    msg.innerHTML = `<i class="fas fa-times-circle"></i> You cannot use your own referral code.`;
+                    msg.style.color = "var(--danger)";
+                    return;
+                }
+
+                validReferrerUid = refDoc.id;
+                finalBill.refCode = code;
+                finalBill.refDiscount = Number(appRules.referral_bonus || 50);
+                btn.innerText = "Apply"; btn.disabled = false;
+                msg.innerHTML = `<i class="fas fa-check-circle"></i> Code applied! ₹${finalBill.refDiscount} off.`;
+                msg.style.color = "var(--success)";
+                calculateFinalBill();
+                return;
+            }
+        }
+
+        // 2. Fallback to Google Sheet legacy referral codes
+        const userId = localStorage.getItem("bhavya_user_id") || "GUEST"; 
+        const res = await fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "verifyReferralCode", user_id: userId, referral_code: code }) });
+        const data = await res.json();
         btn.innerText = "Apply"; btn.disabled = false;
-        if(res.status === "success") {
+        if(data.status === "success") {
+            validReferrerUid = "";
             finalBill.refCode = code;
             finalBill.refDiscount = Number(appRules.referral_bonus || 50); 
             msg.innerHTML = `<i class="fas fa-check-circle"></i> Code applied! ₹${finalBill.refDiscount} off.`;
             msg.style.color = "var(--success)";
             calculateFinalBill();
         } else {
+            validReferrerUid = "";
             finalBill.refCode = ""; finalBill.refDiscount = 0;
-            msg.innerHTML = `<i class="fas fa-times-circle"></i> ${escapeHtml(res.message)}`;
+            msg.innerHTML = `<i class="fas fa-times-circle"></i> ${escapeHtml(data.message || "Invalid Referral Code")}`;
             msg.style.color = "var(--danger)";
             calculateFinalBill();
         }
-    }).catch(() => { btn.innerText = "Apply"; btn.disabled = false; });
+    } catch (e) {
+        btn.innerText = "Apply"; btn.disabled = false;
+        msg.innerText = "Error checking code.";
+        msg.style.color = "var(--danger)";
+    }
 }
 
 function calculateFinalBill() {
@@ -1890,8 +1957,8 @@ async function processOrderSubmission(userId) {
             created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // 2. Update Patient profile in 'patients' collection
-        await savePatientToFirebase({
+        // 2. Update Patient profile (and deduct wallet if used)
+        const patientUpdateObj = {
             user_id: customUserId,
             name: bookingData.name,
             patient_name: bookingData.name,
@@ -1901,9 +1968,58 @@ async function processOrderSubmission(userId) {
             city_village: bookingData.city,
             pincode: bookingData.pincode,
             address: bookingData.address
-        });
+        };
 
-        // 3. Automatic Booking Confirmation Email (booking@bhavyadiagnostics.com)
+        if (finalBill.walletUsed > 0) {
+            const newOwnBal = Math.max(0, userWalletBalance - finalBill.walletUsed);
+            patientUpdateObj.current_wallet_balance = newOwnBal;
+            patientUpdateObj.wallet_balance = newOwnBal;
+
+            await db.collection("wallet_transactions").add({
+                uid: authUser.uid,
+                user_id: customUserId,
+                type: "debit",
+                amount: finalBill.walletUsed,
+                description: `Used in Booking (${orderId})`,
+                reference: orderId,
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        await savePatientToFirebase(patientUpdateObj);
+
+        // 3. Credit Referral Bonus (e.g. ₹50 from services_rule) to Referrer's Firebase Wallet
+        if (finalBill.refCode && validReferrerUid && validReferrerUid !== authUser.uid) {
+            try {
+                const bonusAmt = Number(appRules.referral_bonus || 50);
+                const refPatientRef = db.collection("patients").doc(validReferrerUid);
+                const refSnap = await refPatientRef.get();
+                if (refSnap.exists) {
+                    const rData = refSnap.data();
+                    const curBal = Number(rData.current_wallet_balance ?? rData.wallet_balance ?? 0);
+                    const newBal = curBal + bonusAmt;
+                    await refPatientRef.update({
+                        current_wallet_balance: newBal,
+                        wallet_balance: newBal
+                    });
+
+                    await db.collection("wallet_transactions").add({
+                        uid: validReferrerUid,
+                        user_id: rData.user_id || validReferrerUid,
+                        type: "credit",
+                        amount: bonusAmt,
+                        description: `Referral Bonus: ${bookingData.name} booked (${orderId})`,
+                        reference: orderId,
+                        created_at: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (refErr) {
+                console.error("Referral wallet credit error:", refErr);
+            }
+        }
+        validReferrerUid = "";
+
+        // 4. Automatic Booking Confirmation Email (booking@bhavyadiagnostics.com)
         const itemsRowsHtml = cart.map(i => `
             <tr>
                 <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(i.service_name)} (x${i.qty || 1})<br><small style="color:#64748b;">Lab: ${escapeHtml(i.selected_lab_name || "Bhavya Diagnostics")} (${escapeHtml(i.fulfillment || "home")})</small></td>
