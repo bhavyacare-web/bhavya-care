@@ -871,7 +871,7 @@ function renderWithdrawalsTable() {
                 <td>${formatDateDisplay(req.created_at || req.timestamp)}</td>
                 <td><strong>${escapeHtml(req.user_id || req.userId || "-")}</strong></td>
                 <td><strong>${escapeHtml(req.full_name || req.fullName || "-")}</strong><br><small>${escapeHtml(req.profession || "")}</small></td>
-                <td>UPI: <strong>${escapeHtml(req.upi_id || req.upiId || "-")}</strong></td>
+                <td>UPI: <strong>${escapeHtml(req.upi_id || req.upiId || "-")}</strong><br><small>${req.user_image ? `<a href="${escapeHtml(req.user_image)}" target="_blank">Photo</a> | ` : ""}${req.prof_doc ? `<a href="${escapeHtml(req.prof_doc)}" target="_blank">Doc</a> | ` : ""}${req.qr_code ? `<a href="${escapeHtml(req.qr_code)}" target="_blank">QR</a>` : ""}</small></td>
                 <td><span class="badge ${isApproved ? 'b-completed' : 'b-pending'}">${escapeHtml(st)}</span></td>
                 <td>${isApproved ? "Done" : `<button class="btn-act btn-blue" onclick="approveKycProfile('${escapeHtml(req.docId)}', '${escapeHtml(req.uid || "")}')">Approve KYC</button>`}</td>
             </tr>`;
