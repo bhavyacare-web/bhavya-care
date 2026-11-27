@@ -2,82 +2,94 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Help & Support - BhavyaCare</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Help &amp; Support | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="description" content="Contact Bhavya Diagnostics, Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh for blood test bookings, home sample collection, reports, or VIP membership support. Call/WhatsApp +91 89501 12467.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://www.bhavyadiagnostics.com/contact.html">
+    <link rel="icon" href="image/logo.jpeg" type="image/jpeg">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #2563eb; --primary-hover: #1d4ed8; --success: #10b981; --warning: #f59e0b; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; }
+        :root { --primary: #0056b3; --primary-hover: #004494; --primary-light: #e6f0fa; --success: #10b981; --warning: #f59e0b; --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg-color); margin: 0; padding-bottom: 40px; color: var(--text-main); }
         
-        .header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border);}
-        .back-btn { background: #eff6ff; color: var(--primary); border: none; padding: 10px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 6px;}
+        .header { background: var(--card-bg); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand img { height: 40px; border-radius: 8px; }
+        .brand h3 { margin: 0; font-size: 18px; font-weight: 800; color: var(--primary); }
+        .brand span { color: var(--success); }
+        .back-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 9px 15px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 13px; display: flex; align-items: center; gap: 6px; }
         
-        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 800px; margin: 28px auto; padding: 0 18px; }
         
-        .page-title { text-align: center; margin-bottom: 30px; }
-        .page-title h1 { margin: 0 0 10px 0; font-size: 28px; font-weight: 800; color: var(--text-main); }
-        .page-title p { margin: 0; color: var(--text-muted); font-size: 15px; }
+        .page-title { text-align: center; margin-bottom: 26px; }
+        .page-title h1 { margin: 0 0 8px 0; font-size: 26px; font-weight: 800; color: var(--text-main); }
+        .page-title p { margin: 0; color: var(--text-muted); font-size: 14px; }
 
-        .contact-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .c-card { background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.3s; text-decoration: none; color: inherit; display: block;}
-        .c-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1); }
-        .c-card i { font-size: 30px; margin-bottom: 12px; }
-        .c-card h4 { margin: 0 0 5px 0; font-size: 16px; font-weight: 700; }
-        .c-card p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 500; }
+        .contact-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 26px; }
+        .c-card { background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.25s; text-decoration: none; color: inherit; display: block; }
+        .c-card:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 8px 20px rgba(0, 86, 179, 0.1); }
+        .c-card i { font-size: 28px; margin-bottom: 10px; }
+        .c-card h4 { margin: 0 0 4px 0; font-size: 15px; font-weight: 800; }
+        .c-card p { margin: 0; font-size: 13px; color: var(--text-muted); font-weight: 600; }
 
-        .form-card { background: var(--card-bg); border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border); margin-bottom: 30px;}
-        .form-card h3 { margin: 0 0 20px 0; color: var(--primary); display: flex; align-items: center; gap: 8px;}
+        .form-card { background: var(--card-bg); border-radius: 18px; padding: 26px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid var(--border); margin-bottom: 25px; }
+        .form-card h3 { margin: 0 0 18px 0; color: var(--primary); display: flex; align-items: center; gap: 8px; font-size: 18px; }
         
-        .form-group { margin-bottom: 20px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        label { font-weight: 700; display: block; margin-bottom: 8px; font-size: 13px; color: #475569; }
-        input, select, textarea { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: #f8fafc; transition: 0.3s; font-family: inherit;}
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; }
+        .form-group { margin-bottom: 16px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        label { font-weight: 700; display: block; margin-bottom: 6px; font-size: 13px; color: #334155; }
+        input, select, textarea { width: 100%; padding: 13px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; outline: none; background: #f8fafc; transition: 0.2s; color: var(--text-main); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px var(--primary-light); }
+        input[readonly] { background: #e2e8f0; color: var(--text-muted); cursor: not-allowed; }
 
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 10px; font-size: 16px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3); margin-top: 10px;}
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 800; width: 100%; cursor: pointer; transition: 0.25s; box-shadow: 0 4px 15px rgba(0, 86, 179, 0.25); margin-top: 8px; }
         .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
-        /* Toast CSS */
-        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none;}
-        .toast { background: #1e293b; color: white; padding: 14px 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; animation: slideUpToast 0.4s ease, fadeOutToast 0.4s ease 2.6s forwards; }
-        .toast.success { background: var(--success); } .toast.error { background: #ef4444; }
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; pointer-events: none; }
+        .toast { background: #1e293b; color: white; padding: 14px 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; animation: slideUpToast 0.35s ease; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: #ef4444; }
         @keyframes slideUpToast { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes fadeOutToast { from { opacity: 1; } to { opacity: 0; } }
 
         @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } .form-card { padding: 20px; } }
     </style>
 </head>
 <body>
 
-<div class="header">
+<header class="header">
+    <a href="index.html" class="brand">
+        <img src="image/logo.jpeg" alt="Bhavya Diagnostics">
+        <h3>Bhavya <span>Diagnostics</span></h3>
+    </a>
     <a href="index.html" class="back-btn" id="backLink"><i class="fas fa-arrow-left"></i> Back</a>
-    <h3 style="margin:0; font-size:18px; color:var(--text-main);">BhavyaCare</h3>
-</div>
+</header>
 
-<div class="container">
+<main class="container">
     <div class="page-title">
         <h1>How can we help you?</h1>
-        <p>We are here to assist you with your bookings, reports, and technical issues.</p>
+        <p>Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh • Timings: 7:00 AM – 8:00 PM</p>
     </div>
 
     <!-- Quick Contact Cards -->
     <div class="contact-cards">
-        <a href="https://wa.me/918950112467" target="_blank" class="c-card">
+        <a href="https://wa.me/918950112467" target="_blank" rel="noopener noreferrer" class="c-card">
             <i class="fab fa-whatsapp" style="color: #25D366;"></i>
             <h4>WhatsApp Support</h4>
-            <p>+91 8950112467</p>
+            <p>+91 89501 12467</p>
         </a>
         <a href="tel:8950112467" class="c-card">
             <i class="fas fa-phone-alt" style="color: var(--primary);"></i>
-            <h4>Call Us</h4>
-            <p>+91 8950112467</p>
+            <h4>Call Helpline</h4>
+            <p>+91 89501 12467</p>
         </a>
-        <a href="mailto:support@bhavyacare.com" class="c-card">
+        <a href="mailto:contact@bhavyadiagnostics.com" class="c-card">
             <i class="fas fa-envelope" style="color: var(--warning);"></i>
-            <h4>Email Us</h4>
-            <p>support@bhavyacare.com</p>
+            <h4>Email Support</h4>
+            <p>contact@bhavyadiagnostics.com</p>
         </a>
     </div>
 
@@ -87,174 +99,226 @@
         <form id="supportForm">
             <div class="grid-2">
                 <div class="form-group">
-                    <label>Full Name *</label>
+                    <label>Full Name <span style="color:#ef4444;">*</span></label>
                     <input type="text" id="supName" placeholder="Enter your name" required>
                 </div>
                 <div class="form-group">
-                    <label>Mobile Number *</label>
+                    <label>Mobile Number <span style="color:#ef4444;">*</span></label>
                     <input type="tel" id="supMobile" placeholder="10-digit mobile number" maxlength="10" required>
                 </div>
             </div>
 
             <div class="grid-2">
                 <div class="form-group">
-                    <label>You are a... *</label>
-                    <select id="supUserType" required>
-                        <option value="Patient">Patient</option>
-                        <option value="Doctor">Doctor</option>
-                        <option value="Lab/Diagnostic">Lab / Diagnostic Center</option>
-                        <option value="Pharmacy">Pharmacy</option>
-                    </select>
+                    <label>Email Address (Optional)</label>
+                    <input type="email" id="supEmail" placeholder="e.g. name@gmail.com">
                 </div>
                 <div class="form-group">
-                    <label>What is the issue regarding? *</label>
+                    <label>Inquiry Category <span style="color:#ef4444;">*</span></label>
                     <select id="supIssueType" required>
-                        <option value="Booking/Appointment">Booking / Appointment</option>
-                        <option value="Refund/Payment">Refund / Payment Issue</option>
-                        <option value="Delay in Report/Medicine">Delay in Report / Medicine</option>
-                        <option value="Technical Error">App/Website Technical Error</option>
+                        <option value="Booking / Home Collection">Booking / Home Collection</option>
+                        <option value="Lab Report Query">Lab Report Query</option>
+                        <option value="VIP Membership / Wallet">VIP Membership / Wallet</option>
+                        <option value="Refund / Payment Issue">Refund / Payment Issue</option>
+                        <option value="Health Checkup Camp / Corporate">Health Checkup Camp / Corporate</option>
                         <option value="Other General Query">Other General Query</option>
                     </select>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Order ID / Appointment ID (Optional)</label>
-                <input type="text" id="supOrderId" placeholder="E.g., ORD-12345">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>You are a... <span style="color:#ef4444;">*</span></label>
+                    <select id="supUserType" required>
+                        <option value="Patient">Patient</option>
+                        <option value="Corporate / Camp Organizer">Corporate / Camp Organizer</option>
+                        <option value="Partner Lab">Partner Lab</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Order ID (Optional)</label>
+                    <input type="text" id="supOrderId" placeholder="E.g., ORD-123456">
+                </div>
             </div>
 
             <div class="form-group">
-                <label>Describe your issue in detail *</label>
-                <textarea id="supMessage" rows="4" placeholder="Please write your problem here so our team can help you faster..." required></textarea>
+                <label>Describe your issue in detail <span style="color:#ef4444;">*</span></label>
+                <textarea id="supMessage" rows="4" placeholder="Please write your query here so our team can assist you quickly..." required></textarea>
             </div>
 
-            <button type="submit" class="btn-submit" id="btnSubmit">Submit Request</button>
+            <button type="submit" class="btn-submit" id="btnSubmit">Submit Support Request</button>
         </form>
     </div>
-</div>
+</main>
 
 <div id="toast-container"></div>
 
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_leCWfb7HNhh4BLGLMqhM8dF9jCKpvmqIZkijnzEJl__E3dZftwl3z-hZ7mmzYtrHSA/exec";
+    const firebaseConfig = {
+        apiKey: "AIzaSyC2nYH22wkYDhh-BWfHvkT-bQvdKLCxask",
+        authDomain: "bhavya-care.firebaseapp.com",
+        projectId: "bhavya-care",
+        storageBucket: "bhavya-care.firebasestorage.app",
+        messagingSenderId: "979254809111",
+        appId: "1:979254809111:web:0181e0c97277a5d0d9c252",
+        measurementId: "G-G82G4VWGGT"
+    };
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        const userId = localStorage.getItem("bhavya_user_id");
-        
-        // Helper function to get exact 10 digits
-        const getClean10DigitMobile = (rawNum) => {
-            if(!rawNum) return "";
-            let clean = rawNum.toString().replace(/\D/g, ''); 
-            if(clean.length > 10) clean = clean.slice(-10); 
-            return clean;
-        };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
 
-        if (userId) {
-            const backLink = document.getElementById("backLink");
-            if(backLink) {
-                backLink.onclick = (e) => {
-                    e.preventDefault();
-                    window.history.back();
-                };
+    let loggedInUid = "";
+    let loggedInUserId = "GUEST";
+
+    function escapeHtml(str) {
+        return String(str || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    const getClean10DigitMobile = (rawNum) => {
+        if (!rawNum) return "";
+        let clean = String(rawNum).replace(/\D/g, '');
+        if (clean.length > 10) clean = clean.slice(-10);
+        return clean;
+    };
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        toast.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3500);
+    }
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            loggedInUid = user.uid;
+            if (localStorage.getItem("bhavya_role") === "patient") {
+                document.getElementById("backLink").href = "patient_dashboard/patient_dashboard.html";
             }
 
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: "getPatientProfile", user_id: userId }) 
-                });
-                const resData = await response.json();
+                const snap = await db.collection("patients").doc(user.uid).get();
+                if (snap.exists) {
+                    const p = snap.data();
+                    loggedInUserId = p.user_id || localStorage.getItem("bhavya_user_id") || user.uid;
+                    const name = p.name || p.patient_name || localStorage.getItem("bhavya_name") || "";
+                    const mobile = getClean10DigitMobile(p.mobile || p.mobile_number || user.phoneNumber);
+                    const email = p.email || "";
 
-                if (resData.status === "success") {
-                    const patient = resData.data;
-                    
-                    const nameInput = document.getElementById("supName");
-                    nameInput.value = patient.patient_name;
-                    nameInput.readOnly = true;
-                    nameInput.style.backgroundColor = "#e2e8f0";
-
-                    // Fixed 10 digit logic
-                    const mobileInput = document.getElementById("supMobile");
-                    mobileInput.value = getClean10DigitMobile(patient.mobile_number);
-                    mobileInput.readOnly = true;
-                    mobileInput.style.backgroundColor = "#e2e8f0";
-
-                    const roleSelect = document.getElementById("supUserType");
-                    roleSelect.value = "Patient";
-                    roleSelect.style.pointerEvents = "none";
-                    roleSelect.style.backgroundColor = "#e2e8f0";
+                    if (name) {
+                        const nameInput = document.getElementById("supName");
+                        nameInput.value = name;
+                        nameInput.readOnly = true;
+                    }
+                    if (mobile.length === 10) {
+                        const mobileInput = document.getElementById("supMobile");
+                        mobileInput.value = mobile;
+                        mobileInput.readOnly = true;
+                    }
+                    if (email) {
+                        document.getElementById("supEmail").value = email;
+                    }
                 }
-            } catch(e) {
-                console.log("Could not auto-fill from sheet. Falling back to local storage.");
-                const savedName = localStorage.getItem("bhavya_name");
-                const savedMobile = localStorage.getItem("bhavya_mobile");
-                if(savedName) document.getElementById("supName").value = savedName;
-                if(savedMobile) document.getElementById("supMobile").value = getClean10DigitMobile(savedMobile);
+            } catch (e) {
+                console.warn("Autofill error:", e);
             }
         }
-        
-        document.getElementById("supportForm").addEventListener("submit", handleSupportSubmit);
     });
 
-    function showToast(message, type = 'success') {
-        let container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
-    }
-
-    async function handleSupportSubmit(e) {
+    document.getElementById("supportForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-        
-        const mobile = document.getElementById("supMobile").value.trim();
+
+        const name = document.getElementById("supName").value.trim();
+        const mobile = getClean10DigitMobile(document.getElementById("supMobile").value);
+        const email = document.getElementById("supEmail").value.trim().toLowerCase();
+        const userType = document.getElementById("supUserType").value;
+        const issueType = document.getElementById("supIssueType").value;
+        const orderId = document.getElementById("supOrderId").value.trim().toUpperCase();
+        const message = document.getElementById("supMessage").value.trim();
         const btn = document.getElementById("btnSubmit");
 
-        if(mobile.length !== 10 || isNaN(mobile)) { 
-            showToast("Enter a valid 10-digit mobile number.", "error"); 
-            return; 
+        if (!name || mobile.length !== 10 || !message) {
+            showToast("Please enter Name, 10-digit Mobile, and your Message.", "error");
+            return;
         }
 
         btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Submitting...`;
         btn.disabled = true;
 
         try {
-            const payload = {
-                action: "submitContactQuery",
-                user_id: localStorage.getItem("bhavya_user_id") || "GUEST",
-                name: document.getElementById("supName").value.trim(),
-                mobile: mobile,
-                user_type: document.getElementById("supUserType").value,
-                issue_type: document.getElementById("supIssueType").value,
-                order_id: document.getElementById("supOrderId").value.trim(),
-                message: document.getElementById("supMessage").value.trim()
-            };
+            const ticketId = "TKT-" + Date.now().toString().slice(-6);
 
-            const response = await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
+            // 1. Save directly in Firestore 'support_queries' (shows immediately in Admin Panel)
+            await db.collection("support_queries").doc(ticketId).set({
+                ticket_id: ticketId,
+                uid: loggedInUid || "",
+                user_id: loggedInUserId || "GUEST",
+                name: name,
+                mobile: mobile,
+                email: email,
+                user_type: userType,
+                issue_type: issueType,
+                order_id: orderId || "N/A",
+                message: message,
+                status: "Open",
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            const resData = await response.json();
+            // 2. Send email alert to contact@bhavyadiagnostics.com
+            await db.collection("mail").add({
+                from: "Bhavya Diagnostics <contact@bhavyadiagnostics.com>",
+                replyTo: email && email.includes("@") ? email : "contact@bhavyadiagnostics.com",
+                to: ["contact@bhavyadiagnostics.com"],
+                message: {
+                    subject: `Support Ticket ${ticketId}: ${issueType} - ${name}`,
+                    html: `<div style="font-family:Arial,sans-serif;padding:16px;border:1px solid #e2e8f0;border-radius:10px;">
+                            <h3 style="color:#0056b3;margin-top:0;">New Support Query (${escapeHtml(ticketId)})</h3>
+                            <p><b>Name:</b> ${escapeHtml(name)} (${escapeHtml(userType)})</p>
+                            <p><b>Mobile:</b> +91 ${escapeHtml(mobile)}</p>
+                            <p><b>Issue Type:</b> ${escapeHtml(issueType)}</p>
+                            <p><b>Order ID:</b> ${escapeHtml(orderId || "N/A")}</p>
+                            <p><b>Message:</b><br>${escapeHtml(message)}</p>
+                           </div>`
+                }
+            }).catch(() => {});
 
-            if(resData.status === "success") {
-                showToast("Request submitted successfully! Our team will contact you soon.", "success");
-                document.getElementById("supOrderId").value = "";
-                document.getElementById("supMessage").value = "";
-            } else {
-                showToast("Error: " + resData.message, "error");
+            if (email && email.includes("@")) {
+                await db.collection("mail").add({
+                    from: "Bhavya Diagnostics <contact@bhavyadiagnostics.com>",
+                    replyTo: "contact@bhavyadiagnostics.com",
+                    to: [email],
+                    message: {
+                        subject: `Support Ticket Received (${ticketId}) - Bhavya Diagnostics`,
+                        html: `<p>Dear <b>${escapeHtml(name)}</b>,</p><p>We have received your support query (Ticket ID: <b>${escapeHtml(ticketId)}</b>). Our team will contact you shortly on <b>+91 ${escapeHtml(mobile)}</b>.</p>`
+                    }
+                }).catch(() => {});
             }
-        } catch(err) {
-            showToast("Network error. Please try again.", "error");
+
+            showToast(`Request submitted! Ticket ID: ${ticketId}`, "success");
+            document.getElementById("supOrderId").value = "";
+            document.getElementById("supMessage").value = "";
+        } catch (err) {
+            console.error("Support submit error:", err);
+            showToast("Error submitting request: " + err.message, "error");
         } finally {
-            btn.innerHTML = "Submit Request";
+            btn.innerHTML = "Submit Support Request";
             btn.disabled = false;
         }
-    }
+    });
 </script>
 </body>
 </html>
