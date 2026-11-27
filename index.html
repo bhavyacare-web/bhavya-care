@@ -13,7 +13,7 @@
             if (isValidUser) {
                 if (role === "lab") window.location.replace("Lab/lab_dashboard.html"); 
                 else if (role === "patient") window.location.replace("patient_dashboard/patient_dashboard.html");
-                else if (role === "admin") window.location.replace("admin/admin_dashboard.html"); 
+                else if (role === "admin") window.location.replace("admin.html"); 
             }
         });
     </script>
@@ -455,7 +455,7 @@
         </div>
     </header>
 
-    <!-- 🌟 LOGIN SECTION 🌟 -->
+    <!-- 🌟 PATIENT LOGIN SECTION 🌟 -->
     <div id="login-section">
         <button onclick="closeLoginPopup()" style="position:absolute; top:15px; right:15px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; font-size:16px; color:#64748b; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i class="fas fa-times"></i></button>
         <h3 id="form-title">Login / Sign Up</h3>
@@ -481,17 +481,18 @@
         <p class="support-text" style="font-size:12px; color:#64748b; margin-top:12px;">Need help? Email us at contact@bhavyadiagnostics.com</p>
     </div>
 
-    <!-- ✨ ADMIN PASSWORD MODAL ✨ -->
+    <!-- ✨ PERMANENT FIREBASE ADMIN / STAFF LOGIN MODAL ✨ -->
     <div id="adminPasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.8); z-index:3000; justify-content:center; align-items:center; backdrop-filter: blur(5px);">
-        <div style="background:white; padding:30px; border-radius:24px; width:90%; max-width:350px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation: slideUpToast 0.3s ease-out;">
+        <div style="background:white; padding:30px; border-radius:24px; width:90%; max-width:360px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation: slideUpToast 0.3s ease-out;">
             <button onclick="closeAdminPasswordModal()" style="position:absolute; right:15px; top:15px; border:none; background:#f1f5f9; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; color:#64748b; transition:0.2s;"><i class="fas fa-times"></i></button>
             <div style="background:#e0f2fe; color:#0284c7; width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 15px;">
                 <i class="fas fa-user-shield"></i>
             </div>
-            <h3 style="margin:0 0 15px 0; color:#0f172a; font-size:22px; font-weight:800;">Admin Area</h3>
-            <p style="color:#64748b; font-size:13px; margin:0 0 20px;">Enter security password to access the panel.</p>
-            <input type="password" id="adminPassInput" placeholder="Password" style="width:100%; padding:14px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px; outline:none; text-align:center; margin-bottom:15px; font-weight:bold;">
-            <button onclick="verifyAdminPassword()" style="background:var(--primary); color:white; border:none; width:100%; padding:14px; border-radius:12px; font-weight:800; font-size:16px; cursor:pointer; transition:0.2s; box-shadow:0 4px 15px rgba(37,99,235,0.3);">Access Panel</button>
+            <h3 style="margin:0 0 8px 0; color:#0f172a; font-size:22px; font-weight:800;">Admin &amp; Staff Login</h3>
+            <p style="color:#64748b; font-size:13px; margin:0 0 18px;">Sign in with your authorized email &amp; password.</p>
+            <input type="email" id="adminEmailInput" placeholder="Admin / Staff Email" style="width:100%; padding:13px; border:2px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; margin-bottom:10px; font-weight:600;">
+            <input type="password" id="adminPassInput" placeholder="Password" onkeypress="if(event.key==='Enter') verifyAdminPassword()" style="width:100%; padding:13px; border:2px solid #e2e8f0; border-radius:12px; font-size:15px; outline:none; margin-bottom:15px; font-weight:600;">
+            <button id="btnAdminLoginSubmit" onclick="verifyAdminPassword()" style="background:var(--primary); color:white; border:none; width:100%; padding:14px; border-radius:12px; font-weight:800; font-size:15px; cursor:pointer; transition:0.2s; box-shadow:0 4px 15px rgba(37,99,235,0.3);">Access Panel</button>
         </div>
     </div>
 
@@ -598,7 +599,7 @@
         <div class="hiw-grid">
             <div class="hiw-step">
                 <div class="hiw-icon"><i class="fas fa-mobile-alt"></i></div>
-                <div><h4>1. Book Online</h4><p>Select your required Lab Test, Profile, Ultrasound, or MRI.</p></div>
+                <div><h4>1. Book Online</h4><p>Select your required Lab Test, Profile, ECG, or PFT.</p></div>
             </div>
             <div class="hiw-step">
                 <div class="hiw-icon"><i class="fas fa-home"></i></div>
@@ -630,7 +631,7 @@
 
             <div class="review-card">
                 <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <p class="review-text">"The VIP plan is amazing! I saved around ₹1200 on my family's blood tests and scans. Highly recommended!"</p>
+                <p class="review-text">"The VIP plan is amazing! I saved around ₹1200 on my family's blood tests and packages. Highly recommended!"</p>
                 <div class="review-user">
                     <div class="review-avatar" style="background:#fef3c7; color:#d97706;">S</div>
                     <div class="review-info"><h4>Sneha Patel</h4><p><i class="fas fa-crown" style="color:var(--warning);"></i> VIP Member</p></div>
@@ -639,7 +640,7 @@
 
             <div class="review-card">
                 <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-                <p class="review-text">"Ultrasound book kiya tha, service bahut fast thi aur center par koi line nahi thi. Great aggregator platform."</p>
+                <p class="review-text">"Full body checkup book kiya tha, service bahut fast thi aur home collection time par hua. Great diagnostic platform."</p>
                 <div class="review-user">
                     <div class="review-avatar" style="background:#fce7f3; color:#db2777;">V</div>
                     <div class="review-info"><h4>Vikas Singh</h4><p><i class="fas fa-check-circle" style="color:var(--secondary);"></i> Verified Patient</p></div>
@@ -688,7 +689,7 @@
                 <h3>Company</h3>
                 <a href="about.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> About Us</a>
                 <a href="#" onclick="openPartnerLogin()"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Join Us (Partner)</a>
-                <a href="#" onclick="openAdminPasswordModal(event)"><i class="fas fa-shield-alt" style="font-size:10px; color:#17a2b8;"></i> Admin Login</a>
+                <a href="#" onclick="openAdminPasswordModal(event)"><i class="fas fa-shield-alt" style="font-size:10px; color:#17a2b8;"></i> Admin / Staff Login</a>
                 <a href="contact.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Contact Support</a>
                 <a href="withdraw.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Partnership</a>
             </div>
@@ -819,22 +820,43 @@
             }
         }
 
-        // ✨ ADMIN PASSWORD VERIFICATION LOGIC ✨
+        // ✨ PERMANENT FIREBASE ADMIN / STAFF LOGIN LOGIC ✨
         function openAdminPasswordModal(e) {
             e.preventDefault(); 
             document.getElementById('adminPasswordModal').style.display = 'flex';
-            setTimeout(() => document.getElementById('adminPassInput').focus(), 100);
+            setTimeout(() => document.getElementById('adminEmailInput').focus(), 100);
         }
 
         function closeAdminPasswordModal() {
             document.getElementById('adminPasswordModal').style.display = 'none';
+            document.getElementById('adminEmailInput').value = '';
             document.getElementById('adminPassInput').value = '';
         }
 
-        function verifyAdminPassword() {
+        async function verifyAdminPassword() {
+            const email = document.getElementById('adminEmailInput').value.trim();
             const passInput = document.getElementById('adminPassInput').value;
-            if (passInput === 'Bhavya@123') { window.location.href = 'admin.html'; } 
-            else { showHomeToast("Incorrect Password! Access Denied.", "error"); }
+            const btn = document.getElementById('btnAdminLoginSubmit');
+
+            if (!email || !passInput) {
+                showHomeToast("Please enter both Email and Password.", "error");
+                return;
+            }
+
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            try {
+                const cred = await firebase.auth().signInWithEmailAndPassword(email, passInput);
+                localStorage.setItem("bhavya_uid", cred.user.uid);
+                localStorage.setItem("bhavya_user_id", email);
+                localStorage.setItem("bhavya_role", "admin");
+                window.location.href = 'admin.html';
+            } catch (err) {
+                showHomeToast("Invalid Admin Credentials!", "error");
+                btn.innerText = "Access Panel";
+                btn.disabled = false;
+            }
         }
 
         function handleVipRateClick(event) {
@@ -913,7 +935,6 @@
             });
         }
 
-        // Updated to the latest deployed Apps Script URL returning fasting & reporting_time
         const HOME_GAS_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
         let homeAllServices = [];
         let homeCurrentSubCat = 'all';
@@ -927,7 +948,6 @@
                 let cachedServices = localStorage.getItem('bhavya_services_cache') || localStorage.getItem('bhavyaServicesCache');
                 if (cachedServices) {
                     const parsed = JSON.parse(cachedServices);
-                    // Only use cache if it already contains the new fasting/reporting_time fields
                     if (Array.isArray(parsed) && parsed.length > 0 && ('fasting' in parsed[0] || 'reporting_time' in parsed[0])) {
                         homeAllServices = parsed;
                         renderHomePackages();
@@ -1184,7 +1204,8 @@
                     price: price,
                     qty: 1,
                     service_type: type,
-                    labs: svcObj ? (svcObj.labs || "") : ""
+                    labs: svcObj ? (svcObj.labs || "") : "",
+                    lab_cost: svcObj ? (Number(svcObj.lab_cost) || 0) : 0
                 }); 
                 showHomeToast("Item Added to Cart! 🛒", "success");
             }
