@@ -328,11 +328,34 @@ async function loadFirebasePatientProfile(user) {
             return;
         }
 
-        const pName = patient.name || patient.patient_name || localStorage.getItem("bhavya_name") || "Patient";
+        let pName = patient.name || patient.patient_name || localStorage.getItem("bhavya_name") || "Patient";
+        if ((pName === "Patient" || pName === "Unknown") && localStorage.getItem("bhavya_name")) {
+            pName = localStorage.getItem("bhavya_name");
+        }
         const pMobile = patient.mobile || patient.mobile_number || user.phoneNumber || "";
-        const pUserId = patient.user_id || generateCustomUserId(pName, pMobile);
+        const generatedShortId = generateCustomUserId(pName, pMobile);
+
+        // Purane ya naye account mein lamba Firebase UID ho toh short referral/user code mein badlein
+        let pUserId = patient.user_id || "";
+        if (!pUserId || pUserId === user.uid || pUserId.length > 12) {
+            pUserId = generatedShortId;
+        }
+
+        let pRefCode = patient.referral_code || "";
+        if (!pRefCode || pRefCode === user.uid || pRefCode.length > 12) {
+            pRefCode = pUserId;
+        }
+
+        if (patient.user_id !== pUserId || patient.referral_code !== pRefCode || !patient.name) {
+            await patientRef.set({
+                user_id: pUserId,
+                referral_code: pRefCode,
+                name: pName,
+                patient_name: pName
+            }, { merge: true });
+        }
+
         const pWallet = Number(patient.current_wallet_balance ?? patient.wallet_balance ?? 0);
-        const pRefCode = patient.referral_code || pUserId;
         const planRaw = String(patient.current_plan_status || patient.plan || "basic").toLowerCase();
 
         localStorage.setItem("bhavya_uid", user.uid);
@@ -438,7 +461,6 @@ async function loadFirebasePatientProfile(user) {
             }
         }
 
-        // Re-render packages with accurate VIP pricing once profile loads
         if (dashAllServices.length > 0) renderDashboardPackages(dashCurrentSubCat);
 
         await Promise.all([
