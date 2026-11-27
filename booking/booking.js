@@ -26,6 +26,25 @@ try {
 }
 
 // =======================================================
+// SECURITY HELPER (XSS Protection for Play Store Compliance)
+// =======================================================
+function escapeHtml(str) {
+    return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function generateCustomUserId(name, mobile) {
+    const cleanName = String(name || "USR").replace(/[^a-zA-Z]/g, "").toUpperCase();
+    const prefix = (cleanName + "XXX").slice(0, 3);
+    const digits = String(mobile || "").replace(/\D/g, "").slice(-4) || Math.floor(1000 + Math.random() * 9000);
+    return prefix + digits;
+}
+
+// =======================================================
 // AUTOMATIC EMAIL SYSTEM (Zoho SMTP via Firebase Extension)
 // =======================================================
 const EMAIL_SENDERS = {
@@ -84,10 +103,8 @@ async function savePatientToFirebase(profileObj) {
 }
 
 // =======================================================
-// MASTER FRONTEND JS (booking.js & cart.js UNIFIED SPA)
+// MASTER FRONTEND JS (booking.js UNIFIED SPA)
 // =======================================================
-
-// Public catalog & lab list ke liye
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwIxSjlD6oVAGi4InT6Lb8RPg6NWrl7vpptoYrEG5HKPzPaadUp_0pVnN_1OZfJ7X_r/exec";
 
 // --- GLOBALS ---
@@ -101,7 +118,7 @@ const categoryConfig = {
 };
 const defaultIcon = '🧪';
 const mainCategoryKeys = ['pathology', 'profile', 'pft', 'ecg'];
-const homeServiceCategories = ['pathology', 'profile', 'package', 'ecg', 'blood test'];
+const homeServiceCategories = ['pathology', 'profile', 'package', 'discount_profile', 'ecg', 'blood test'];
 
 let isVipPkgPending = false;
 let allServices = [];
@@ -109,8 +126,8 @@ let userPlanStatus = "basic";
 let currentCategory = 'profile'; 
 let currentSubCategory = 'all'; 
 let welcomeEmailAlreadySent = false;
+let patientProfileComplete = false;
 
-// Load cart aggressively
 try {
     let stored = localStorage.getItem('bhavyaCart');
     if (stored) {
@@ -121,7 +138,6 @@ try {
 } catch (e) { cart = []; }
 
 let searchTimeout; 
-let pollingInterval; 
 
 let currentVipAmount = 3000;
 let baseVipPrice = 3000;
@@ -129,32 +145,57 @@ let vipDiscount = 500;
 let validReferrerId = "";
 
 let bookingData = { name: "", mobile: "", email: "", city: "", pincode: "", address: "", isVip: false };
-let allActiveLabsList = []; 
 let cartConfirmationResult; 
 let appRules = {};
 let userWalletBalance = 0;
 let finalBill = { subtotal: 0, collectionCharge: 0, walletUsed: 0, refDiscount: 0, totalPayable: 0, refCode: "" };
 let labSlots = {}; 
 
-window.onload = () => {
+window.onload = async () => {
     updateCartUI(); 
+    await syncFirebasePatientState();
     fetchBookingData();
 
     const pendingFlag = localStorage.getItem("pending_vip_redirect");
     const userId = localStorage.getItem("bhavya_user_id");
     if (pendingFlag === "true" && userId) {
         localStorage.removeItem("pending_vip_redirect");
-        openVipFormModal();
+        handleVipActivationFlow();
     }
 };
+
+// Load logged-in patient plan & profile state directly from Firebase
+async function syncFirebasePatientState() {
+    if (!db) return;
+    try {
+        const authUser = await getAuthUser();
+        if (!authUser) return;
+        const doc = await db.collection("patients").doc(authUser.uid).get();
+        if (doc.exists) {
+            const data = doc.data();
+            const plan = String(data.current_plan_status || data.plan || "basic").toLowerCase();
+            userPlanStatus = plan;
+            localStorage.setItem("bhavya_plan_cache", plan);
+            if (data.name) localStorage.setItem("bhavya_name", data.name);
+            userWalletBalance = Number(data.current_wallet_balance || data.wallet_balance || 0);
+            welcomeEmailAlreadySent = !!data.welcome_email_sent;
+            patientProfileComplete = !!(data.name && data.mobile && data.city && data.pincode && data.address);
+            isVipPkgPending = (plan === "vip" && data.vip_package_claimed !== true);
+            handleBannerDisplay();
+        }
+    } catch (e) {
+        console.error("Sync patient state error:", e);
+    }
+}
 
 // 🌟 TOAST NOTIFICATION 🌟
 function showToast(message, type = 'success') {
     let container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     let icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${escapeHtml(message)}</span>`;
     container.appendChild(toast);
     setTimeout(() => { toast.remove(); }, 3000);
 }
@@ -163,14 +204,42 @@ function formatText(text) {
     if (!text) return "";
     let cleanText = String(text).replace(/_/g, ' '); 
     let formatted = cleanText.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-    const acronyms = /\b(cbc|esr|usg|mri|ecg|echo|ct|lft|kft|hba1c|tsh|t3|t4|ana|psa|hiv|hcv|bun|aptt|sgpt|sgot|vdrl|rbc|wbc|bchg|aec|anc|amh|ada|hbsag|crp|abp|ncv|emg|ssep|dlco|eeg|pft)\b/gi;
+    const acronyms = /\b(cbc|esr|usg|mri|ecg|echo|ct|lft|kft|hba1c|tsh|t3|t4|ana|psa|hiv|hcv|bun|aptt|sgpt|sgot|vdrl|rbc|wbc|bchg|aec|anc|amh|ada|hbsag|crp|abp|ncv|emg|ssep|dlco|eeg|pft|nabl|nabh|crl|ved)\b/gi;
     return formatted.replace(acronyms, match => match.toUpperCase());
 }
 
 function formatPrice(price) { return (!price || isNaN(price)) ? 0 : parseFloat(Number(price).toFixed(2)); }
 
+// =======================================================
+// PARSE LABS FROM SERVICES SHEET COLUMN R
+// e.g. "CRL DIAGNOSTICS (NABL) , VED DIAGNOSTICS (URGENT)"
+// =======================================================
+function parseLabsFromColumnR(labsRawString) {
+    const raw = String(labsRawString || "").trim();
+    const parts = raw ? raw.split(',').map(p => p.trim()).filter(Boolean) : ["Bhavya Diagnostics (NABL)"];
+    
+    return parts.map(entry => {
+        const tagMatches = [...entry.matchAll(/\(([^)]+)\)/g)].map(m => m[1].trim().toUpperCase());
+        const cleanName = entry.replace(/\([^)]*\)/g, '').trim() || "Bhavya Diagnostics";
+        const labId = cleanName.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_|_$/g, '') || "BHAVYA_DIAGNOSTICS";
+        return {
+            lab_id: labId,
+            lab_name: cleanName,
+            tags: tagMatches,
+            raw_label: entry
+        };
+    });
+}
+
+function getLabsForService(serviceObj) {
+    if (!serviceObj) return parseLabsFromColumnR("");
+    const liveSvc = allServices.find(s => String(s.service_id) === String(serviceObj.service_id));
+    const labsStr = (liveSvc && liveSvc.labs) || serviceObj.labs || "";
+    return parseLabsFromColumnR(labsStr);
+}
+
 function fetchBookingData() {
-    const userId = localStorage.getItem("bhavya_user_id") || localStorage.getItem("user_id"); 
+    const userId = localStorage.getItem("bhavya_user_id") || localStorage.getItem("user_id") || ""; 
     const cachedServices = localStorage.getItem("bhavya_services_cache");
     const cachedPlan = localStorage.getItem("bhavya_plan_cache");
     
@@ -191,7 +260,7 @@ function fetchBookingData() {
 
     if (cachedServices) {
         allServices = JSON.parse(cachedServices);
-        userPlanStatus = cachedPlan || "basic";
+        if (cachedPlan) userPlanStatus = cachedPlan;
         handleBannerDisplay();
         renderCategories();
         checkUrlAndRender();
@@ -201,74 +270,42 @@ function fetchBookingData() {
     .then(res => res.json())
     .then(response => {
         if(response.status === "success") {
-            allServices = response.data.services;
-            userPlanStatus = response.data.userPlan;
-            
-            isVipPkgPending = (response.data.vipPackageStatus === "pending");
-            
-            let claimBanner = document.getElementById("vipClaimBanner");
-            if (claimBanner) {
-                if (isVipPkgPending && userPlanStatus === "vip" && currentView === 'booking') {
-                    claimBanner.style.display = "block";
-                } else {
-                    claimBanner.style.display = "none";
+            allServices = response.data.services || [];
+            if (response.data.rules) {
+                appRules = response.data.rules;
+                if (appRules.vip_plan_price) {
+                    baseVipPrice = Number(appRules.vip_plan_price);
+                    currentVipAmount = baseVipPrice;
+                }
+                if (appRules.vip_purchase_referral_bonus) {
+                    vipDiscount = Number(appRules.vip_purchase_referral_bonus);
                 }
             }
             
             localStorage.setItem("bhavya_services_cache", JSON.stringify(allServices));
-            localStorage.setItem("bhavya_plan_cache", userPlanStatus);
-            
             handleBannerDisplay();
             renderCategories();
             
             if (!cachedServices) { 
                 checkUrlAndRender(); 
+            } else if (currentView === 'booking') {
+                renderServices(document.getElementById("searchInput").value.toLowerCase());
             }
         }
-    }).catch(error => { 
+    }).catch(() => { 
         if(!cachedServices) document.getElementById("servicesList").innerHTML = "<p style='text-align:center;'>Failed to load data.</p>"; 
     });
 }
 
 function handleBannerDisplay() {
     const banner = document.getElementById("pendingWarningBanner");
-    if (userPlanStatus === "pending") {
-        banner.style.display = "block";
-        startVipPolling(); 
-    } else {
-        banner.style.display = "none";
-        if(pollingInterval) clearInterval(pollingInterval);
+    if (banner) {
+        banner.style.display = (userPlanStatus === "pending" && currentView === 'booking') ? "block" : "none";
     }
-}
-
-function startVipPolling() {
-    if (pollingInterval) clearInterval(pollingInterval);
-    pollingInterval = setInterval(() => {
-        const userId = localStorage.getItem("bhavya_user_id") || localStorage.getItem("user_id"); 
-        if (!userId) return;
-        
-        fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "checkVipStatus", user_id: userId }) })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === "success") {
-                const status = data.data.status;
-                if (status === "active") {
-                    userPlanStatus = "vip"; 
-                    localStorage.setItem("bhavya_plan_cache", "vip");
-                    handleBannerDisplay(); 
-                    fetchBookingData(); 
-                    renderServices(); 
-                    clearInterval(pollingInterval);
-                } else if (status === "rejected") {
-                    userPlanStatus = "basic"; 
-                    localStorage.setItem("bhavya_plan_cache", "basic");
-                    handleBannerDisplay();
-                    renderServices();
-                    clearInterval(pollingInterval);
-                }
-            }
-        }).catch(err => {});
-    }, 15000); 
+    const claimBanner = document.getElementById("vipClaimBanner");
+    if (claimBanner) {
+        claimBanner.style.display = (isVipPkgPending && userPlanStatus === "vip" && currentView === 'booking') ? "block" : "none";
+    }
 }
 
 function renderCategories() {
@@ -326,33 +363,89 @@ function selectSubCategory(subCat) { currentSubCategory = subCat; renderServices
 
 function filterServices() {
     clearTimeout(searchTimeout); 
-    searchTimeout = setTimeout(() => { renderServices(document.getElementById("searchInput").value.toLowerCase()); }, 300); 
+    searchTimeout = setTimeout(() => { renderServices(document.getElementById("searchInput").value.toLowerCase()); }, 250); 
 }
 
-// 🌟 AUTO SUGGEST LOGIC 🌟
-function handleAutoSuggest() {
-    let query = document.getElementById("searchInput").value.toLowerCase();
-    let suggestBox = document.getElementById("autoSuggestBox");
-    if(query.length < 2) { suggestBox.style.display = "none"; return; }
-    
-    let matches = allServices.filter(s => 
-        s.service_name.toLowerCase().includes(query) && 
-        s.service_id !== "VIP-FREE-001" && 
-        String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') !== "surprise package"
-    ).slice(0, 6);
-    
-    if(matches.length > 0) {
-        suggestBox.innerHTML = matches.map(m => `<div style="padding:12px 15px; border-bottom:1px solid #eee; cursor:pointer;" onclick="selectSuggested('${m.service_name.replace(/'/g, "\\'")}')"><i class="fas fa-search" style="color:#cbd5e1; margin-right:8px;"></i> <b>${m.service_name}</b> <span style="float:right; color:var(--success); font-weight:bold;">₹${m.basic_price}</span></div>`).join('');
-        suggestBox.style.display = "block";
-    } else {
-        suggestBox.style.display = "none";
-    }
+// 🌟 SMART SEARCH (Matching index.html: name, second_name, category, description + Tests/Packages split) 🌟
+function matchesServiceQuery(s, query) {
+    const name = String(s.service_name || '').toLowerCase();
+    const secondName = String(s.second_name || '').toLowerCase();
+    const cat = String(s.service_category || '').toLowerCase();
+    const desc = String(s.description || '').toLowerCase();
+    const id = String(s.service_id || '').toLowerCase();
+    return name.includes(query) || secondName.includes(query) || cat.includes(query) || desc.includes(query) || id.includes(query);
 }
+
+function handleAutoSuggest() {
+    let query = document.getElementById("searchInput").value.toLowerCase().trim();
+    let suggestBox = document.getElementById("autoSuggestBox");
+    if (!suggestBox) return;
+
+    if (query.length < 2) {
+        suggestBox.style.display = "none";
+        filterServices();
+        return;
+    }
+
+    const isPkgType = (s) => {
+        const t = String(s.service_type || '').toLowerCase().trim();
+        return t === 'profile' || t === 'package' || t === 'discount_profile';
+    };
+
+    const validPool = allServices.filter(s =>
+        s.service_id !== "VIP-FREE-001" &&
+        String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') !== "surprise package" &&
+        matchesServiceQuery(s, query)
+    );
+
+    const matchingTests = validPool.filter(s => !isPkgType(s)).slice(0, 4);
+    const matchingPackages = validPool.filter(s => isPkgType(s)).slice(0, 4);
+
+    if (matchingTests.length === 0 && matchingPackages.length === 0) {
+        suggestBox.style.display = "none";
+        filterServices();
+        return;
+    }
+
+    const isVip = (userPlanStatus === "vip" || userPlanStatus === "pending");
+    const renderRow = (m, isPkg) => {
+        const priceToShow = formatPrice(isVip ? (m.vip_price || m.basic_price) : (m.basic_price || m.service_price));
+        const safeName = formatText(m.service_name).replace(/'/g, "\\'");
+        const badge = isPkg ? `<span style="background:#e0f2fe;color:#0284c7;font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px;margin-left:6px;">PACKAGE</span>` : "";
+        return `<div style="padding:11px 15px; border-bottom:1px solid #f1f5f9; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="selectSuggested('${safeName}')">
+                    <span style="font-size:13px;"><i class="fas fa-search" style="color:#cbd5e1; margin-right:8px;"></i><b>${escapeHtml(formatText(m.service_name))}</b>${badge}</span>
+                    <span style="color:var(--success); font-weight:800; font-size:13px;">₹${priceToShow}</span>
+                </div>`;
+    };
+
+    let html = "";
+    if (matchingTests.length > 0) {
+        html += `<div style="padding:7px 15px; background:#f8fafc; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase;">🧪 Tests</div>`;
+        matchingTests.forEach(m => { html += renderRow(m, false); });
+    }
+    if (matchingPackages.length > 0) {
+        html += `<div style="padding:7px 15px; background:#eff6ff; font-size:11px; font-weight:800; color:#2563eb; text-transform:uppercase;">📦 Packages</div>`;
+        matchingPackages.forEach(m => { html += renderRow(m, true); });
+    }
+
+    suggestBox.innerHTML = html;
+    suggestBox.style.display = "block";
+    filterServices();
+}
+
 function selectSuggested(name) {
     document.getElementById("searchInput").value = name;
     document.getElementById("autoSuggestBox").style.display = "none";
-    filterServices();
+    renderServices(name.toLowerCase());
 }
+
+document.addEventListener('click', function(e) {
+    const searchWrap = document.querySelector('.search-container');
+    const suggestBox = document.getElementById('autoSuggestBox');
+    if (searchWrap && suggestBox && !searchWrap.contains(e.target)) {
+        suggestBox.style.display = 'none';
+    }
+});
 
 function renderServices(searchQuery = "") {
     const container = document.getElementById("servicesList");
@@ -371,7 +464,7 @@ function renderServices(searchQuery = "") {
         let subHtml = `<div class="sub-cat-nav">`;
         subCats.forEach(sc => {
             let active = currentSubCategory === sc ? 'active' : '';
-            subHtml += `<button class="sub-cat-btn ${active}" onclick="selectSubCategory('${sc}')">${formatText(sc)}</button>`;
+            subHtml += `<button class="sub-cat-btn ${active}" onclick="selectSubCategory('${sc.replace(/'/g, "\\'")}')">${escapeHtml(formatText(sc))}</button>`;
         });
         subHtml += `</div>`;
         subContainer.innerHTML = subHtml;
@@ -380,15 +473,11 @@ function renderServices(searchQuery = "") {
     } else { subContainer.innerHTML = ""; }
 
     if (searchQuery) {
-        filtered = displayServices.filter(s => 
-            String(s.service_name || '').toLowerCase().includes(searchQuery) || 
-            String(s.service_id || '').toLowerCase().includes(searchQuery) ||
-            String(s.description || '').toLowerCase().includes(searchQuery)
-        );
+        filtered = displayServices.filter(s => matchesServiceQuery(s, searchQuery.toLowerCase().trim()));
     }
 
     if (filtered.length === 0) {
-        container.innerHTML = "<div style='text-align:center; padding:40px;'><i class='fas fa-search' style='font-size:30px; color:#cbd5e1; margin-bottom:15px;'></i><br><span style='color:var(--text-muted); font-weight:500;'>No tests found.</span></div>";
+        container.innerHTML = "<div style='text-align:center; padding:40px;'><i class='fas fa-search' style='font-size:30px; color:#cbd5e1; margin-bottom:15px;'></i><br><span style='color:var(--text-muted); font-weight:500;'>No tests or packages found.</span></div>";
         return;
     }
 
@@ -438,30 +527,34 @@ function renderServices(searchQuery = "") {
             }
         }
 
-        let fastingHtml = "";
-        let fastData = service.fasting ? service.fasting.toLowerCase() : "";
-        if (fastData.includes("yes") || fastData.includes("8") || fastData.includes("10") || fastData.includes("12")) {
-            fastingHtml = `<div style="color:#d97706; font-size:10px; font-weight:800; background:#fef3c7; padding:4px 8px; border-radius:4px; display:inline-block; margin-top:5px; border:1px solid #fde68a;"><i class="fas fa-utensils"></i> 8-12 Hrs Fasting Required</div>`;
+        // Fasting (Col L) & Reporting Time (Col N) Badges
+        let fastingVal = service.fasting ? String(service.fasting).trim() : "";
+        let reportVal = service.reporting_time ? String(service.reporting_time).trim() : "";
+        let metaHtml = "";
+        if (fastingVal || reportVal) {
+            const fText = fastingVal ? (fastingVal.toLowerCase().includes('fast') ? fastingVal : `Fasting: ${fastingVal}`) : "";
+            const rText = reportVal ? (reportVal.toLowerCase().includes('report') ? reportVal : `Report: ${reportVal}`) : "";
+            metaHtml = `<div class="meta-badges-row">
+                ${fText ? `<span class="meta-pill-fast"><i class="fas fa-utensils"></i> ${escapeHtml(fText)}</span>` : ''}
+                ${rText ? `<span class="meta-pill-report"><i class="fas fa-clock"></i> ${escapeHtml(rText)}</span>` : ''}
+            </div>`;
         }
 
         if (isPackageOrProfile) {
             let descPreviewHtml = "";
             let descRaw = String(service.description || '');
             if (descRaw.trim() !== "") {
-                let items = descRaw.split(/<br>|\n/).filter(i => i.trim() !== '');
+                let items = descRaw.split(/<br\s*\/?>|\n/i).filter(i => i.trim() !== '');
                 if (items.length > 0) {
                     let previewItems = items.slice(0, 2).map(i => formatText(i.trim()));
                     let moreText = service.number_of_test ? `+ ${service.number_of_test} Parameters` : (items.length > 2 ? "View All Details" : "");
-                    descPreviewHtml = `<div class="desc-preview"><ul>${previewItems.map(i => `<li>${i}</li>`).join('')}</ul>${moreText ? `<div class="view-more-btn" onclick="openModal('${s_id}')">${moreText}</div>` : ''}</div>`;
+                    descPreviewHtml = `<div class="desc-preview"><ul>${previewItems.map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>${moreText ? `<div class="view-more-btn" onclick="openModal('${s_id}')">${escapeHtml(moreText)}</div>` : ''}</div>`;
                 }
             }
-            htmlContent += `<div class="profile-item"><div class="profile-header"><span class="profile-badge">${cleanCat}</span>${service.number_of_test ? `<span class="param-badge"><i class="fas fa-microscope"></i> ${service.number_of_test} Tests</span>` : ''}</div><div class="service-info"><h3>${cleanName} ${infoIconHtml}</h3>${fastingHtml}${descPreviewHtml}</div><div class="price-action-row"><div class="price-box">${pricingHtml}</div><div class="action-container">${actionBtnHtml}</div></div></div>`;
+            htmlContent += `<div class="profile-item"><div class="profile-header"><span class="profile-badge">${escapeHtml(cleanCat)}</span>${service.number_of_test ? `<span class="param-badge"><i class="fas fa-microscope"></i> ${escapeHtml(service.number_of_test)} Tests</span>` : ''}</div><div class="service-info"><h3>${escapeHtml(formatText(service.service_name))} ${infoIconHtml}</h3>${metaHtml}${descPreviewHtml}</div><div class="price-action-row"><div class="price-box">${pricingHtml}</div><div class="action-container">${actionBtnHtml}</div></div></div>`;
         } else {
             let catIcon = categoryConfig[sTypeLowerCase]?.icon || defaultIcon;
-            let imgStr = service.service_image ? String(service.service_image).trim() : "";
-            let imageHtml = imgStr !== "" ? `<img src="${imgStr}" onerror="this.style.display='none'; this.parentNode.innerHTML='${catIcon}';">` : catIcon;
-
-            htmlContent += `<div class="service-item"><div class="service-img-box">${imageHtml}</div><div class="service-info-normal"><h3 style="font-size:14px; margin-bottom:2px;">${cleanName} ${infoIconHtml}</h3>${fastingHtml}<div class="price-box" style="margin-top:6px;">${pricingHtml}</div></div><div class="action-container">${actionBtnHtml}</div></div>`;
+            htmlContent += `<div class="service-item"><div class="service-img-box">${catIcon}</div><div class="service-info-normal"><h3 style="font-size:14px; margin-bottom:2px;">${escapeHtml(formatText(service.service_name))} ${infoIconHtml}</h3>${metaHtml}<div class="price-box" style="margin-top:6px;">${pricingHtml}</div></div><div class="action-container">${actionBtnHtml}</div></div>`;
         }
     });
     container.innerHTML = htmlContent;
@@ -473,8 +566,16 @@ function updateQty(id, change, price, name, type) {
     if (index > -1) {
         cart[index].qty += change;
         if (cart[index].qty <= 0) cart.splice(index, 1); 
-    } else if (change > 0) { 
-        cart.push({ service_id: id, service_name: name, price: price, qty: 1, service_type: type }); 
+    } else if (change > 0) {
+        const svcObj = allServices.find(s => String(s.service_id) === id);
+        cart.push({
+            service_id: id,
+            service_name: name,
+            price: price,
+            qty: 1,
+            service_type: type,
+            labs: svcObj ? (svcObj.labs || "") : ""
+        }); 
         showToast("Item added to cart!", "success");
     }
     
@@ -484,8 +585,11 @@ function updateQty(id, change, price, name, type) {
 }
 
 function updateCartUI() {
-    const topCartBtn = document.getElementById("topCartBtn"); const cartBar = document.getElementById("bottomCartBar"); const cartText = document.getElementById("bottomCartText");
-    let totalItems = cart.reduce((sum, item) => sum + item.qty, 0); let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const topCartBtn = document.getElementById("topCartBtn"); 
+    const cartBar = document.getElementById("bottomCartBar"); 
+    const cartText = document.getElementById("bottomCartText");
+    let totalItems = cart.reduce((sum, item) => sum + item.qty, 0); 
+    let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     if(topCartBtn) topCartBtn.innerText = `🛒 Cart (${totalItems})`;
     if (totalItems > 0) {
         if(cartText) cartText.innerHTML = `${totalItems} Item${totalItems > 1 ? 's' : ''} <span style="color:#cbd5e1; margin:0 8px;">|</span> ₹${totalPrice}`;
@@ -496,13 +600,9 @@ function updateCartUI() {
 }
 
 function toggleView(view) {
-    let claimBanner = document.getElementById("vipClaimBanner");
-    let warningBanner = document.getElementById("pendingWarningBanner");
-
     if (view === 'cart') {
         currentView = 'cart';
-        if (claimBanner) claimBanner.style.display = "none";
-        if (warningBanner) warningBanner.style.display = "none";
+        handleBannerDisplay();
         
         document.getElementById('bookingView').style.display = 'none';
         document.getElementById('cartView').style.display = 'block';
@@ -521,18 +621,13 @@ function toggleView(view) {
         }
     } else {
         currentView = 'booking';
-        if (claimBanner && userPlanStatus === "vip" && isVipPkgPending) {
-            claimBanner.style.display = "block";
-        }
-        if (warningBanner && userPlanStatus === "pending") {
-            warningBanner.style.display = "block";
-        }
+        handleBannerDisplay();
         
         document.getElementById('cartView').style.display = 'none';
         document.getElementById('bookingView').style.display = 'block';
         document.getElementById('topCartBtn').style.display = 'inline-block';
         document.getElementById('navBackText').innerText = "Home";
-        document.getElementById('pageMainTitle').innerText = "Book Services";
+        document.getElementById('pageMainTitle').innerText = "Book Lab Tests & Packages";
         window.scrollTo(0, 0);
         updateCartUI();
     }
@@ -546,10 +641,10 @@ function openModal(serviceId) {
     let descRaw = String(service.description || '');
     let formattedDesc = "<p style='text-align:center;'>No details available.</p>";
     if (descRaw.trim() !== "") {
-        let items = descRaw.split(/<br>|\n/).filter(i => i.trim() !== '');
-        formattedDesc = "<ul>" + items.map(i => `<li style="margin-bottom:6px; border-bottom:1px dashed #eee; padding-bottom:4px;">${formatText(i.trim())}</li>`).join('') + "</ul>";
+        let items = descRaw.split(/<br\s*\/?>|\n/i).filter(i => i.trim() !== '');
+        formattedDesc = "<ul>" + items.map(i => `<li style="margin-bottom:6px; border-bottom:1px dashed #eee; padding-bottom:4px;">${escapeHtml(formatText(i.trim()))}</li>`).join('') + "</ul>";
         if (service.number_of_test) {
-            formattedDesc = `<div style="background:#e0f2fe; color:#0284c7; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; margin-bottom:15px; display:inline-block;"><i class="fas fa-microscope"></i> Includes ${service.number_of_test} Parameters</div>` + formattedDesc;
+            formattedDesc = `<div style="background:#e0f2fe; color:#0284c7; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; margin-bottom:15px; display:inline-block;"><i class="fas fa-microscope"></i> Includes ${escapeHtml(service.number_of_test)} Parameters</div>` + formattedDesc;
         }
     }
     document.getElementById("modalBody").innerHTML = formattedDesc; 
@@ -572,6 +667,16 @@ function openVipFormModal() {
     updateVipPayableUI();
 }
 function closeVipFormModal() { document.getElementById("vipFormModal").classList.remove("active"); }
+
+// Safe UPI Link Handler for Play Store WebView / TWA
+function openSafeUpiLink(e) {
+    const upiUrl = `upi://pay?pa=8950112467@ptsbi&pn=Bhavya%20Diagnostics&am=${currentVipAmount}&cu=INR&tn=VIP%20Membership`;
+    const link = document.getElementById("upiPaymentBtn");
+    if (link) link.href = upiUrl;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText("8950112467@ptsbi").catch(() => {});
+    }
+}
 
 // ✨ LOGIN MODAL KE FUNCTIONS (100% Firebase) ✨
 let loginConfirmationResult;
@@ -600,8 +705,8 @@ function sendOTP() {
         document.getElementById("phone-section").style.display = "none";
         document.getElementById("otp-section").style.display = "block";
         showToast("OTP Sent!", "success");
-    }).catch((error) => {
-        alert("Error sending OTP.");
+    }).catch(() => {
+        alert("Error sending OTP. Please check your number and try again.");
     });
 }
 
@@ -612,24 +717,75 @@ function verifyOTP() {
     loginConfirmationResult.confirm(otp).then(async (result) => {
         let user = result.user;
         const patientName = document.getElementById("userName").value.trim();
+        const customUserId = generateCustomUserId(patientName, user.phoneNumber);
 
         localStorage.setItem("bhavya_uid", user.uid);
         localStorage.setItem("bhavya_mobile", user.phoneNumber);
         localStorage.setItem("bhavya_role", "patient");
-        localStorage.setItem("bhavya_user_id", user.uid);
+        localStorage.setItem("bhavya_user_id", customUserId);
         localStorage.setItem("bhavya_name", patientName);
 
-        await savePatientToFirebase({
-            user_id: user.uid,
-            name: patientName,
-            mobile: user.phoneNumber,
-            role: "patient",
-            plan: "basic"
-        });
+        const existingDoc = db ? await db.collection("patients").doc(user.uid).get() : null;
+        if (!existingDoc || !existingDoc.exists) {
+            await savePatientToFirebase({
+                user_id: customUserId,
+                udi: user.uid,
+                name: patientName,
+                patient_name: patientName,
+                mobile: user.phoneNumber,
+                mobile_number: user.phoneNumber,
+                role: "patient",
+                referral_code: customUserId,
+                current_wallet_balance: 0,
+                wallet_balance: 0,
+                current_plan_status: "basic",
+                plan: "basic",
+                status: "active",
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
+            // Admin alert on new patient registration
+            await sendAutoEmail({
+                type: "contact",
+                to: "contact@bhavyadiagnostics.com",
+                subject: `New Patient Registered: ${patientName} (${user.phoneNumber})`,
+                html: `<p>New patient signed up on Bhavya Diagnostics:</p>
+                       <ul>
+                         <li><b>Name:</b> ${escapeHtml(patientName)}</li>
+                         <li><b>Mobile:</b> ${escapeHtml(user.phoneNumber)}</li>
+                         <li><b>User ID:</b> ${escapeHtml(customUserId)}</li>
+                       </ul>`
+            });
+        }
+
+        await syncFirebasePatientState();
         closeLoginPopup();
         showToast("Login Successful!", "success");
-    }).catch((error) => { alert("Invalid OTP."); });
+    }).catch(() => { alert("Invalid OTP."); });
+}
+
+// VIP Membership requires Login + Complete Patient Profile
+async function handleVipActivationFlow() {
+    await syncFirebasePatientState();
+    const authUser = await getAuthUser();
+    if (!authUser) {
+        localStorage.setItem("pending_vip_redirect", "true");
+        openPatientLogin();
+        return;
+    }
+
+    if (!patientProfileComplete) {
+        alert("VIP Membership lene ke liye pehle apni Patient Details (Email, City, Pincode aur Complete Address) fill karein.");
+        if (cart.length === 0) {
+            // Open checkout step 1 or redirect to dashboard profile
+            window.location.href = "../patient_dashboard/patient_dashboard.html";
+        } else {
+            toggleView('cart');
+        }
+        return;
+    }
+
+    openVipFormModal();
 }
 
 async function handleVipPromoClick() {
@@ -652,29 +808,14 @@ async function handleVipPromoClick() {
             msg.style.display = "block"; msg.style.color = "var(--success)";
             msg.innerHTML = "<i class='fas fa-check-circle'></i> Service Available! Proceeding...";
             
-            setTimeout(() => {
-                const userId = localStorage.getItem("bhavya_user_id");
-                if (userId) { 
-                    closeVipPromo(); openVipFormModal(); 
-                } 
-                else {
-                    localStorage.setItem("pending_vip_redirect", "true");
-                    closeVipPromo();
-                    
-                    openPatientLogin(); 
-                    let checkLoginInterval = setInterval(() => {
-                        if (localStorage.getItem("bhavya_user_id")) {
-                            clearInterval(checkLoginInterval); 
-                            localStorage.removeItem("pending_vip_redirect");
-                            openVipFormModal(); 
-                        }
-                    }, 1000); 
-                }
+            setTimeout(async () => {
+                closeVipPromo();
                 btn.innerHTML = `<i class="fas fa-crown"></i> Activate Now`; btn.disabled = false;
-            }, 800);
+                await handleVipActivationFlow();
+            }, 600);
         } else {
             msg.style.display = "block"; msg.style.color = "var(--danger)";
-            msg.innerHTML = `<i class='fas fa-times-circle'></i> ${res.message || "VIP Plan is not available in this pincode yet."}`;
+            msg.innerHTML = `<i class='fas fa-times-circle'></i> ${escapeHtml(res.message || "VIP Plan is not available in this pincode yet.")}`;
             btn.innerHTML = `<i class="fas fa-crown"></i> Activate Now`; btn.disabled = false;
         }
     } catch(err) {
@@ -685,7 +826,7 @@ async function handleVipPromoClick() {
 
 function updateVipPayableUI() {
     document.getElementById('vipFinalAmount').innerText = currentVipAmount;
-    const upiUrl = `upi://pay?pa=8950112467@ptsbi&pn=BhavyaCare&am=${currentVipAmount}&cu=INR&tn=VIP%20Subscription`;
+    const upiUrl = `upi://pay?pa=8950112467@ptsbi&pn=Bhavya%20Diagnostics&am=${currentVipAmount}&cu=INR&tn=VIP%20Subscription`;
     document.getElementById("upiPaymentBtn").href = upiUrl;
 }
 
@@ -703,7 +844,7 @@ async function applyVipPromo() {
             updateVipPayableUI();
             msg.style.display="block"; msg.style.color="var(--success)"; msg.innerHTML=`<i class="fas fa-check-circle"></i> ₹${vipDiscount} discount applied!`;
         } else {
-            msg.style.display="block"; msg.style.color="var(--danger)"; msg.innerHTML=`<i class="fas fa-times-circle"></i> ${data.message || "Invalid Code"}`;
+            msg.style.display="block"; msg.style.color="var(--danger)"; msg.innerHTML=`<i class="fas fa-times-circle"></i> ${escapeHtml(data.message || "Invalid Code")}`;
             currentVipAmount = baseVipPrice; updateVipPayableUI();
         }
     } catch(err) { msg.style.display="block"; msg.style.color="var(--danger)"; msg.innerText="Error checking code."; }
@@ -713,7 +854,7 @@ function updateFileName() {
     const fileInput = document.getElementById('vipScreenshot');
     const btnText = document.getElementById('fileUploadBtnText');
     if (fileInput.files.length > 0) {
-        btnText.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ${fileInput.files[0].name}`;
+        btnText.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ${escapeHtml(fileInput.files[0].name)}`;
         btnText.style.borderColor = "var(--success)"; btnText.style.background = "#f0fdf4";
     }
 }
@@ -739,41 +880,105 @@ if (screenInput) {
     });
 }
 
-function submitVipApplicationForm() {
+// VIP Membership Application -> 100% Firebase + Automatic Email
+async function submitVipApplicationForm() {
     const txnId = document.getElementById('vipTxnId').value.trim();
     const screenshot = document.getElementById('vipScreenshotBase64').value;
-    
     if(!screenshot) { alert("Please upload the payment screenshot. It is mandatory."); return; }
+
+    const authUser = await getAuthUser();
+    if (!db || !authUser) {
+        alert("Please login first to apply for VIP Plan.");
+        return;
+    }
 
     const btn = document.getElementById('submitVipBtn');
     btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Submitting...`; btn.disabled = true;
 
-    const payload = {
-        action: "submitVipApplication",
-        user_id: localStorage.getItem("bhavya_user_id"),
-        member1_name: document.getElementById("vipMem1").value,
-        member2_name: document.getElementById("vipMem2").value.trim(),
-        member3_name: document.getElementById("vipMem3").value.trim(),
-        referrer_user_id: validReferrerId,
-        payment_mode: "online", 
-        payment_id: txnId,
-        payment_screenshot: screenshot,
-        amount_paid: currentVipAmount
-    };
+    try {
+        const patientDoc = await db.collection("patients").doc(authUser.uid).get();
+        const pData = patientDoc.exists ? patientDoc.data() : {};
+        const mem1 = document.getElementById("vipMem1").value.trim() || pData.name || "Self";
+        const mem2 = document.getElementById("vipMem2").value.trim();
+        const mem3 = document.getElementById("vipMem3").value.trim();
+        const members = [mem1, mem2, mem3].filter(Boolean);
 
-    fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) })
-    .then(res => res.json())
-    .then(res => {
-        if(res.status === "success") {
-            alert("VIP Application Submitted! Your plan is under review.");
-            userPlanStatus = "pending"; 
-            localStorage.setItem("bhavya_plan_cache", "pending"); 
-            closeVipFormModal();
-            handleBannerDisplay(); 
-            renderServices(); 
-        } else { alert("Error: " + res.message); }
-    }).catch(error => { alert("Network error."); })
-    .finally(() => { btn.innerHTML = `Submit Application <i class="fas fa-arrow-right"></i>`; btn.disabled = false; });
+        const vipPayload = {
+            current_plan_status: "pending",
+            plan: "pending",
+            isVip: false,
+            vipMembers: members,
+            vip_details: {
+                member_1_name: mem1,
+                member_2_name: mem2,
+                member_3_name: mem3,
+                referrer_user_id: validReferrerId,
+                payment_mode: "online",
+                payment_id: txnId,
+                payment_screenshot: screenshot,
+                amount_paid: currentVipAmount,
+                vip_status: "pending",
+                applied_at: new Date().toISOString()
+            }
+        };
+
+        await savePatientToFirebase(vipPayload);
+
+        // Save in vip_requests collection for Admin Panel review
+        await db.collection("vip_requests").doc(authUser.uid).set({
+            uid: authUser.uid,
+            user_id: pData.user_id || authUser.uid,
+            patient_name: mem1,
+            mobile: pData.mobile || authUser.phoneNumber || "",
+            email: pData.email || "",
+            members: members,
+            referrer_user_id: validReferrerId,
+            payment_id: txnId,
+            payment_screenshot: screenshot,
+            amount_paid: currentVipAmount,
+            status: "pending",
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        // Send confirmation email to Patient (if email exists) & Admin
+        if (pData.email && pData.email.includes("@")) {
+            await sendAutoEmail({
+                type: "contact",
+                to: pData.email,
+                subject: "VIP Membership Application Received - Bhavya Diagnostics",
+                html: `<p>Dear <b>${escapeHtml(mem1)}</b>,</p>
+                       <p>Your <b>Bhavya VIP Family Plan</b> application (Amount: ₹${currentVipAmount}) has been received and is under verification.</p>
+                       <p>You can immediately start booking tests at VIP rates!</p>`
+            });
+        }
+
+        await sendAutoEmail({
+            type: "contact",
+            to: "contact@bhavyadiagnostics.com",
+            subject: `New VIP Membership Request: ${mem1} (₹${currentVipAmount})`,
+            html: `<p>New VIP Membership application received:</p>
+                   <ul>
+                     <li><b>Applicant:</b> ${escapeHtml(mem1)}</li>
+                     <li><b>Mobile:</b> ${escapeHtml(pData.mobile || authUser.phoneNumber || "")}</li>
+                     <li><b>Family Members:</b> ${escapeHtml(members.join(", "))}</li>
+                     <li><b>Amount Paid:</b> ₹${currentVipAmount}</li>
+                     <li><b>UTR / Ref:</b> ${escapeHtml(txnId || "Screenshot Uploaded")}</li>
+                   </ul>`
+        });
+
+        userPlanStatus = "pending"; 
+        localStorage.setItem("bhavya_plan_cache", "pending"); 
+        closeVipFormModal();
+        handleBannerDisplay(); 
+        renderServices();
+        alert("🎉 VIP Application Submitted! Your plan is under review and VIP rates are unlocked.");
+    } catch (err) {
+        console.error("VIP submit error:", err);
+        alert("Error submitting VIP application: " + err.message);
+    } finally {
+        btn.innerHTML = `Submit Application <i class="fas fa-arrow-right"></i>`; 
+        btn.disabled = false;
+    }
 }
 
 function claimVipPackage() {
@@ -792,7 +997,7 @@ function handleHomeNavigation() {
 }
 
 // =======================================================
-// 🌟 CART & CHECKOUT PAGE LOGIC (100% Firebase Patient Data) 🌟
+// 🌟 CART & CHECKOUT PAGE LOGIC (100% Firebase + Column R Labs) 🌟
 // =======================================================
 function initCartPage() {
     let s2 = document.getElementById('step2-card');
@@ -803,14 +1008,12 @@ function initCartPage() {
 
     calculateFinalBill(); 
 
-    const userId = localStorage.getItem("bhavya_user_id");
+    const userId = localStorage.getItem("bhavya_user_id") || localStorage.getItem("bhavya_uid");
     if (userId) { 
-        fetchProfile(userId); 
-    } 
-    else { 
+        fetchProfile(); 
+    } else { 
         let loader = document.getElementById('loadingOverlay');
         if(loader) loader.style.display = 'none'; 
-        
         let skel = document.getElementById('checkoutFormSkeleton');
         let form = document.getElementById('actualCheckoutForm');
         if(skel) skel.style.display = 'none';
@@ -818,7 +1021,7 @@ function initCartPage() {
     }
 }
 
-async function fetchProfile(userId) {
+async function fetchProfile() {
     let skel = document.getElementById('checkoutFormSkeleton');
     let form = document.getElementById('actualCheckoutForm');
     if(skel) skel.style.display = 'block';
@@ -831,9 +1034,10 @@ async function fetchProfile(userId) {
                 const doc = await db.collection("patients").doc(authUser.uid).get();
                 if (doc.exists) {
                     const data = doc.data();
-                    bookingData.mobile = String(data.mobile || "").replace(/^\+91/, '');
+                    bookingData.mobile = String(data.mobile || data.mobile_number || "").replace(/^\+91/, '');
                     bookingData.email = data.email || "";
-                    bookingData.isVip = (data.plan === "vip" || data.isVip === true);
+                    const planStr = String(data.current_plan_status || data.plan || "basic").toLowerCase();
+                    bookingData.isVip = (planStr === "vip" || planStr === "pending" || data.isVip === true);
                     welcomeEmailAlreadySent = !!data.welcome_email_sent;
 
                     let uMob = document.getElementById('uMobile');
@@ -851,21 +1055,21 @@ async function fetchProfile(userId) {
                     if (uAddr && data.address) uAddr.value = data.address;
 
                     let uCity = document.getElementById('uCity');
-                    if (uCity && data.city) uCity.value = data.city;
+                    if (uCity && (data.city || data.city_village)) uCity.value = data.city || data.city_village;
 
                     const nameBox = document.getElementById('nameInputBox');
                     if (nameBox) {
                         if (bookingData.isVip && Array.isArray(data.vipMembers) && data.vipMembers.length > 0) {
                             let badge = document.getElementById('vipBadge');
                             if(badge) badge.innerHTML = '<span style="background:var(--warning); color:white; font-size:10px; padding:4px 8px; border-radius:12px; margin-left: 10px;"><i class="fas fa-crown"></i> VIP Active</span>';
-                            let opts = data.vipMembers.map(m => `<option value="${m}">${m}</option>`).join('');
+                            let opts = data.vipMembers.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
                             nameBox.innerHTML = `<select id="uName" class="form-input">${opts}</select>`;
                         } else {
-                            nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${data.name || ''}" placeholder="Patient Name">`;
+                            nameBox.innerHTML = `<input type="text" id="uName" class="form-input" value="${escapeHtml(data.name || data.patient_name || '')}" placeholder="Patient Name">`;
                         }
                     }
 
-                    userWalletBalance = Number(data.wallet_balance || 0);
+                    userWalletBalance = Number(data.current_wallet_balance || data.wallet_balance || 0);
                     let walletTxt = document.getElementById('walletBalTxt');
                     if (walletTxt) walletTxt.innerText = userWalletBalance;
                     calculateFinalBill();
@@ -890,8 +1094,14 @@ async function savePatientInfo() {
     const city = document.getElementById('uCity').value.trim();
     const pin = document.getElementById('uPincode').value.trim();
     const addr = document.getElementById('uAddress').value.trim();
+    const consentEl = document.getElementById('consentCheckbox');
 
-    if(!name || !city || pin.length < 6 || mobile.length < 10) return alert("Please enter valid Name, 10-digit Mobile, City, and 6-digit Pincode.");
+    if (consentEl && !consentEl.checked) {
+        return alert("Please accept the Privacy Policy & Terms consent checkbox to continue.");
+    }
+    if (!name || !city || pin.length < 6 || mobile.length < 10 || !addr) {
+        return alert("Please enter valid Name, 10-digit Mobile, City, 6-digit Pincode, and Complete Address.");
+    }
 
     bookingData.name = name;
     bookingData.mobile = mobile;
@@ -899,18 +1109,21 @@ async function savePatientInfo() {
     bookingData.city = city.toLowerCase();
     bookingData.pincode = pin;
     bookingData.address = addr;
+    patientProfileComplete = true;
 
     const updateObj = {
-        user_id: localStorage.getItem("bhavya_user_id") || "",
         name: name,
+        patient_name: name,
         mobile: mobile,
+        mobile_number: mobile,
         email: email,
         city: city,
+        city_village: city,
         pincode: pin,
         address: addr
     };
 
-    // Pehli baar email milne par contact@bhavyadiagnostics.com se Welcome Email bhejein
+    // First-time email -> Welcome Email from contact@bhavyadiagnostics.com
     if (email && email.includes("@") && !welcomeEmailAlreadySent) {
         welcomeEmailAlreadySent = true;
         updateObj.welcome_email_sent = true;
@@ -920,9 +1133,9 @@ async function savePatientInfo() {
             subject: "Welcome to Bhavya Diagnostics!",
             html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;border:1px solid #e2e8f0;border-radius:12px;padding:20px;">
                     <h2 style="color:#0056b3;margin-top:0;">Welcome to Bhavya Diagnostics!</h2>
-                    <p>Dear <b>${name}</b>,</p>
-                    <p>Thank you for registering with <b>Bhavya Diagnostics</b> (Bahadurgarh). You can now book pathology tests, preventive health packages, ECG, and PFT with fast digital reports.</p>
-                    <p style="font-size:13px;color:#64748b;">Need help? Call/WhatsApp us at <b>89501 12467</b> or reply to this email.</p>
+                    <p>Dear <b>${escapeHtml(name)}</b>,</p>
+                    <p>Thank you for registering with <b>Bhavya Diagnostics</b> (Main Jhajjar Road, Bahadurgarh). You can now book 700+ NABL lab blood tests, health packages, ECG, and PFT with fast digital reports.</p>
+                    <p style="font-size:13px;color:#64748b;">Need help? Call/WhatsApp us at <b>89501 12467</b>.</p>
                    </div>`
         });
     }
@@ -948,7 +1161,9 @@ async function savePatientInfo() {
     const s2 = document.getElementById('step2-card');
     s2.style.display = 'block'; s2.style.opacity = '1'; s2.style.pointerEvents = 'auto';
     
-    fetchLabs(); 
+    // Instant Step 2 rendering directly from Column R labs (No network call needed!)
+    autoAssignGroupLabs();
+    renderGroupedCart();
 }
 
 function editPatientInfo() {
@@ -959,93 +1174,36 @@ function editPatientInfo() {
     validateCheckout();
 }
 
-function fetchLabs() {
-    let spinner = document.getElementById('loadingLabsSpinner');
-    if (spinner) spinner.style.display = 'block';
-    document.getElementById('cartItemsContainer').innerHTML = "";
-
-    fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "getAllActiveLabs" }) })
-    .then(res => res.json())
-    .then(res => {
-        if (spinner) spinner.style.display = 'none';
-        if(res.status === "success") {
-            allActiveLabsList = res.data.labs;
-
-            let canServiceAnything = false;
-            let containsVipOnly = true;
-
-            cart.forEach(item => {
-                if (item.service_id === "VIP-FREE-001") {
-                    canServiceAnything = true;
-                    return; 
-                }
-                containsVipOnly = false;
-                let type = (item.service_type || "pathology").toLowerCase().trim();
-                let labsForSvc = allActiveLabsList.filter(l => l.provided_services[type] === true);
-                
-                let matchHome = labsForSvc.some(l => l.pincode === bookingData.pincode || l.available_pincodes.includes(bookingData.pincode));
-                let matchCity = labsForSvc.some(l => l.city === bookingData.city || l.available_cities.includes(bookingData.city));
-
-                if (matchHome || matchCity) { canServiceAnything = true; }
-            });
-
-            if (!canServiceAnything && !containsVipOnly) {
-                alert("No provider found in your area for service. Redirecting to Booking list...");
-                toggleView('booking');
-                return;
-            }
-
-            autoAssignGroupLabs(); 
-            renderGroupedCart(); 
-        } else alert("Error fetching labs.");
-    }).catch(e => {
-        if (spinner) spinner.style.display = 'none';
-        alert("Network Error.");
-    });
-}
-
 function autoAssignGroupLabs() {
     let assignedLabs = {}; 
     cart.forEach(item => {
         if (item.service_id === "VIP-FREE-001") {
             item.selected_lab_id = "BHAVYACARE-INTERNAL";
+            item.selected_lab_name = "Bhavya Diagnostics Nodal Center";
             item.fulfillment = "home"; 
             return;
         }
 
         if (item.service_type === "surprise_package" || String(item.service_id).startsWith("SURP-")) {
             item.selected_lab_id = "BHAVYACARE-INTERNAL";
+            item.selected_lab_name = "Bhavya Diagnostics Nodal Center";
             item.fulfillment = "center";
             return;
         }
 
         let type = (item.service_type || "pathology").toLowerCase().trim();
-        let allLabsForSvc = allActiveLabsList.filter(lab => lab.provided_services[type] === true);
-
-        let homeEligibleLabs = allLabsForSvc.filter(lab => lab.available_pincodes.includes(bookingData.pincode) || lab.pincode === bookingData.pincode);
-        let cityEligibleLabs = allLabsForSvc.filter(lab => lab.city === bookingData.city || lab.available_cities.includes(bookingData.city));
-
-        let eligibleLabs = [];
-
-        if (item.fulfillment === "home") {
-            if (homeEligibleLabs.length === 0 && cityEligibleLabs.length > 0) {
-                item.fulfillment = "center";
-                eligibleLabs = cityEligibleLabs;
-            } else if (homeEligibleLabs.length > 0) {
-                eligibleLabs = homeEligibleLabs;
-            }
-        } else {
-            eligibleLabs = cityEligibleLabs.length > 0 ? cityEligibleLabs : homeEligibleLabs;
-        }
+        let eligibleLabs = getLabsForService(item);
 
         if (eligibleLabs.length > 0) {
             if (!assignedLabs[type]) {
-                let existingValidLab = eligibleLabs.find(l => String(l.lab_id) === String(item.selected_lab_id));
-                assignedLabs[type] = existingValidLab ? String(existingValidLab.lab_id) : String(eligibleLabs[0].lab_id);
+                let existingValidLab = eligibleLabs.find(l => l.lab_id === item.selected_lab_id);
+                assignedLabs[type] = existingValidLab ? existingValidLab : eligibleLabs[0];
             }
-            item.selected_lab_id = assignedLabs[type];
+            item.selected_lab_id = assignedLabs[type].lab_id;
+            item.selected_lab_name = assignedLabs[type].raw_label;
         } else {
-            item.selected_lab_id = null; 
+            item.selected_lab_id = "BHAVYA_DIAGNOSTICS";
+            item.selected_lab_name = "Bhavya Diagnostics (NABL)";
         }
     });
     localStorage.setItem('bhavyaCart', JSON.stringify(cart));
@@ -1077,7 +1235,7 @@ function renderGroupedCart() {
         let groupTitle = "";
         if (isVipGroup) groupTitle = '<i class="fas fa-gift" style="color:var(--warning);"></i> VIP Package';
         else if (isSurpriseGroup) groupTitle = '<i class="fas fa-magic" style="color:#d946ef;"></i> Surprise Package';
-        else groupTitle = `<i class="fas fa-notes-medical"></i> ${type} Booking`;
+        else groupTitle = `<i class="fas fa-notes-medical"></i> ${escapeHtml(formatText(type))} Booking`;
 
         html += `<div class="group-container">
                     <div class="group-header">${groupTitle}</div>`;
@@ -1087,9 +1245,9 @@ function renderGroupedCart() {
             html += `
                 <div class="cart-item-header" style="margin-bottom: 12px;">
                     <div class="item-title-box">
-                        <strong style="font-size:14px; color: var(--text-main);">${item.service_name} <span style="color:var(--text-muted); font-size:12px;">(x${item.qty || 1})</span></strong>
+                        <strong style="font-size:14px; color: var(--text-main);">${escapeHtml(item.service_name)} <span style="color:var(--text-muted); font-size:12px;">(x${item.qty || 1})</span></strong>
                     </div>
-                    <div class="price-box" style="display:flex; align-items:center;">
+                    <div class="price-box" style="display:flex; flex-direction:row; align-items:center;">
                         <strong style="color:var(--success); font-size: 15px;">₹${itemPrice * (item.qty || 1)}</strong>
                         <button class="btn-remove-item" onclick="removeCartItem(${item.originalIndex})" title="Remove"><i class="fas fa-times"></i></button>
                     </div>
@@ -1098,7 +1256,7 @@ function renderGroupedCart() {
 
         if (isVipGroup || isSurpriseGroup) {
             let badgeTxt = isVipGroup ? "SPONSORED" : "SURPRISE";
-            let infoTxt = isVipGroup ? "<i class='fas fa-check-circle' style='color:var(--success);'></i> Free Home Collection Included" : "<i class='fas fa-exclamation-circle' style='color:#b45309;'></i> This is a sponsored package and will be processed by our Nodal Center.";
+            let infoTxt = isVipGroup ? "<i class='fas fa-check-circle' style='color:var(--success);'></i> Free Home Collection Included" : "<i class='fas fa-exclamation-circle' style='color:#b45309;'></i> Processed by Bhavya Diagnostics Nodal Center.";
             let themeColor = isVipGroup ? "var(--primary)" : "#d946ef";
             let themeBg = isVipGroup ? "var(--primary-soft)" : "#fdf4ff";
             let themeBorder = isVipGroup ? "#bfdbfe" : "#f0abfc";
@@ -1107,12 +1265,12 @@ function renderGroupedCart() {
             <div style="background: ${themeBg}; border: 1px solid ${themeBorder}; border-radius: 12px; padding: 15px; margin-top: 15px;">
                 <p style="font-size:12px; font-weight:800; color:${themeColor}; margin: 0 0 10px 0; text-transform:uppercase;"><i class="fas fa-star" style="color:var(--warning);"></i> Handled Internally</p>
                 <div class="lab-card selected" style="border-color: ${themeColor}; background: #ffffff; margin-bottom: 0; cursor: default;">
-                    <div class="lab-img" style="background: ${themeColor}; color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; width:50px; height:50px; border-radius:8px;">
+                    <div class="lab-icon-box" style="background: ${themeColor}; color: white;">
                         <i class="fas fa-heartbeat"></i>
                     </div>
                     <div class="lab-info">
-                        <h4 class="lab-name" style="color: ${themeColor};">BhavyaCare Nodal Center <span class="badge-small" style="background:var(--warning); color:white;">${badgeTxt}</span></h4>
-                        <p class="lab-addr" style="color: var(--text-muted);">${infoTxt}</p>
+                        <h4 class="lab-name" style="color: ${themeColor};">Bhavya Diagnostics Nodal Center <span class="badge-small" style="background:var(--warning); color:white;">${badgeTxt}</span></h4>
+                        <p class="lab-addr">${infoTxt}</p>
                     </div>
                 </div>
             </div></div>`;
@@ -1121,71 +1279,47 @@ function renderGroupedCart() {
 
         let isHomeEligible = homeServiceCategories.includes(type);
         let isHome = group.fulfillment === "home";
-        
-        let allLabsForSvc = allActiveLabsList.filter(lab => lab.provided_services[type] === true);
-        let homeLabsForSvc = allLabsForSvc.filter(lab => lab.available_pincodes.includes(bookingData.pincode) || lab.pincode === bookingData.pincode);
-        let cityLabsForSvc = allLabsForSvc.filter(lab => lab.city === bookingData.city || lab.available_cities.includes(bookingData.city));
-
-        let hasHomeProvider = homeLabsForSvc.length > 0;
-        let hasCityProvider = cityLabsForSvc.length > 0;
 
         if(isHomeEligible) {
-            let homeClickAction = hasHomeProvider ? `changeGroupFulfill('${type}', 'home')` : `showHomeUnavailableAlert('${type}')`;
-            let homeBtnStyle = hasHomeProvider ? "" : "opacity: 0.6; cursor: not-allowed; background: #f8fafc;";
-            let lockIcon = hasHomeProvider ? "" : ' <i class="fas fa-lock" style="font-size:11px; margin-left:4px;"></i>';
-
             html += `
                 <div class="service-toggle-box" style="margin-bottom:15px;">
-                    <button class="toggle-btn ${isHome ? 'active' : ''}" style="${homeBtnStyle}" onclick="${homeClickAction}"><i class="fas fa-home"></i> Home Collection${lockIcon}</button>
-                    <button class="toggle-btn ${!isHome ? 'active' : ''}" onclick="changeGroupFulfill('${type}', 'center')"><i class="fas fa-hospital"></i> Center Visit</button>
+                    <button class="toggle-btn ${isHome ? 'active' : ''}" onclick="changeGroupFulfill('${type.replace(/'/g, "\\'")}', 'home')"><i class="fas fa-home"></i> Home Collection</button>
+                    <button class="toggle-btn ${!isHome ? 'active' : ''}" onclick="changeGroupFulfill('${type.replace(/'/g, "\\'")}', 'center')"><i class="fas fa-hospital"></i> Center Visit</button>
                 </div>`;
         } else {
-            html += `<div class="center-only-badge"><i class="fas fa-info-circle"></i> Center Visit Required for Scans</div>`;
+            html += `<div class="center-only-badge"><i class="fas fa-info-circle"></i> Center Visit Required</div>`;
         }
 
-        if (!hasHomeProvider && !hasCityProvider) {
-            html += `<div class="item-error-box"><span><i class="fas fa-exclamation-triangle"></i> No provider found in your area for ${type}.</span></div>`;
-        } else {
-            let displayLabs = isHome ? homeLabsForSvc : (hasCityProvider ? cityLabsForSvc : homeLabsForSvc);
-            html += `<p style="font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:8px;">Provider for ${type}:</p>`;
-            
-            displayLabs.forEach(lab => {
-                let isSelected = String(lab.lab_id) === String(group.selected_lab_id) ? "selected" : "";
-                
-                let isNabl = (lab.nabl && String(lab.nabl).toLowerCase().trim() === "yes");
-                let nablBadge = isNabl ? `<span class="badge-small" style="margin-left:5px; background:#dcfce7; color:#065f46; border:1px solid #bbf7d0;">NABL</span>` : "";
-                
-                let isNabh = (lab.nabh && String(lab.nabh).toLowerCase().trim() === "yes");
-                let nabhBadge = isNabh ? `<span class="badge-small" style="margin-left:5px; background:#dcfce7; color:#065f46; border:1px solid #bbf7d0;">NABH</span>` : "";
-                
-                let rawImg = lab.lab_image1 || lab.img1_url || lab.lab_image || "";
-                let imgSrc = "";
-                if (rawImg.trim() !== "") {
-                    if (rawImg.includes("drive.google.com/file/d/")) {
-                        let match = rawImg.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                        imgSrc = match ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200` : rawImg;
-                    } else if (rawImg.includes("drive.google.com/open?id=")) {
-                        let match = rawImg.match(/id=([a-zA-Z0-9_-]+)/);
-                        imgSrc = match ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200` : rawImg;
-                    } else if (!rawImg.startsWith("http") && !rawImg.startsWith("data:image")) {
-                        imgSrc = `data:image/jpeg;base64,${rawImg}`;
-                    } else { imgSrc = rawImg; }
-                }
-                if (imgSrc === "") {
-                     imgSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(lab.lab_name)}&background=e0f2fe&color=0369a1`;
-                }
-
-                html += `
-                    <div class="lab-card ${isSelected}" onclick="assignLabToGroup('${type}', '${lab.lab_id}')">
-                        <img src="${imgSrc}" class="lab-img" style="width:60px; height:60px; border-radius:10px; object-fit:cover; border:1px solid var(--border);" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(lab.lab_name)}&background=e0f2fe&color=0369a1'">
-                        <div class="lab-info">
-                            <h4 class="lab-name">${lab.lab_name} ${nablBadge} ${nabhBadge}</h4>
-                            <p class="lab-addr"><i class="fas fa-map-marker-alt"></i> ${lab.lab_address}, ${lab.city} - ${lab.pincode}</p>
-                        </div>
-                        ${isSelected ? '<i class="fas fa-check-circle" style="color:var(--success); font-size:18px;"></i>' : ''}
-                    </div>`;
+        // Merge unique labs from Column R for all items in this group
+        const labMap = new Map();
+        group.items.forEach(item => {
+            getLabsForService(item).forEach(l => {
+                if (!labMap.has(l.lab_id)) labMap.set(l.lab_id, l);
             });
-        }
+        });
+        const displayLabs = Array.from(labMap.values());
+
+        html += `<p style="font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:8px;">Select Processing Lab (Timings: 7:00 AM – 8:00 PM):</p>`;
+        
+        displayLabs.forEach(lab => {
+            let isSelected = String(lab.lab_id) === String(group.selected_lab_id) ? "selected" : "";
+            let badgesHtml = lab.tags.map(tag => {
+                let extraClass = "";
+                if (tag === "NABL" || tag === "NABH") extraClass = "badge-nabl";
+                else if (tag === "URGENT") extraClass = "badge-urgent";
+                return `<span class="badge-small ${extraClass}">${escapeHtml(tag)}</span>`;
+            }).join(" ");
+
+            html += `
+                <div class="lab-card ${isSelected}" onclick="assignLabToGroup('${type.replace(/'/g, "\\'")}', '${lab.lab_id}', '${lab.raw_label.replace(/'/g, "\\'")}')">
+                    <div class="lab-icon-box"><i class="fas fa-flask"></i></div>
+                    <div class="lab-info">
+                        <h4 class="lab-name">${escapeHtml(lab.lab_name)} ${badgesHtml}</h4>
+                        <p class="lab-addr"><i class="far fa-clock"></i> Open Daily: 07:00 AM – 08:00 PM</p>
+                    </div>
+                    ${isSelected ? '<i class="fas fa-check-circle" style="color:var(--success); font-size:18px;"></i>' : ''}
+                </div>`;
+        });
         
         html += `</div>`; 
     }
@@ -1197,15 +1331,7 @@ function renderGroupedCart() {
     calculateFinalBill(); 
 }
 
-function showHomeUnavailableAlert(type) {
-    alert(`No provider found in your area for this service. However, this facility is available in your city, please visit the center.`);
-}
-
 function changeGroupFulfill(type, fulfillment) {
-    if (fulfillment === "home") {
-        let hasHomeProvider = allActiveLabsList.some(l => l.provided_services[type] && (l.pincode === bookingData.pincode || l.available_pincodes.includes(bookingData.pincode)));
-        if (!hasHomeProvider) { showHomeUnavailableAlert(type); return; }
-    }
     cart.forEach(item => {
         if ((item.service_type || "pathology").toLowerCase().trim() === type) item.fulfillment = fulfillment;
     });
@@ -1213,9 +1339,12 @@ function changeGroupFulfill(type, fulfillment) {
     renderGroupedCart(); 
 }
 
-function assignLabToGroup(type, labId) {
+function assignLabToGroup(type, labId, rawLabel) {
     cart.forEach(item => {
-        if ((item.service_type || "pathology").toLowerCase().trim() === type) item.selected_lab_id = String(labId);
+        if ((item.service_type || "pathology").toLowerCase().trim() === type) {
+            item.selected_lab_id = String(labId);
+            item.selected_lab_name = rawLabel || labId;
+        }
     });
     localStorage.setItem('bhavyaCart', JSON.stringify(cart)); 
     renderGroupedCart(); 
@@ -1255,7 +1384,6 @@ function renderLabTimeSelectors() {
     if(!container) return;
 
     let uniqueLabIds = [...new Set(cart.map(c => c.selected_lab_id).filter(Boolean))];
-    
     if(uniqueLabIds.length === 0) { 
         container.innerHTML = ''; 
         validateCheckout();
@@ -1263,7 +1391,7 @@ function renderLabTimeSelectors() {
     }
 
     let todayStr = new Date().toISOString().split('T')[0];
-    let html = `<h3 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-main);">Select Appointment Time</h3>`;
+    let html = `<h3 style="font-size:15px; font-weight:800; margin-bottom:15px; color:var(--text-main);">Select Appointment Date &amp; Time</h3>`;
 
     let hasNormalLab = uniqueLabIds.some(id => id !== "BHAVYACARE-INTERNAL");
 
@@ -1273,22 +1401,22 @@ function renderLabTimeSelectors() {
             return;
         }
 
-        let lab = allActiveLabsList.find(l => String(l.lab_id) === String(labId));
-        let labName = lab ? lab.lab_name : "Selected Provider";
-        
-        if (labId === "BHAVYACARE-INTERNAL") labName = "BhavyaCare Nodal Center";
+        const sampleItem = cart.find(c => c.selected_lab_id === labId);
+        let labName = (sampleItem && sampleItem.selected_lab_name) ? sampleItem.selected_lab_name : "Selected Lab";
+        if (labId === "BHAVYACARE-INTERNAL") labName = "Bhavya Diagnostics Nodal Center";
         
         let fulfills = cart.filter(c => c.selected_lab_id === labId).map(c => c.fulfillment);
         let fText = fulfills.includes("home") ? "Home Collection" : "Center Visit";
 
-        if(!labSlots[labId]) labSlots[labId] = { date: "", time: "" };
+        if(!labSlots[labId]) labSlots[labId] = { date: "", time: "", lab_name: labName };
+        labSlots[labId].lab_name = labName;
         let savedDate = labSlots[labId].date;
 
         html += `
         <div style="background: var(--primary-soft); border: 1px solid #bfdbfe; padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-            <strong style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px; color:var(--primary);">
-                <span><i class="far fa-clock"></i> ${labName}</span>
-                <span style="font-size:11px; background:#dbeafe; padding:2px 8px; border-radius:6px; color:var(--text-main); font-weight:800;">${fText}</span>
+            <strong style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:12px; color:var(--primary); gap:8px;">
+                <span><i class="far fa-clock"></i> ${escapeHtml(labName)}</span>
+                <span style="font-size:11px; background:#dbeafe; padding:2px 8px; border-radius:6px; color:var(--text-main); font-weight:800; white-space:nowrap;">${fText}</span>
             </strong>
             <input type="date" class="form-input" min="${todayStr}" value="${savedDate}" onchange="updateLabDate('${labId}', this.value)" style="margin-bottom:10px; background:white; padding:10px;">
             <div class="slot-grid" id="slots-${labId}"></div>
@@ -1306,6 +1434,7 @@ function renderLabTimeSelectors() {
     validateCheckout();
 }
 
+// Fixed Lab Timings: 07:00 AM to 08:00 PM for ALL Labs
 function updateLabDate(labId, dateStr, isRenderCall = false) {
     labSlots[labId].date = dateStr;
     if(!isRenderCall) labSlots[labId].time = ""; 
@@ -1324,50 +1453,31 @@ function updateLabDate(labId, dateStr, isRenderCall = false) {
     if(label) label.remove();
 
     let dateObj = new Date(dateStr);
-    let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-    let dayName = days[dateObj.getDay()];
-
-    let lab = allActiveLabsList.find(l => String(l.lab_id) === String(labId));
+    let o = parseTime("07:00 AM");
+    let c = parseTime("08:00 PM");
     
-    if (labId === "BHAVYACARE-INTERNAL") {
-        lab = { timings: { 
-            [dayName]: { open: "08:00 AM", close: "08:00 PM" } 
-        }};
-    }
-
+    let now = new Date();
+    let isToday = (dateObj.toDateString() === now.toDateString());
+    let currentMins = (now.getHours() * 60) + now.getMinutes();
+    
+    let planCache = localStorage.getItem("bhavya_plan_cache") || "basic";
+    let hasVipPackageInCart = cart.some(item => item.service_id === "VIP-FREE-001");
+    let bufferMins = (planCache === "pending" || hasVipPackageInCart) ? 120 : 30;
+    
     let html = "";
-
-    if(lab && lab.timings && lab.timings[dayName]) {
-        let o = parseTime(lab.timings[dayName].open) || parseTime("09:00 AM");
-        let c = parseTime(lab.timings[dayName].close) || parseTime("08:00 PM");
-        
-        let now = new Date();
-        let isToday = (dateObj.toDateString() === now.toDateString());
-        let currentMins = (now.getHours() * 60) + now.getMinutes();
-        
-        let planCache = localStorage.getItem("bhavya_plan_cache") || "basic";
-        let hasVipPackageInCart = cart.some(item => item.service_id === "VIP-FREE-001");
-        
-        let bufferMins = (planCache === "pending" || hasVipPackageInCart) ? 120 : 30;
-        
-        if (o >= c - 30) {
-            html = `<p style="color:var(--danger); font-size:12px; font-weight:700;">Provider is closed on this day.</p>`;
-        } else {
-            let slotsAdded = 0;
-            for(let t = o; t <= c - 30; t += 30) {
-                if (isToday && t < (currentMins + bufferMins)) { continue; }
-
-                let slotStr = formatTime(t);
-                let sel = labSlots[labId].time === slotStr ? "selected" : "";
-                html += `<button class="slot-btn ${sel}" onclick="selectLabTime('${labId}', '${slotStr}')">${slotStr}</button>`;
-                slotsAdded++;
-            }
-            
-            if (slotsAdded === 0) {
-                html = `<p style="color:var(--danger); font-size:12px; font-weight:700;">No more slots available for today. Please select tomorrow.</p>`;
-            }
-        }
+    let slotsAdded = 0;
+    for(let t = o; t <= c - 30; t += 30) {
+        if (isToday && t < (currentMins + bufferMins)) { continue; }
+        let slotStr = formatTime(t);
+        let sel = labSlots[labId].time === slotStr ? "selected" : "";
+        html += `<button class="slot-btn ${sel}" onclick="selectLabTime('${labId}', '${slotStr}')">${slotStr}</button>`;
+        slotsAdded++;
     }
+    
+    if (slotsAdded === 0) {
+        html = `<p style="color:var(--danger); font-size:12px; font-weight:700; grid-column:1/-1;">No more slots available for today (7:00 AM – 8:00 PM). Please select tomorrow.</p>`;
+    }
+
     container.innerHTML = html;
     validateCheckout();
 }
@@ -1396,7 +1506,7 @@ function selectLabTime(labId, timeStr) {
             
             const timeLabel = document.createElement('div');
             timeLabel.id = `selected-time-label-${labId}`;
-            timeLabel.innerHTML = `<span style="font-size:12px; color:var(--success); font-weight:700;"><i class="fas fa-check"></i> Selected: ${timeStr}</span>`;
+            timeLabel.innerHTML = `<span style="font-size:12px; color:var(--success); font-weight:700;"><i class="fas fa-check"></i> Selected: ${escapeHtml(timeStr)}</span>`;
             
             const oldLabel = document.getElementById(`selected-time-label-${labId}`);
             if(oldLabel) oldLabel.remove();
@@ -1440,7 +1550,6 @@ function applyReferral() {
     }
 
     const userId = localStorage.getItem("bhavya_user_id") || "GUEST"; 
-
     btn.innerText = "Wait..."; btn.disabled = true;
 
     fetch(GAS_URL, { method: "POST", body: JSON.stringify({ action: "verifyReferralCode", user_id: userId, referral_code: code }) })
@@ -1449,17 +1558,17 @@ function applyReferral() {
         btn.innerText = "Apply"; btn.disabled = false;
         if(res.status === "success") {
             finalBill.refCode = code;
-            finalBill.refDiscount = appRules.referral_bonus || 50; 
+            finalBill.refDiscount = Number(appRules.referral_bonus || 50); 
             msg.innerHTML = `<i class="fas fa-check-circle"></i> Code applied! ₹${finalBill.refDiscount} off.`;
             msg.style.color = "var(--success)";
             calculateFinalBill();
         } else {
             finalBill.refCode = ""; finalBill.refDiscount = 0;
-            msg.innerHTML = `<i class="fas fa-times-circle"></i> ${res.message}`;
+            msg.innerHTML = `<i class="fas fa-times-circle"></i> ${escapeHtml(res.message)}`;
             msg.style.color = "var(--danger)";
             calculateFinalBill();
         }
-    }).catch(e => { btn.innerText = "Apply"; btn.disabled = false; });
+    }).catch(() => { btn.innerText = "Apply"; btn.disabled = false; });
 }
 
 function calculateFinalBill() {
@@ -1468,7 +1577,7 @@ function calculateFinalBill() {
     let isHomeCollection = false;
     let hasVipPackage = false; 
     
-    let allowedTypesStr = appRules.referral_applicable_services_type || "pathology, profile, package, ct, mri";
+    let allowedTypesStr = appRules.wallet_applicable_services_type || appRules.referral_applicable_services_type || "pathology, profile, package, ct, mri";
     let allowedTypes = allowedTypesStr.toLowerCase().split(',').map(s => s.trim());
 
     cart.forEach(item => {
@@ -1490,9 +1599,9 @@ function calculateFinalBill() {
         if (hasVipPackage) {
             collectionCharge = 0;
         } else {
-            let freeLimit = bookingData.isVip ? (appRules.free_collection_limit_vip || 100) : (appRules.free_collection_limit_basic || 300);
+            let freeLimit = bookingData.isVip ? Number(appRules.free_collection_limit_vip || 100) : Number(appRules.free_collection_limit_basic || 300);
             if (subtotal < freeLimit) {
-                collectionCharge = appRules.home_collection_charge || 50;
+                collectionCharge = Number(appRules.home_collection_charge || 50);
             }
         }
     }
@@ -1504,7 +1613,7 @@ function calculateFinalBill() {
             walletCb.checked = false; 
             alert(`Wallet can only be used on: ${allowedTypesStr.toUpperCase()}`);
         } else {
-            let maxAllowed = bookingData.isVip ? (appRules.vip_max_wallet_use || 200) : (appRules.basic_max_wallet_use || 50);
+            let maxAllowed = bookingData.isVip ? Number(appRules.vip_max_wallet_use || 200) : Number(appRules.basic_max_wallet_use || 50);
             walletUsed = Math.min(userWalletBalance, maxAllowed, eligibleSubtotal); 
         }
     }
@@ -1544,8 +1653,8 @@ function calculateFinalBill() {
 
         if (potentialVipSavings > 500) {
             upsellBanner.innerHTML = `<div style="background:linear-gradient(135deg, #1e293b, #0f172a); color:white; padding:15px; border-radius:12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-                <div><h4 style="margin:0; color:#f59e0b; font-size:14px;"><i class="fas fa-crown"></i> Add VIP Plan</h4><p style="margin:2px 0 0; font-size:12px; color:#cbd5e1;">Add VIP for ₹${baseVipPrice} & save ₹${potentialVipSavings} instantly!</p></div>
-                <button onclick="claimVipPackage()" style="background:#f59e0b; color:#1e293b; font-weight:800; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Add Now</button>
+                <div><h4 style="margin:0; color:#f59e0b; font-size:14px;"><i class="fas fa-crown"></i> Add VIP Plan</h4><p style="margin:2px 0 0; font-size:12px; color:#cbd5e1;">Get VIP Plan for ₹${baseVipPrice} &amp; save ₹${potentialVipSavings}!</p></div>
+                <button onclick="openVipPromo()" style="background:#f59e0b; color:#1e293b; font-weight:800; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">Explore</button>
             </div>`;
             upsellBanner.style.display = "block";
         } else {
@@ -1560,7 +1669,6 @@ function renderCrossSell() {
     if(!crossSellDiv) return;
 
     let inCartNames = cart.map(c => c.service_name.toLowerCase());
-    
     const crossSellRules = [
         { trigger: "thyroid", suggest: "vitamin d" },
         { trigger: "lipid", suggest: "hba1c" },
@@ -1568,11 +1676,9 @@ function renderCrossSell() {
     ];
 
     let suggestedItem = null;
-
     for (let rule of crossSellRules) {
         let hasTrigger = inCartNames.some(name => name.includes(rule.trigger));
         let alreadyHasSuggest = inCartNames.some(name => name.includes(rule.suggest));
-        
         if (hasTrigger && !alreadyHasSuggest) {
             suggestedItem = allServices.find(s => s.service_name.toLowerCase().includes(rule.suggest) && s.service_id !== "VIP-FREE-001");
             if (suggestedItem) break; 
@@ -1581,14 +1687,14 @@ function renderCrossSell() {
 
     if (suggestedItem) {
         let priceToUse = (userPlanStatus === "vip" || userPlanStatus === "pending") ? suggestedItem.vip_price : suggestedItem.basic_price;
-        let cName = suggestedItem.service_name.replace(/'/g, "\\'");
+        let cName = formatText(suggestedItem.service_name).replace(/'/g, "\\'");
         
         crossSellDiv.innerHTML = `
         <div style="background:#fdf8f6; border:1px dashed #f97316; padding:15px; border-radius:12px;">
             <p style="margin:0 0 8px 0; font-size:12px; color:#c2410c; font-weight:800; text-transform:uppercase;"><i class="fas fa-magic"></i> Frequently Added Together</p>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <h4 style="margin:0; font-size:14px; color:var(--text-main);">${suggestedItem.service_name}</h4>
+                    <h4 style="margin:0; font-size:14px; color:var(--text-main);">${escapeHtml(formatText(suggestedItem.service_name))}</h4>
                     <p style="margin:2px 0 0; font-size:12px; color:var(--success); font-weight:bold;">Just +₹${priceToUse}</p>
                 </div>
                 <button onclick="updateQty('${suggestedItem.service_id}', 1, ${priceToUse}, '${cName}', '${suggestedItem.service_type}')" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer;">Add</button>
@@ -1668,10 +1774,10 @@ function editServicesInfo() {
     }
 }
 
-function finalizeBooking() {
-    const userId = localStorage.getItem("bhavya_user_id");
+async function finalizeBooking() {
+    const authUser = await getAuthUser();
     
-    if (!userId) {
+    if (!authUser) {
         document.getElementById("displayOtpMobile").innerText = "+91 " + bookingData.mobile;
         document.getElementById("cartOtpModal").classList.add('active');
         
@@ -1685,17 +1791,17 @@ function finalizeBooking() {
                 cartConfirmationResult = result;
                 document.getElementById("cart-recaptcha-container").style.display = "none";
                 document.getElementById("cartOtpInputSection").style.display = "block";
-            }).catch((error) => {
-                alert("Error sending OTP.");
+            }).catch(() => {
+                alert("Error sending OTP. Please check your mobile number.");
                 document.getElementById("cartOtpModal").classList.remove('active');
             });
     } else {
-        processOrderSubmission(userId);
+        processOrderSubmission(authUser.uid);
     }
 }
 
 function verifyCartOTP() {
-    const otp = document.getElementById('cartOtpCode').value;
+    const otp = document.getElementById('cartOtpCode').value.trim();
     if(otp.length !== 6) return alert("Please enter valid 6-digit OTP");
 
     const btn = document.getElementById('cartVerifyOtpBtn');
@@ -1703,29 +1809,39 @@ function verifyCartOTP() {
 
     cartConfirmationResult.confirm(otp).then((result) => {
         proceedWithRegistration(result.user); 
-    }).catch((error) => {
+    }).catch(() => {
         alert("Invalid OTP! Please try again.");
         btn.innerHTML = "Confirm Order <i class='fas fa-check-circle' style='margin-left: 5px;'></i>"; btn.disabled = false;
     });
 }
 
 async function proceedWithRegistration(user) {
+    const customUserId = generateCustomUserId(bookingData.name, user.phoneNumber);
     localStorage.setItem("bhavya_uid", user.uid);
     localStorage.setItem("bhavya_mobile", user.phoneNumber);
     localStorage.setItem("bhavya_role", "patient");
-    localStorage.setItem("bhavya_user_id", user.uid);
+    localStorage.setItem("bhavya_user_id", customUserId);
     localStorage.setItem("bhavya_name", bookingData.name);
 
     await savePatientToFirebase({
-        user_id: user.uid,
+        user_id: customUserId,
+        udi: user.uid,
         name: bookingData.name,
+        patient_name: bookingData.name,
         mobile: user.phoneNumber,
+        mobile_number: user.phoneNumber,
         email: bookingData.email,
         city: bookingData.city,
+        city_village: bookingData.city,
         pincode: bookingData.pincode,
         address: bookingData.address,
         role: "patient",
-        plan: "basic"
+        referral_code: customUserId,
+        current_wallet_balance: 0,
+        wallet_balance: 0,
+        current_plan_status: "basic",
+        plan: "basic",
+        status: "active"
     });
 
     document.getElementById('cartOtpModal').classList.remove('active');
@@ -1745,12 +1861,13 @@ async function processOrderSubmission(userId) {
         }
 
         const orderId = "ORD-" + Date.now().toString().slice(-6);
+        const customUserId = localStorage.getItem("bhavya_user_id") || generateCustomUserId(bookingData.name, bookingData.mobile);
 
-        // 1. Booking सीधे Firebase 'bookings' collection में सेव करें
+        // 1. Save Booking in Firebase 'bookings' collection
         await db.collection("bookings").doc(orderId).set({
             order_id: orderId,
             uid: authUser.uid,
-            user_id: authUser.uid,
+            user_id: customUserId,
             patient_name: bookingData.name,
             mobile: bookingData.mobile,
             email: bookingData.email || "",
@@ -1759,6 +1876,7 @@ async function processOrderSubmission(userId) {
             address: bookingData.address,
             cart_items: cart,
             lab_slots: labSlots,
+            fulfillment: cart.some(c => c.fulfillment === "home") ? "home" : "center",
             subtotal: finalBill.subtotal,
             collection_charge: finalBill.collectionCharge,
             wallet_used: finalBill.walletUsed,
@@ -1766,18 +1884,21 @@ async function processOrderSubmission(userId) {
             total_discount: (finalBill.walletUsed + finalBill.refDiscount),
             referral_code: finalBill.refCode,
             final_total: finalBill.totalPayable,
+            report_url: "",
             status: "Pending",
             payment_status: "DUE",
             created_at: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // 2. Patient की latest डिटेल्स 'patients' collection में अपडेट करें
+        // 2. Update Patient profile in 'patients' collection
         await savePatientToFirebase({
-            user_id: authUser.uid,
+            user_id: customUserId,
             name: bookingData.name,
+            patient_name: bookingData.name,
             mobile: bookingData.mobile,
             email: bookingData.email || "",
             city: bookingData.city,
+            city_village: bookingData.city,
             pincode: bookingData.pincode,
             address: bookingData.address
         });
@@ -1785,7 +1906,7 @@ async function processOrderSubmission(userId) {
         // 3. Automatic Booking Confirmation Email (booking@bhavyadiagnostics.com)
         const itemsRowsHtml = cart.map(i => `
             <tr>
-                <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${i.service_name} (x${i.qty || 1})</td>
+                <td style="padding:8px;border-bottom:1px solid #e2e8f0;">${escapeHtml(i.service_name)} (x${i.qty || 1})<br><small style="color:#64748b;">Lab: ${escapeHtml(i.selected_lab_name || "Bhavya Diagnostics")} (${escapeHtml(i.fulfillment || "home")})</small></td>
                 <td style="padding:8px;border-bottom:1px solid #e2e8f0;text-align:right;">₹${Number(i.price || 0) * Number(i.qty || 1)}</td>
             </tr>`).join("");
 
@@ -1798,15 +1919,15 @@ async function processOrderSubmission(userId) {
             <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
                 <div style="background:#0056b3;color:#ffffff;padding:18px 24px;">
                     <h2 style="margin:0;font-size:20px;">Bhavya Diagnostics — Booking Confirmed</h2>
-                    <p style="margin:4px 0 0;font-size:13px;opacity:0.9;">Order ID: <b>${orderId}</b></p>
+                    <p style="margin:4px 0 0;font-size:13px;opacity:0.9;">Order ID: <b>${escapeHtml(orderId)}</b></p>
                 </div>
                 <div style="padding:20px 24px;color:#1e293b;">
-                    <p>Dear <b>${bookingData.name}</b>,</p>
+                    <p>Dear <b>${escapeHtml(bookingData.name)}</b>,</p>
                     <p>Your diagnostic booking has been received and is currently <b>Pending Confirmation</b>.</p>
                     <p style="font-size:13px;line-height:1.6;background:#f8fafc;padding:12px;border-radius:8px;">
-                        <b>Mobile:</b> +91 ${bookingData.mobile}<br>
-                        <b>Address:</b> ${bookingData.address}, ${bookingData.city.toUpperCase()} - ${bookingData.pincode}<br>
-                        <b>Preferred Slot:</b> ${slotSummaries}<br>
+                        <b>Mobile:</b> +91 ${escapeHtml(bookingData.mobile)}<br>
+                        <b>Address:</b> ${escapeHtml(bookingData.address)}, ${escapeHtml(bookingData.city.toUpperCase())} - ${escapeHtml(bookingData.pincode)}<br>
+                        <b>Preferred Slot:</b> ${escapeHtml(slotSummaries)}<br>
                         <b>Payment Mode:</b> Pay at Center / Home (Cash or UPI)
                     </p>
                     <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;">
@@ -1829,7 +1950,6 @@ async function processOrderSubmission(userId) {
                 </div>
             </div>`;
 
-        // Patient ko confirmation email (agar email bhara hai)
         if (bookingData.email && bookingData.email.includes("@")) {
             await sendAutoEmail({
                 type: "booking",
@@ -1839,11 +1959,10 @@ async function processOrderSubmission(userId) {
             });
         }
 
-        // Admin copy (booking@bhavyadiagnostics.com par)
         await sendAutoEmail({
             type: "booking",
             to: "booking@bhavyadiagnostics.com",
-            subject: `New Booking Received: ${orderId} - ${bookingData.name} (₹${finalBill.totalPayable})`,
+            subject: `New Booking: ${orderId} - ${bookingData.name} (₹${finalBill.totalPayable})`,
             html: confirmationHtml
         });
 
@@ -1860,7 +1979,7 @@ async function processOrderSubmission(userId) {
     }
 }
 
-// ✨ BULLETPROOF TEST DESCRIPTION FUNCTION ✨
+// ✨ TEST DESCRIPTION MODAL ✨
 window.showTestInfo = function(serviceId) {
     let targetId = String(serviceId).trim();
     let service = allServices.find(s => String(s.service_id).trim() === targetId);
@@ -1868,8 +1987,8 @@ window.showTestInfo = function(serviceId) {
     if (service) {
         let desc = service.description ? String(service.description).trim() : "";
         if (desc !== "") {
-            document.getElementById('testInfoTitle').innerText = service.service_name;
-            document.getElementById('testInfoDesc').innerHTML = desc.replace(/\n/g, '<br>');
+            document.getElementById('testInfoTitle').innerText = formatText(service.service_name);
+            document.getElementById('testInfoDesc').innerHTML = escapeHtml(desc).replace(/\n/g, '<br>');
             document.getElementById('testInfoModal').style.display = 'flex';
         } else {
             showToast("No description text found in database.", "error");
@@ -1913,22 +2032,17 @@ function checkSurpriseBannerStatus() {
         return eligibleTypes.includes(type);
     });
 
-    if (hasEligibleService) {
-        banner.style.display = "flex";
-    } else {
-        banner.style.display = "none";
-    }
+    banner.style.display = hasEligibleService ? "flex" : "none";
 }
 
 function openSurpriseModal() {
     let cartServiceNames = cart.map(item => String(item.service_name).toLowerCase().trim());
-
     let surprisePool = allServices.filter(s => 
         String(s.service_type).toLowerCase().trim().replace(/_/g, ' ') === "surprise package"
     );
 
     if (surprisePool.length === 0) {
-        showToast("Surprise offer is currently not configured by Admin.", "error");
+        showToast("Surprise offer is currently not configured.", "error");
         return;
     }
 
@@ -1942,18 +2056,14 @@ function openSurpriseModal() {
     }
 
     surpriseService = eligibleTests[Math.floor(Math.random() * eligibleTests.length)];
-
     document.getElementById("scratchTestName").innerText = formatText(surpriseService.service_name);
-    
     let actualPrice = surpriseService.service_price || surpriseService.basic_price || 500;
     document.getElementById("scratchActualPrice").innerText = "₹" + actualPrice;
-    
     let desc = surpriseService.description ? surpriseService.description : "Highly recommended by doctors for routine checkups.";
-    document.getElementById("scratchDesc").innerHTML = `<i class="fas fa-stethoscope" style="color:var(--primary);"></i> <b>Why do this?</b><br>${desc}`;
+    document.getElementById("scratchDesc").innerHTML = `<i class="fas fa-stethoscope" style="color:var(--primary);"></i> <b>Why do this?</b><br>${escapeHtml(desc)}`;
 
     document.getElementById("scratchModal").classList.add("active");
     document.getElementById("scratchSuccessMsg").style.display = "none";
-    
     setupScratchCanvas();
 }
 
@@ -1980,7 +2090,6 @@ function setupScratchCanvas() {
     ctx.fillText('🪙 Scratch to Reveal', canvas.width / 2, canvas.height / 2);
 
     let isDrawing = false;
-
     function getMousePos(e) {
         let rect = canvas.getBoundingClientRect();
         let clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -2010,11 +2119,9 @@ function checkScratchedArea(ctx, canvas) {
     if (isScratched) return;
     let pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
     let transparentPixels = 0;
-    
     for (let i = 3; i < pixels.length; i += 16) { 
         if (pixels[i] === 0) transparentPixels++;
     }
-
     let totalPixels = pixels.length / 16;
     let scratchedPercentage = (transparentPixels / totalPixels) * 100;
 
@@ -2022,7 +2129,6 @@ function checkScratchedArea(ctx, canvas) {
         isScratched = true;
         canvas.style.transition = 'opacity 0.6s ease-out';
         canvas.style.opacity = '0';
-        
         setTimeout(() => {
             canvas.style.display = 'none';
             addSurpriseToCart();
@@ -2032,19 +2138,18 @@ function checkScratchedArea(ctx, canvas) {
 
 function addSurpriseToCart() {
     if (!surpriseService) return;
-
     cart.push({ 
         service_id: "SURP-" + surpriseService.service_id, 
         service_name: "🎁 Surprise: " + formatText(surpriseService.service_name), 
         price: 100, 
         qty: 1, 
         service_type: "surprise_package", 
-        selected_lab_id: null,
+        selected_lab_id: "BHAVYACARE-INTERNAL",
+        selected_lab_name: "Bhavya Diagnostics Nodal Center",
         fulfillment: "center"
     });
 
     localStorage.setItem('bhavyaCart', JSON.stringify(cart));
-    
     document.getElementById("scratchSuccessMsg").style.display = "block";
     showToast("Surprise Test added for ₹100!", "success");
 
@@ -2054,5 +2159,5 @@ function addSurpriseToCart() {
         autoAssignGroupLabs(); 
         renderGroupedCart();
         calculateFinalBill();
-    }, 2000); 
+    }, 1800); 
 }
