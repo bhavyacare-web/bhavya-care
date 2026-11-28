@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Partner &amp; Wallet Withdrawals | Bhavya Diagnostics Bahadurgarh</title>
+    <title>Partner KYC &amp; Wallet Withdrawals | Bhavya Diagnostics Bahadurgarh</title>
     <meta name="description" content="Manage your Bhavya Diagnostics wallet balance, complete KYC setup, and withdraw referral earnings directly to your UPI ID.">
     <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="https://www.bhavyadiagnostics.com/withdraw.html">
@@ -29,23 +29,26 @@
         label { display: block; margin-top: 14px; font-weight: 700; color: var(--text-main); font-size: 13px; }
         input[type="text"], input[type="number"], input[type="file"], select { width: 100%; padding: 12px; margin-top: 6px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; background: #f8fafc; color: var(--text-main); }
         input:focus, select:focus { border-color: var(--primary); background: #ffffff; outline: none; box-shadow: 0 0 0 3px var(--primary-light); }
-        input[readonly] { background: #e2e8f0; color: var(--text-muted); cursor: not-allowed; }
 
         .submit-btn { margin-top: 22px; width: 100%; padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.25s; box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
         .submit-btn:hover:not(:disabled) { background: var(--primary-hover); }
         .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; box-shadow: none; }
 
-        /* Loader & Status */
         #loaderSection, #statusSection { text-align: center; padding: 40px 15px; }
         .spinner { border: 4px solid var(--primary-light); border-top: 4px solid var(--primary); border-radius: 50%; width: 42px; height: 42px; animation: spin 0.9s linear infinite; margin: 0 auto 18px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .status-msg { color: #b45309; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
         .dash-btn { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-block; font-weight: 700; font-size: 14px; }
 
-        /* Wallet Dashboard Styles */
-        .wallet-card { background: linear-gradient(135deg, #0056b3 0%, #0284c7 100%); color: white; padding: 22px; border-radius: 16px; text-align: center; margin-bottom: 18px; box-shadow: 0 8px 20px rgba(0,86,179,0.2); }
-        .wallet-card h1 { margin: 8px 0 0 0; font-size: 36px; font-weight: 800; }
-        .wallet-card p { margin: 0; opacity: 0.9; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .wallet-card { background: linear-gradient(135deg, #0056b3 0%, #0284c7 100%); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 16px; box-shadow: 0 8px 20px rgba(0,86,179,0.2); }
+        .wallet-card h1 { margin: 6px 0 0 0; font-size: 34px; font-weight: 800; }
+        .wallet-card p { margin: 0; opacity: 0.9; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .balance-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.25); }
+        .split-box { background: rgba(255,255,255,0.14); padding: 10px; border-radius: 10px; }
+        .split-box span { display: block; font-size: 11px; opacity: 0.9; }
+        .split-box strong { font-size: 18px; display: block; margin-top: 3px; }
+
+        .rule-note { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 10px 12px; border-radius: 10px; font-size: 12px; margin-bottom: 16px; line-height: 1.45; }
         .action-box { background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; }
         .txn-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
         .txn-table th, .txn-table td { padding: 10px; text-align: left; border-bottom: 1px solid #f1f5f9; }
@@ -72,7 +75,7 @@
             </div>
             <div class="status-msg">KYC Request Under Review</div>
             <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin-bottom: 22px;">
-                Your wallet withdrawal profile is currently being verified by our admin team. Once approved, you can transfer earnings directly to your UPI ID.
+                Your wallet withdrawal profile is currently being verified by our admin team. Once approved, you can transfer referral earnings directly to your UPI ID.
             </p>
             <a href="patient_dashboard/patient_dashboard.html" class="dash-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
         </div>
@@ -85,19 +88,32 @@
             </div>
             
             <div class="wallet-card">
-                <p>Available Withdrawable Balance</p>
-                <h1 id="displayBalance">₹0</h1>
-                <div id="savedUpiDisplay" style="font-size: 12px; margin-top: 8px; opacity: 0.95;"></div>
+                <p>Withdrawable Referral Balance</p>
+                <h1 id="displayWithdrawable">₹0</h1>
+                <div class="balance-split">
+                    <div class="split-box">
+                        <span>Total Wallet (Discounts)</span>
+                        <strong id="displayBalance">₹0</strong>
+                    </div>
+                    <div class="split-box">
+                        <span>My Referral Code</span>
+                        <strong id="displayRefCode">-</strong>
+                    </div>
+                </div>
+                <div id="savedUpiDisplay" style="font-size: 12px; margin-top: 10px; opacity: 0.95;"></div>
+            </div>
+
+            <div class="rule-note">
+                <i class="fas fa-info-circle"></i> <b>Note:</b> Only <b>Referral Earnings</b> can be withdrawn to UPI. Promotional VIP Cashback can be used for discounts on Lab Tests &amp; Health Packages.
             </div>
 
             <div class="action-box">
-                <h3 style="margin: 0 0 4px 0; color: var(--text-main); font-size: 15px;">Withdraw Money to UPI</h3>
+                <h3 style="margin: 0 0 4px 0; color: var(--text-main); font-size: 15px;">Withdraw Referral Earnings to UPI</h3>
                 <p id="limitMsg" style="color: var(--text-muted); font-size: 12px; margin: 0 0 10px 0;">Minimum withdrawal limit: ₹500</p>
                 <input type="number" id="withdrawAmount" placeholder="Enter amount (₹)">
                 <button class="submit-btn" id="requestMoneyBtn" onclick="requestMoney()" style="margin-top: 12px; padding: 12px; background: var(--success);">Withdraw Now <i class="fas fa-paper-plane"></i></button>
             </div>
 
-            <!-- Withdrawal Payout Status Table -->
             <h3 style="font-size: 14px; margin: 16px 0 6px; color: var(--text-main);">Withdrawal Payout Requests</h3>
             <div style="max-height: 170px; overflow-y: auto; margin-bottom: 20px; border: 1px solid var(--border); border-radius: 10px;">
                 <table class="txn-table">
@@ -106,7 +122,6 @@
                 </table>
             </div>
 
-            <!-- Wallet Transactions Table -->
             <h3 style="font-size: 14px; margin: 0 0 6px; color: var(--text-main);">Recent Wallet Transactions</h3>
             <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px;">
                 <table class="txn-table">
@@ -139,7 +154,7 @@
                 <input type="file" id="userImage" accept="image/*" required>
                 
                 <label id="lblProfession">Profession (What work do you do?) *</label>
-                <input type="text" id="profession" required placeholder="e.g. Clinic Staff, Medical Representative, Health Advisor">
+                <input type="text" id="profession" required placeholder="e.g. Shop Owner, Medical Rep, Health Advisor">
                 
                 <label id="lblProfDoc">Upload Profession Document / Visiting Card *</label>
                 <input type="file" id="profDoc" accept="image/*,application/pdf" required>
@@ -171,9 +186,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <script>
-        // =======================================================
-        // 1. FIREBASE CONFIGURATION & INITIALIZATION
-        // =======================================================
         const firebaseConfig = {
             apiKey: "AIzaSyC2nYH22wkYDhh-BWfHvkT-bQvdKLCxask",
             authDomain: "bhavya-care.firebaseapp.com",
@@ -196,6 +208,7 @@
         let currentPatientDoc = {};
         let currentKycDoc = {};
         let walletBalance = 0;
+        let withdrawableBalance = 0;
         let minLimit = 500;
 
         function escapeHtml(str) {
@@ -239,9 +252,6 @@
             }).catch(err => console.error("Email trigger error:", err));
         }
 
-        // =======================================================
-        // 2. AUTH & INITIAL STATUS CHECK
-        // =======================================================
         firebase.auth().onAuthStateChanged(async (user) => {
             if (!user) {
                 alert("Please login first to access Wallet & Withdrawals.");
@@ -262,7 +272,7 @@
                 const json = await res.json();
                 if (json.status === "success" && json.data && json.data.rules) {
                     const r = json.data.rules;
-                    const limitVal = r.min_withdrawal_limit || r.minimum_withdrawal_limit || r.withdrawal_min_limit;
+                    const limitVal = r.min_withdraw_limit || r.min_withdrawal_limit || r.minimum_withdrawal_limit || r.withdrawal_min_limit;
                     if (limitVal && !isNaN(limitVal)) {
                         minLimit = Number(limitVal);
                     }
@@ -308,9 +318,6 @@
             }
         }
 
-        // =======================================================
-        // 3. LOAD WALLET DASHBOARD FROM FIREBASE
-        // =======================================================
         async function loadWalletDashboard(user) {
             document.getElementById('loaderSection').style.display = 'block';
             document.getElementById('formSection').style.display = 'none';
@@ -329,16 +336,41 @@
 
                 walletBalance = Number(currentPatientDoc.current_wallet_balance ?? currentPatientDoc.wallet_balance ?? 0);
 
+                // Calculate Referral-Only Withdrawable Balance (Excludes VIP Activation Cashback)
+                let referralEarned = 0;
+                let alreadyWithdrawn = 0;
+                let txns = [];
+
+                txnSnap.forEach(d => {
+                    const data = d.data();
+                    const typeLow = String(data.type || "").toLowerCase();
+                    const descLow = String(data.description || "").toLowerCase();
+                    const refStr = String(data.reference || "").toUpperCase();
+                    const amt = Number(data.amount || 0);
+
+                    if (typeLow === "credit" && descLow.includes("referral")) {
+                        referralEarned += amt;
+                    }
+                    if (typeLow === "debit" && (refStr === "PAYOUT-REQ" || descLow.includes("withdrawal"))) {
+                        alreadyWithdrawn += amt;
+                    }
+                    txns.push({ ...data, ts: getTimeMillis(data.created_at || data.date) });
+                });
+
+                withdrawableBalance = Math.max(0, Math.min(walletBalance, referralEarned - alreadyWithdrawn));
+
                 document.getElementById('loaderSection').style.display = 'none';
                 document.getElementById('walletDashboardSection').style.display = 'block';
 
-                document.getElementById('displayBalance').innerText = '₹' + walletBalance.toFixed(2);
-                document.getElementById('limitMsg').innerText = `Minimum withdrawal limit: ₹${minLimit}`;
+                document.getElementById('displayWithdrawable').innerText = '₹' + withdrawableBalance.toFixed(0);
+                document.getElementById('displayBalance').innerText = '₹' + walletBalance.toFixed(0);
+                document.getElementById('displayRefCode').innerText = currentPatientDoc.referral_code || currentPatientDoc.user_id || "-";
+                document.getElementById('limitMsg').innerText = `Minimum withdrawal limit: ₹${minLimit} (Available to withdraw: ₹${withdrawableBalance.toFixed(0)})`;
+
                 if (currentKycDoc.upi_id) {
                     document.getElementById('savedUpiDisplay').innerHTML = `Registered UPI: <b>${escapeHtml(currentKycDoc.upi_id)}</b>`;
                 }
 
-                // Render Payout Requests
                 let payouts = [];
                 paySnap.forEach(d => {
                     const data = d.data();
@@ -366,14 +398,7 @@
                     });
                 }
 
-                // Render Wallet Transactions
-                let txns = [];
-                txnSnap.forEach(d => {
-                    const data = d.data();
-                    txns.push({ ...data, ts: getTimeMillis(data.created_at || data.date) });
-                });
                 txns.sort((a, b) => b.ts - a.ts);
-
                 let tbody = document.getElementById('txnBody');
                 tbody.innerHTML = '';
                 if (txns.length === 0) {
@@ -397,17 +422,14 @@
             }
         }
 
-        // =======================================================
-        // 4. REQUEST PAYOUT TO UPI (SAVES IN FIREBASE + EMAIL)
-        // =======================================================
         async function requestMoney() {
             const amt = Number(document.getElementById('withdrawAmount').value || 0);
             if (!amt || amt < minLimit) {
                 alert(`Please enter an amount of at least ₹${minLimit}`);
                 return;
             }
-            if (amt > walletBalance) {
-                alert("Insufficient wallet balance!");
+            if (amt > withdrawableBalance) {
+                alert(`Insufficient withdrawable referral balance! You can withdraw up to ₹${withdrawableBalance.toFixed(0)} (VIP cashback is only valid for test discounts).`);
                 return;
             }
             if (!currentUser) return;
@@ -423,13 +445,11 @@
                 const upiId = currentKycDoc.upi_id || "QR Code Uploaded";
                 const newBal = Math.max(0, walletBalance - amt);
 
-                // 1. Deduct balance from patient wallet
                 await db.collection("patients").doc(currentUser.uid).update({
                     current_wallet_balance: newBal,
                     wallet_balance: newBal
                 });
 
-                // 2. Create Payout Request for Admin Panel
                 await db.collection("payout_requests").add({
                     uid: currentUser.uid,
                     user_id: pUserId,
@@ -444,7 +464,6 @@
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 3. Record Debit in Wallet Transactions
                 await db.collection("wallet_transactions").add({
                     uid: currentUser.uid,
                     user_id: pUserId,
@@ -455,7 +474,6 @@
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // 4. Send Automatic Emails via contact@bhavyadiagnostics.com
                 await sendAutoEmail({
                     to: "contact@bhavyadiagnostics.com",
                     subject: `New Wallet Withdrawal Request: ₹${amt} - ${pName} (${pUserId})`,
@@ -486,9 +504,6 @@
             }
         }
 
-        // =======================================================
-        // 5. LANGUAGE TOGGLE & KYC FILE UPLOAD TO FIREBASE STORAGE
-        // =======================================================
         const translations = { 
             hi: { 
                 formTitle: "वॉलेट सेटअप (KYC)", lblFullName: "पूरा नाम *", lblUserImage: "अपनी फोटो *", lblProfession: "पेशा *", lblProfDoc: "विज़िटिंग कार्ड / डॉक्यूमेंट *", lblNetwork: "नेटवर्क क्षमता (महीने में कितने मरीज़ जोड़ सकते हैं?) *", 
@@ -588,7 +603,6 @@
                 const networkCapacity = Number(document.getElementById('networkCapacity').value || 0);
                 const pUserId = currentPatientDoc.user_id || localStorage.getItem("bhavya_user_id") || currentUser.uid;
 
-                // Save in Firestore 'withdrawal_profiles/{uid}'
                 await db.collection("withdrawal_profiles").doc(currentUser.uid).set({
                     uid: currentUser.uid,
                     user_id: pUserId,
@@ -606,7 +620,6 @@
                     created_at: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Send Admin Notification Email
                 await sendAutoEmail({
                     to: "contact@bhavyadiagnostics.com",
                     subject: `New Wallet KYC Request: ${fullName} (${pUserId})`,
