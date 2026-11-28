@@ -66,10 +66,15 @@
         .card-vip:active { transform: scale(0.98); }
         .cc-title { font-size: 11px; font-weight: 600; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
         .cc-value { font-size: 24px; font-weight: 800; margin: 0; line-height: 1.2; }
-        .cc-action { background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 10px; backdrop-filter: blur(5px); width: max-content; }
+        .cc-action { background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.35); color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; margin-top: 10px; backdrop-filter: blur(5px); width: max-content; }
         .cc-icon { position: absolute; right: -15px; bottom: -20px; font-size: 80px; opacity: 0.15; }
         
         #vipPackageAlert { background: linear-gradient(90deg, #f59e0b, #d97706); border-radius: 12px; padding: 12px; color: white; font-size: 12px; font-weight: bold; text-align: center; margin-top: -15px; margin-bottom: 25px; cursor: pointer; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); display: none; position: relative; z-index: 2; }
+
+        /* ✨ PARTNER WITHDRAW BANNER IN WALLET TAB ✨ */
+        .withdraw-promo-box { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-radius: 16px; padding: 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+        .withdraw-promo-btn { background: #059669; color: #ffffff; padding: 11px 18px; border-radius: 10px; font-weight: 800; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25); transition: 0.2s; }
+        .withdraw-promo-btn:hover { background: #047857; }
 
         .data-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid var(--border); }
         .section-title { margin: 0 0 15px 0; color: var(--text-main); font-size: 16px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
@@ -281,6 +286,7 @@
         
         <a class="nav-item mobile-only" onclick="toggleMobileMenu()"><i class="fas fa-layer-group"></i> <span>Menu</span></a>
         
+        <a class="nav-item desktop-only" onclick="switchTab('wallet', this)"><i class="fas fa-wallet"></i> <span>Wallet &amp; Withdraw</span></a>
         <a class="nav-item desktop-only" onclick="switchTab('profile', this)"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
         <a class="nav-item desktop-only" style="color: var(--danger); margin-top: auto;" onclick="logoutDashboard()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
     </nav>
@@ -290,6 +296,10 @@
         <div class="sheet-handle"></div>
         <h3 style="margin: 0 0 20px 0; color: var(--text-main); font-size: 18px; font-weight: 800;">More Options</h3>
         <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+            <button class="q-btn" style="border-color:#bbf7d0; background:#f0fdf4; flex-direction:row; padding:15px; justify-content: flex-start;" onclick="toggleMobileMenu(); window.location.href='../withdraw.html'">
+                <div class="icon-circle" style="background:#d1fae5; color:#059669; width: 35px; height: 35px;"><i class="fas fa-university"></i></div>
+                <span style="font-size: 14px; color:#065f46;">Wallet &amp; Withdraw (Partner KYC)</span>
+            </button>
             <button class="q-btn" style="border-color:#e2e8f0; flex-direction:row; padding:15px; justify-content: flex-start;" onclick="toggleMobileMenu(); switchTab('profile')">
                 <div class="icon-circle" style="background:#f1f5f9; color:#475569; width: 35px; height: 35px;"><i class="fas fa-user"></i></div>
                 <span style="font-size: 14px;">My Info</span>
@@ -387,9 +397,9 @@
             <div class="compact-cards-row">
                 <div class="compact-card card-wallet" onclick="switchTab('wallet')" style="cursor: pointer;">
                     <i class="fas fa-wallet cc-icon"></i>
-                    <div class="cc-title">Wallet Balance <i class="fas fa-info-circle" style="opacity:0.8;"></i></div>
+                    <div class="cc-title">Wallet Balance <i class="fas fa-arrow-right" style="opacity:0.85;"></i></div>
                     <div class="cc-value">₹<span id="walletBal">0.00</span></div>
-                    <button id="btn-withdraw" class="cc-action" style="display: none;" onclick="event.stopPropagation(); window.location.href='../withdraw.html'">Withdraw Funds</button>
+                    <button id="btn-withdraw" class="cc-action" style="display: inline-flex !important; align-items: center; gap: 5px;" onclick="event.stopPropagation(); window.location.href='../withdraw.html'"><i class="fas fa-university"></i> Withdraw / KYC</button>
                 </div>
                 
                 <div class="compact-card card-vip" onclick="handleVipCardClick()">
@@ -403,7 +413,7 @@
             <div class="data-box" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); padding: 15px; border-color: #bfdbfe; display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <h4 style="margin: 0 0 5px 0; color: #3730a3; font-size: 14px; font-weight: 800;"><i class="fas fa-gift" style="color: #4f46e5;"></i> Refer &amp; Earn</h4>
-                    <p style="margin: 0; font-size: 11px; color: #4338ca; font-weight: 600;">Share code, get rewards!</p>
+                    <p style="margin: 0; font-size: 11px; color: #4338ca; font-weight: 600;">Share code, earn rewards &amp; withdraw to UPI!</p>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; background: white; padding: 8px 12px; border-radius: 10px; border: 1px dashed #818cf8; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
                     <span id="refCodeDisplay" style="font-weight: 800; color: #4f46e5; font-size: 14px; letter-spacing: 1px;">Loading..</span>
@@ -465,6 +475,16 @@
         </div>
 
         <div id="wallet" class="tab-content">
+            <div class="withdraw-promo-box">
+                <div>
+                    <strong style="color: #065f46; font-size: 15px; display: block; margin-bottom: 4px;">💰 Partner &amp; Referral Withdrawal</strong>
+                    <span style="color: #047857; font-size: 12.5px; line-height: 1.4; display: block;">Complete one-time KYC approval &amp; withdraw your referral earnings directly to your UPI ID.</span>
+                </div>
+                <a href="../withdraw.html" class="withdraw-promo-btn">
+                    <i class="fas fa-university"></i> Withdraw / Setup KYC
+                </a>
+            </div>
+
             <div class="data-box">
                 <div class="section-title">Wallet Transaction History</div>
                 <div id="walletHistoryContainer">
@@ -526,7 +546,7 @@
         <h4 style="font-size: 14px; margin: 0 0 10px 0; color: var(--text-main);">Covered Members</h4>
         <div style="display:flex; justify-content:space-between; background:white; border:1px solid var(--border); padding:10px 15px; border-radius:10px; margin-bottom:8px; align-items:center;" id="vd-mem1"></div>
         <div style="display:flex; justify-content:space-between; background:white; border:1px solid var(--border); padding:10px 15px; border-radius:10px; margin-bottom:8px; align-items:center;" id="vd-mem2"></div>
-        <div style="display:flex; justify-content:space-between; background:white; border:1px solid var(--border); padding:10px 15px; border-radius:10px; align-items:center;" id="vd-mem3"></div>
+        <div style="display:flex; justify-content:space-between; background:white; border:1px solid var(--border); padding:10px 15px; border-radius:10px; margin-bottom:8px; align-items:center;" id="vd-mem3"></div>
         
         <button onclick="generateAndShowVipCard()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); width: 100%; color: white; border: none; margin-top: 15px; font-weight: 800; padding: 14px; border-radius: 12px; cursor: pointer; font-size: 15px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">
             <i class="fas fa-id-card"></i> View &amp; Download VIP Card
