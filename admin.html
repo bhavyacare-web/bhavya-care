@@ -14,103 +14,133 @@
             --success: #10b981; --success-soft: #d1fae5;
             --warning: #f59e0b; --warning-soft: #fef3c7;
             --danger: #ef4444; --danger-soft: #fee2e2;
+            --info: #0284c7; --info-soft: #e0f2fe;
             --bg-color: #f1f5f9; --card-bg: #ffffff;
             --text-main: #0f172a; --text-muted: #64748b;
             --border: #e2e8f0;
         }
-        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; padding: 0; background: var(--bg-color); color: var(--text-main); }
 
         /* LOGIN GATE OVERLAY */
-        #adminLoginGate { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: white; width: 100%; max-width: 390px; border-radius: 22px; padding: 32px 26px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.35); }
-        .login-card img { height: 55px; border-radius: 10px; margin-bottom: 12px; }
+        #adminLoginGate { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 18px; }
+        .login-card { background: white; width: 100%; max-width: 390px; border-radius: 22px; padding: 30px 24px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.35); }
+        .login-card img { height: 54px; border-radius: 10px; margin-bottom: 12px; }
 
         /* NAVBAR */
-        .navbar { background: #ffffff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
-        .brand-wrap { display: flex; align-items: center; gap: 10px; }
-        .brand-wrap img { height: 40px; border-radius: 8px; }
-        .brand-wrap h1 { font-size: 19px; font-weight: 800; margin: 0; color: var(--primary); }
+        .navbar { background: #ffffff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+        .brand-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .brand-wrap img { height: 38px; border-radius: 8px; }
+        .brand-wrap h1 { font-size: 18px; font-weight: 800; margin: 0; color: var(--primary); }
         .brand-wrap span { color: var(--success); }
-        .role-pill { background: var(--primary-light); color: var(--primary); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        .role-pill { background: var(--primary-light); color: var(--primary); font-size: 10.5px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        .live-pill { background: var(--success-soft); color: #065f46; font-size: 10.5px; font-weight: 800; padding: 4px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px; }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        .nav-right { display: flex; align-items: center; gap: 10px; }
-        .btn-sm { border: none; padding: 9px 14px; border-radius: 9px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .nav-right { display: flex; align-items: center; gap: 8px; }
+        .btn-sm { border: none; padding: 8px 13px; border-radius: 9px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
         .btn-refresh { background: var(--primary-light); color: var(--primary); }
         .btn-logout { background: var(--danger-soft); color: var(--danger); }
 
         /* MAIN TABS BAR */
-        .main-tabs { background: #ffffff; padding: 10px 24px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        .main-tabs { background: #ffffff; padding: 9px 20px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid var(--border); white-space: nowrap; -webkit-overflow-scrolling: touch; }
         .main-tabs::-webkit-scrollbar { display: none; }
-        .main-tab-btn { background: #f8fafc; border: 1px solid var(--border); color: var(--text-muted); padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: 0.2s; }
+        .main-tab-btn { background: #f8fafc; border: 1px solid var(--border); color: var(--text-muted); padding: 9px 15px; border-radius: 10px; font-weight: 700; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; flex: 0 0 auto; }
         .main-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,86,179,0.2); }
+        .tab-count-badge { background: var(--danger); color: white; font-size: 10px; font-weight: 800; padding: 1px 6px; border-radius: 999px; display: none; }
 
-        .container { max-width: 1320px; margin: 22px auto; padding: 0 20px 60px; }
+        .container { max-width: 1360px; margin: 18px auto; padding: 0 16px 60px; }
         .section-panel { display: none; }
         .section-panel.active { display: block; }
 
         /* KPI SUMMARY CARDS */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 22px; }
-        .kpi-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .kpi-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .kpi-val { font-size: 26px; font-weight: 800; color: var(--text-main); }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 18px; }
+        .kpi-card { background: white; padding: 18px; border-radius: 15px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .kpi-label { font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+        .kpi-val { font-size: 24px; font-weight: 800; color: var(--text-main); }
         .kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
 
         /* TOOLBAR & FILTERS */
-        .toolbar { background: white; padding: 14px 18px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .input-ctrl { padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 9px; font-size: 13.5px; font-weight: 600; outline: none; background: #f8fafc; color: var(--text-main); }
+        .toolbar { background: white; padding: 13px 16px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 14px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .input-ctrl { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 9px; font-size: 13px; font-weight: 600; outline: none; background: #f8fafc; color: var(--text-main); }
         .input-ctrl:focus { border-color: var(--primary); background: white; }
-        .search-grow { flex: 1; min-width: 220px; }
+        .search-grow { flex: 1; min-width: 200px; }
 
         /* TABLES */
-        .table-card { background: white; border-radius: 16px; border: 1px solid var(--border); overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        table { width: 100%; border-collapse: collapse; min-width: 1050px; }
-        th, td { padding: 13px 15px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: middle; }
-        th { background: #f8fafc; color: var(--text-muted); font-weight: 800; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--border); }
+        .table-card { background: white; border-radius: 15px; border: 1px solid var(--border); overflow-x: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        table { width: 100%; border-collapse: collapse; min-width: 1020px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; vertical-align: middle; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--border); }
         tr:hover { background: #f8fafc; }
 
         /* BADGES & BUTTONS */
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; text-transform: uppercase; }
+        .badge { padding: 4px 9px; border-radius: 20px; font-size: 10.5px; font-weight: 800; display: inline-block; text-transform: uppercase; }
         .b-pending { background: var(--warning-soft); color: #b45309; }
         .b-confirmed { background: var(--primary-light); color: var(--primary); }
+        .b-sample { background: var(--info-soft); color: #0369a1; }
         .b-completed { background: var(--success-soft); color: #065f46; }
         .b-cancelled { background: var(--danger-soft); color: #991b1b; }
 
-        .btn-act { border: none; padding: 7px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin: 2px; }
+        .btn-act { border: none; padding: 7px 11px; border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin: 2px; text-decoration: none; }
         .btn-blue { background: var(--primary); color: white; }
+        .btn-sky { background: #0284c7; color: white; }
         .btn-green { background: var(--success); color: white; }
         .btn-amber { background: var(--warning); color: #1e293b; }
         .btn-red { background: var(--danger); color: white; }
         .btn-gray { background: #e2e8f0; color: var(--text-main); }
 
-        .sub-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
-        .sub-tab { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; color: var(--text-muted); }
+        .sub-tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+        .sub-tab { background: white; border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; color: var(--text-muted); }
         .sub-tab.active { background: #0f172a; color: white; border-color: #0f172a; }
 
         /* MODALS */
-        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 2000; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 2000; align-items: center; justify-content: center; padding: 14px; backdrop-filter: blur(3px); }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: white; width: 100%; max-width: 560px; border-radius: 20px; padding: 24px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
-        .modal-close { position: absolute; right: 16px; top: 16px; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; color: var(--text-muted); }
-        .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin: 12px 0 5px; }
-        .full-input { width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; outline: none; }
-        .full-input:focus { border-color: var(--primary); }
+        .modal-box { background: white; width: 100%; max-width: 560px; border-radius: 18px; padding: 22px; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.25); }
+        .modal-close { position: absolute; right: 14px; top: 14px; border: none; background: #f1f5f9; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 16px; color: var(--text-muted); }
+        .form-label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin: 11px 0 4px; }
+        .full-input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13.5px; font-weight: 600; outline: none; background: #f8fafc; }
+        .full-input:focus { border-color: var(--primary); background: #fff; }
 
-        .patient-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+        .patient-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); }
+
+        /* WALK-IN SEARCH RESULTS */
+        .walkin-results { border: 1px solid var(--border); border-radius: 10px; max-height: 170px; overflow-y: auto; margin-top: 6px; display: none; background: #fff; }
+        .walkin-res-row { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; gap: 8px; }
+        .walkin-selected-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12.5px; }
+
+        /* ADMIN TOAST */
+        #adminToastBox { position: fixed; bottom: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; max-width: 340px; }
+        .admin-toast { background: #0f172a; color: #fff; padding: 12px 16px; border-radius: 11px; font-size: 13px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.22); }
+        .admin-toast.success { background: #059669; }
+        .admin-toast.error { background: #dc2626; }
+
+        @media (max-width: 640px) {
+            .navbar { padding: 10px 14px; }
+            .brand-wrap h1 { font-size: 16px; }
+            .main-tabs { padding: 8px 12px; }
+            .container { padding: 0 10px 50px; margin-top: 14px; }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .kpi-card { padding: 14px; }
+            .kpi-val { font-size: 20px; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="adminToastBox"></div>
 
     <!-- SECURE FIREBASE ADMIN / STAFF LOGIN GATE -->
     <div id="adminLoginGate">
         <div class="login-card">
             <img src="image/logo.jpeg" alt="Bhavya Diagnostics">
-            <h2 style="margin:0 0 6px; font-size:22px; color:#0f172a;">Admin &amp; Staff Portal</h2>
-            <p style="margin:0 0 20px; font-size:13px; color:#64748b;">Bhavya Diagnostics Bahadurgarh • Authorized Access Only</p>
-            <input type="email" id="gateEmail" class="full-input" placeholder="Staff / Admin Email" style="margin-bottom:12px;">
-            <input type="password" id="gatePassword" class="full-input" placeholder="Password" onkeypress="if(event.key==='Enter') handleGateLogin()" style="margin-bottom:16px;">
-            <button id="btnGateLogin" onclick="handleGateLogin()" class="btn-act btn-blue" style="width:100%; justify-content:center; padding:14px; font-size:15px;">Sign In <i class="fas fa-arrow-right"></i></button>
-            <p style="margin:16px 0 0; font-size:12px;"><a href="index.html" style="color:#64748b; text-decoration:none;">← Back to Website Home</a></p>
+            <h2 style="margin:0 0 6px; font-size:21px; color:#0f172a;">Admin &amp; Staff Portal</h2>
+            <p style="margin:0 0 18px; font-size:12.5px; color:#64748b;">Bhavya Diagnostics Bahadurgarh • Authorized Access Only</p>
+            <input type="email" id="gateEmail" class="full-input" placeholder="Staff / Admin Email" style="margin-bottom:11px;">
+            <input type="password" id="gatePassword" class="full-input" placeholder="Password" onkeypress="if(event.key==='Enter') handleGateLogin()" style="margin-bottom:15px;">
+            <button id="btnGateLogin" onclick="handleGateLogin()" class="btn-act btn-blue" style="width:100%; justify-content:center; padding:13px; font-size:14.5px;">Sign In <i class="fas fa-arrow-right"></i></button>
+            <p style="margin:14px 0 0; font-size:12px;"><a href="index.html" style="color:#64748b; text-decoration:none;">← Back to Website Home</a></p>
         </div>
     </div>
 
@@ -123,47 +153,53 @@
                     <h1>Bhavya <span>Diagnostics</span></h1>
                     <div style="font-size:11px; color:var(--text-muted); font-weight:600;" id="loggedStaffEmail">-</div>
                 </div>
-                <span class="role-pill" id="loggedStaffRole">ADMIN</span>
+                <span class="role-pill" id="loggedStaffRole">STAFF</span>
+                <span class="live-pill"><span class="live-dot"></span> Live</span>
             </div>
             <div class="nav-right">
-                <button class="btn-sm btn-refresh" onclick="refreshAllAdminData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <button class="btn-sm btn-refresh" id="btnMasterRefresh" onclick="refreshAllAdminData(true)"><i id="refreshIcon" class="fas fa-sync-alt"></i> Refresh</button>
                 <button class="btn-sm btn-logout" onclick="logoutAdmin()"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </header>
 
-        <!-- ROLE-CONTROLLED NAVIGATION TABS -->
+        <!-- STRICT ROLE-CONTROLLED NAVIGATION TABS -->
         <nav class="main-tabs" id="adminMainTabs">
-            <button class="main-tab-btn active" data-tab="bookings" onclick="switchMainTab('bookings')"><i class="fas fa-microscope"></i> Bookings &amp; Reports</button>
+            <button class="main-tab-btn active" data-tab="bookings" onclick="switchMainTab('bookings')"><i class="fas fa-microscope"></i> Bookings &amp; Collection</button>
+            <button class="main-tab-btn" data-tab="retests" onclick="switchMainTab('retests')"><i class="fas fa-shield-alt"></i> Re-test Requests <span id="retestCountBadge" class="tab-count-badge">0</span></button>
             <button class="main-tab-btn" data-tab="patients" onclick="switchMainTab('patients')"><i class="fas fa-crown"></i> Patients &amp; VIP</button>
+            <button class="main-tab-btn" data-tab="promos" onclick="switchMainTab('promos')"><i class="fas fa-tags"></i> Camp Promo Codes</button>
             <button class="main-tab-btn" data-tab="withdrawals" onclick="switchMainTab('withdrawals')"><i class="fas fa-wallet"></i> Wallet &amp; Withdrawals</button>
             <button class="main-tab-btn" data-tab="support" onclick="switchMainTab('support')"><i class="fas fa-file-prescription"></i> Prescriptions &amp; Support</button>
             <button class="main-tab-btn" data-tab="pnl" onclick="switchMainTab('pnl')"><i class="fas fa-chart-line"></i> Profit &amp; Loss</button>
-            <button class="main-tab-btn" data-tab="staff" onclick="switchMainTab('staff')"><i class="fas fa-user-lock"></i> Staff &amp; Passwords</button>
+            <button class="main-tab-btn" data-tab="staff" onclick="switchMainTab('staff')"><i class="fas fa-user-lock"></i> Staff &amp; Cleanup</button>
         </nav>
 
         <main class="container">
 
             <!-- =================================================== -->
-            <!-- TAB 1: BOOKINGS & REPORT PDF UPLOAD                 -->
+            <!-- TAB 1: BOOKINGS, SAMPLE COLLECTION & REPORT UPLOAD  -->
             <!-- =================================================== -->
             <section id="panel-bookings" class="section-panel active">
                 <div class="kpi-grid">
                     <div class="kpi-card"><div class="kpi-label">Total Bookings</div><div class="kpi-val" id="kpiTotalOrders">0</div></div>
                     <div class="kpi-card"><div class="kpi-label">Pending / Confirmed</div><div class="kpi-val" style="color:var(--warning);" id="kpiPendingOrders">0</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Sample Collected</div><div class="kpi-val" style="color:var(--info);" id="kpiCollectedOrders">0</div></div>
                     <div class="kpi-card"><div class="kpi-label">Completed &amp; Reported</div><div class="kpi-val" style="color:var(--success);" id="kpiCompletedOrders">0</div></div>
                 </div>
 
                 <div class="toolbar">
-                    <input type="text" id="bookingSearchInput" class="input-ctrl search-grow" placeholder="🔍 Search Order ID, Patient Name, Mobile, or Test..." onkeyup="renderBookingsTable()">
+                    <input type="text" id="bookingSearchInput" class="input-ctrl search-grow" placeholder="🔍 Search Order ID, Patient, Mobile, or Test..." onkeyup="renderBookingsTable()">
                     <select id="bookingStatusFilter" class="input-ctrl" onchange="renderBookingsTable()">
                         <option value="ALL">All Status</option>
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
+                        <option value="sample collected">Sample Collected</option>
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
                     <input type="date" id="bookingDateFilter" class="input-ctrl" onchange="renderBookingsTable()">
                     <button class="btn-act btn-gray" onclick="clearBookingFilters()">Clear</button>
+                    <button id="btnOpenWalkin" class="btn-act btn-green" style="margin-left:auto; padding:9px 14px;" onclick="openWalkinModal()"><i class="fas fa-plus-circle"></i> Walk-in / Camp Entry</button>
                 </div>
 
                 <div class="table-card">
@@ -171,23 +207,54 @@
                         <thead>
                             <tr>
                                 <th>Order ID &amp; Date</th>
-                                <th>Patient Details</th>
+                                <th>Patient Details &amp; GPS</th>
                                 <th>Tests / Packages &amp; Lab</th>
                                 <th>Slot &amp; Mode</th>
-                                <th>Billing &amp; Lab Cost</th>
+                                <th>Billing &amp; B2B Cost</th>
                                 <th>Status &amp; Report</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="bookingsTableBody">
-                            <tr><td colspan="7" style="text-align:center; padding:30px;">Loading bookings from Firebase...</td></tr>
+                            <tr><td colspan="7" style="text-align:center; padding:30px;">Loading live bookings...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
             <!-- =================================================== -->
-            <!-- TAB 2: PATIENTS & VIP MEMBERSHIP APPROVALS          -->
+            <!-- TAB 2: TRIPLE PROTECTION RE-TEST REQUESTS           -->
+            <!-- =================================================== -->
+            <section id="panel-retests" class="section-panel">
+                <div class="toolbar">
+                    <strong style="font-size:14px;"><i class="fas fa-shield-alt" style="color:var(--primary);"></i> Triple Protection Doubtful Test Re-test Requests</strong>
+                    <select id="retestStatusFilter" class="input-ctrl" style="margin-left:auto;" onchange="renderRetestsTable()">
+                        <option value="ALL">All Requests</option>
+                        <option value="pending" selected>Pending</option>
+                        <option value="approved">Approved / Scheduled</option>
+                        <option value="completed">Completed</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Order ID</th>
+                                <th>Patient &amp; Mobile</th>
+                                <th>Doubtful Test</th>
+                                <th>Patient Reason</th>
+                                <th>Status &amp; Remarks</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="retestsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 3: PATIENTS & VIP MEMBERSHIP APPROVALS          -->
             <!-- =================================================== -->
             <section id="panel-patients" class="section-panel">
                 <div class="sub-tabs">
@@ -195,14 +262,13 @@
                     <button class="sub-tab" id="subtab-allpatients" onclick="switchPatientSubTab('allpatients')">👥 All Registered Patients</button>
                 </div>
 
-                <!-- VIP Applications Sub-panel -->
                 <div id="subpanel-vip">
                     <div class="toolbar">
                         <select id="vipStatusFilter" class="input-ctrl" onchange="renderVipTable()">
                             <option value="ALL">All VIP Requests</option>
                             <option value="pending" selected>Pending Approval</option>
                             <option value="active">Approved (Active)</option>
-                            <option value="rejected">Rejected</option>
+                            <option value="rejected">Rejected / Unapproved</option>
                         </select>
                     </div>
                     <div class="table-card">
@@ -210,8 +276,8 @@
                             <thead>
                                 <tr>
                                     <th>User ID</th>
-                                    <th>Applicant &amp; Family</th>
-                                    <th>Referrer</th>
+                                    <th>Applicant &amp; Plan</th>
+                                    <th>Code / Referrer</th>
                                     <th>Payment &amp; Screenshot</th>
                                     <th>Amount</th>
                                     <th>Status &amp; Validity</th>
@@ -223,7 +289,6 @@
                     </div>
                 </div>
 
-                <!-- All Patients Sub-panel -->
                 <div id="subpanel-allpatients" style="display:none;">
                     <div class="toolbar">
                         <input type="text" id="patientMasterSearch" class="input-ctrl search-grow" placeholder="🔍 Search Patient by Name, User ID, or Mobile..." onkeyup="renderPatientsMasterTable()">
@@ -250,7 +315,67 @@
             </section>
 
             <!-- =================================================== -->
-            <!-- TAB 3: WALLET & WITHDRAWALS (SUPER ADMIN ONLY)      -->
+            <!-- TAB 4: CAMP PROMO CODE MANAGER (SUPER ADMIN)        -->
+            <!-- =================================================== -->
+            <section id="panel-promos" class="section-panel">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap:18px;">
+                    <div class="kpi-card">
+                        <h3 style="margin-top:0; color:var(--primary); font-size:16.5px;"><i class="fas fa-tags"></i> Create / Update Camp Promo Code</h3>
+                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Offer instant camp discounts on VIP Plans, Blood Tests, or both. Turn OFF anytime after the camp.</p>
+
+                        <label class="form-label">Promo Code (No Spaces) *</label>
+                        <input type="text" id="promoCodeInput" class="full-input" placeholder="e.g. CAMP500 or MORNING20" oninput="this.value=this.value.toUpperCase().replace(/\s+/g,'')">
+
+                        <label class="form-label">Apply On</label>
+                        <select id="promoApplyOn" class="full-input">
+                            <option value="all">Both Tests &amp; VIP Plans</option>
+                            <option value="vip">Only VIP Membership</option>
+                            <option value="tests">Only Lab Tests / Packages</option>
+                        </select>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div>
+                                <label class="form-label">Discount Type</label>
+                                <select id="promoDiscType" class="full-input">
+                                    <option value="flat">Flat ₹ OFF</option>
+                                    <option value="percent">Percent % OFF</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Discount Value *</label>
+                                <input type="number" id="promoDiscVal" class="full-input" placeholder="e.g. 500 or 20">
+                            </div>
+                        </div>
+
+                        <label class="form-label">Minimum Order Amount (₹)</label>
+                        <input type="number" id="promoMinOrder" class="full-input" value="0" placeholder="0">
+
+                        <button id="btnSavePromo" onclick="savePromoCode()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:12px; margin-top:15px; font-size:14px;">
+                            <i class="fas fa-save"></i> Save &amp; Activate Promo Code
+                        </button>
+                    </div>
+
+                    <div class="table-card">
+                        <div style="padding:14px 16px; border-bottom:1px solid var(--border); font-weight:800; font-size:14.5px;">Active &amp; Past Camp Promo Codes</div>
+                        <table style="min-width: 580px;">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Applies On</th>
+                                    <th>Discount</th>
+                                    <th>Used</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="promoTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =================================================== -->
+            <!-- TAB 5: WALLET & WITHDRAWALS (SUPER ADMIN ONLY)      -->
             <!-- =================================================== -->
             <section id="panel-withdrawals" class="section-panel">
                 <div class="sub-tabs">
@@ -275,7 +400,7 @@
             </section>
 
             <!-- =================================================== -->
-            <!-- TAB 4: PRESCRIPTIONS & SUPPORT QUERIES              -->
+            <!-- TAB 6: PRESCRIPTIONS & SUPPORT QUERIES              -->
             <!-- =================================================== -->
             <section id="panel-support" class="section-panel">
                 <div class="sub-tabs">
@@ -317,11 +442,11 @@
             </section>
 
             <!-- =================================================== -->
-            <!-- TAB 5: PROFIT & LOSS ACCOUNTING (SUPER ADMIN ONLY)  -->
+            <!-- TAB 7: PROFIT & LOSS ACCOUNTING (SUPER ADMIN ONLY)  -->
             <!-- =================================================== -->
             <section id="panel-pnl" class="section-panel">
                 <div class="toolbar">
-                    <strong style="font-size:14px;">Period:</strong>
+                    <strong style="font-size:13.5px;">Period:</strong>
                     <select id="pnlPeriodFilter" class="input-ctrl" onchange="toggleCustomPnlDates(); calculateProfitAndLoss();">
                         <option value="today">Today</option>
                         <option value="month" selected>This Month</option>
@@ -340,9 +465,9 @@
                         <div class="kpi-sub" id="pnlRevenueBreakup">Bookings: ₹0 | VIP: ₹0</div>
                     </div>
                     <div class="kpi-card" style="border-left: 4px solid var(--warning);">
-                        <div class="kpi-label">B2B Lab Cost (Outsource)</div>
+                        <div class="kpi-label">B2B Lab Cost (Completed Only)</div>
                         <div class="kpi-val" style="color:#b45309;">₹<span id="pnlLabCost">0</span></div>
-                        <div class="kpi-sub">Paid to Partner Labs (CRL/VED)</div>
+                        <div class="kpi-sub">Counted only after Order Completed</div>
                     </div>
                     <div class="kpi-card" style="border-left: 4px solid #8b5cf6;">
                         <div class="kpi-label">Clinic &amp; Daily Expenses</div>
@@ -357,7 +482,7 @@
                 </div>
 
                 <div class="table-card">
-                    <div style="padding:15px 18px; border-bottom:1px solid var(--border); font-weight:800; font-size:15px;">Daily Expenses Ledger</div>
+                    <div style="padding:14px 16px; border-bottom:1px solid var(--border); font-weight:800; font-size:14.5px;">Daily Expenses Ledger</div>
                     <table>
                         <thead>
                             <tr>
@@ -375,39 +500,40 @@
             </section>
 
             <!-- =================================================== -->
-            <!-- TAB 6: STAFF & PASSWORDS (SUPER ADMIN ONLY)         -->
+            <!-- TAB 8: STAFF & 1-YEAR DATA CLEANUP (SUPER ADMIN)    -->
             <!-- =================================================== -->
             <section id="panel-staff" class="section-panel">
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)); gap:18px; margin-bottom:20px;">
                     <div class="kpi-card">
-                        <h3 style="margin-top:0; color:var(--primary); font-size:17px;"><i class="fas fa-user-plus"></i> Create Staff / Member Login</h3>
-                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Assign separate Email, Password &amp; Role to your Report Team (3 members), Booking Desk, or VIP Desk.</p>
+                        <h3 style="margin-top:0; color:var(--primary); font-size:16.5px;"><i class="fas fa-user-plus"></i> Create Staff / Member Login</h3>
+                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Strict role-based permissions: staff only see their assigned module.</p>
 
                         <label class="form-label">Staff Member Name</label>
-                        <input type="text" id="newStaffName" class="full-input" placeholder="e.g. Rohit (Report Desk 1)">
+                        <input type="text" id="newStaffName" class="full-input" placeholder="e.g. Rohit (Technician)">
 
                         <label class="form-label">Login Email ID</label>
-                        <input type="email" id="newStaffEmail" class="full-input" placeholder="e.g. report1@bhavyadiagnostics.com">
+                        <input type="email" id="newStaffEmail" class="full-input" placeholder="e.g. phlebo1@bhavyadiagnostics.com">
 
                         <label class="form-label">Password (Min 6 characters)</label>
-                        <input type="text" id="newStaffPass" class="full-input" placeholder="e.g. Report@2026">
+                        <input type="text" id="newStaffPass" class="full-input" placeholder="e.g. Staff@2026">
 
                         <label class="form-label">Access Role</label>
                         <select id="newStaffRole" class="full-input">
-                            <option value="report_staff">Report Team (Only Bookings &amp; Report PDF Upload)</option>
-                            <option value="booking_staff">Booking Staff (Bookings, Prescriptions &amp; Support)</option>
-                            <option value="vip_staff">VIP Desk (Only Patients &amp; VIP Applications)</option>
-                            <option value="super_admin">Super Admin (Full Access + Profit &amp; Loss)</option>
+                            <option value="report_staff">Report Team (ONLY Bookings &amp; Report Upload + Re-tests)</option>
+                            <option value="phlebo_staff">Technician / Phlebo (ONLY Sample Collection, GPS &amp; Walk-in)</option>
+                            <option value="booking_staff">Booking Desk (Bookings, Walk-in, Prescriptions &amp; Support)</option>
+                            <option value="vip_staff">VIP Desk (ONLY Patients &amp; VIP Applications)</option>
+                            <option value="super_admin">Super Admin (Full Access + P&amp;L + Wallet + Staff)</option>
                         </select>
 
-                        <button id="btnCreateStaff" onclick="createStaffAccount()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:13px; margin-top:16px; font-size:14px;">
-                            <i class="fas fa-key"></i> Create Staff Account
+                        <button id="btnCreateStaff" onclick="createStaffAccount()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:12px; margin-top:15px; font-size:14px;">
+                            <i class="fas fa-key"></i> Create / Update Staff Account
                         </button>
                     </div>
 
                     <div class="table-card">
-                        <div style="padding:15px 18px; border-bottom:1px solid var(--border); font-weight:800; font-size:15px;">Authorized Team Members &amp; Roles</div>
-                        <table style="min-width: 520px;">
+                        <div style="padding:14px 16px; border-bottom:1px solid var(--border); font-weight:800; font-size:14.5px;">Authorized Team Members &amp; Roles</div>
+                        <table style="min-width: 560px;">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -419,6 +545,19 @@
                             </thead>
                             <tbody id="staffTableBody"></tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- 1-YEAR OLD DATA BACKUP & CLEANUP CARD (SUPER ADMIN ONLY) -->
+                <div class="kpi-card" style="border: 1.5px solid #fecaca; background: #fffafb;">
+                    <h3 style="margin:0 0 6px; color:#991b1b; font-size:16.5px;"><i class="fas fa-broom"></i> 1-Year Old Data Backup &amp; Cleanup</h3>
+                    <p style="font-size:12.5px; color:#7f1d1d; margin:0 0 14px; line-height:1.5;">
+                        Keep Firebase fast and within free storage limits. Clicking below scans all <strong>Bookings &amp; Prescriptions older than 365 days</strong>, automatically downloads a <strong>CSV Excel Backup</strong> to your computer first, and then deletes those old database entries &amp; PDF reports.
+                    </p>
+                    <div id="cleanupStatusText" style="font-size:13px; font-weight:700; color:var(--text-main); margin-bottom:12px;">Click "Scan 1-Year Old Records" to check eligible data.</div>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="btn-act btn-blue" style="padding:10px 16px;" onclick="scanOldRecords()"><i class="fas fa-search"></i> Scan 1-Year Old Records</button>
+                        <button id="btnBackupAndDeleteOld" class="btn-act btn-red" style="padding:10px 16px;" onclick="backupAndDeleteOldRecords()"><i class="fas fa-download"></i> Download CSV Backup &amp; Delete 1-Year Old Data</button>
                     </div>
                 </div>
             </section>
@@ -433,7 +572,7 @@
         <div class="modal-box">
             <button class="modal-close" onclick="closeAllModals()">&times;</button>
             <h3 style="margin-top:0; color:var(--primary);"><i class="fas fa-file-medical"></i> Upload &amp; Send Diagnostic Report</h3>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
                 Order: <strong id="repModalOrderId">-</strong> | Patient: <strong id="repModalPatientName">-</strong>
             </p>
             <input type="hidden" id="repModalOrderDocId">
@@ -447,24 +586,123 @@
             <label class="form-label">3. Physical / In-Hand Reports Note (Optional)</label>
             <input type="text" id="repHandNoteInput" class="full-input" placeholder="e.g. ECG Graph / X-Ray Film collected at center">
 
-            <label class="form-label">4. B2B Partner Lab Cost (₹) — For Profit &amp; Loss Calculation</label>
-            <input type="number" id="repLabCostInput" class="full-input" placeholder="e.g. 250">
-
-            <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:10px; font-size:12px; color:#166534; margin-top:14px;">
-                <i class="fas fa-envelope"></i> Saving will mark order <strong>Completed</strong> and automatically send the report email from <strong>report@bhavyadiagnostics.com</strong>.
+            <div id="repLabCostWrap">
+                <label class="form-label">4. B2B Partner Lab Cost (₹) — Counted in P&amp;L on Completion</label>
+                <input type="number" id="repLabCostInput" class="full-input" placeholder="e.g. 250">
             </div>
 
-            <button id="btnSubmitReport" onclick="submitOrderReport()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:14px; margin-top:16px; font-size:15px;">
+            <div style="background:#f0fdf4; border:1px solid #bbf7d0; padding:10px 12px; border-radius:10px; font-size:12px; color:#166534; margin-top:12px;">
+                <i class="fas fa-envelope"></i> Saving marks order <strong>Completed</strong> and automatically emails the report via <strong>report@bhavyadiagnostics.com</strong>.
+            </div>
+
+            <button id="btnSubmitReport" onclick="submitOrderReport()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:13px; margin-top:14px; font-size:14.5px;">
                 <i class="fas fa-paper-plane"></i> Save Report &amp; Email Patient
             </button>
         </div>
     </div>
 
     <!-- =================================================== -->
-    <!-- MODAL 2: VIP APPROVAL / REJECTION                   -->
+    <!-- MODAL 2: SAMPLE COLLECTED CONFIRMATION (TECHNICIAN) -->
+    <!-- =================================================== -->
+    <div class="modal-backdrop" id="sampleCollectModal">
+        <div class="modal-box" style="max-width:430px;">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <h3 style="margin-top:0; color:#0284c7;"><i class="fas fa-vial"></i> Confirm Sample Collected</h3>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">
+                Order: <strong id="scModalOrderId">-</strong> | Patient: <strong id="scModalPatientName">-</strong><br>
+                Payable Amount: <strong style="color:var(--success);">₹<span id="scModalAmount">0</span></strong>
+            </p>
+            <input type="hidden" id="scModalDocId">
+
+            <label class="form-label">Payment Status at Collection</label>
+            <select id="scPaymentSelect" class="full-input">
+                <option value="PAID_CASH">Payment Collected (Cash)</option>
+                <option value="PAID_UPI">Payment Collected (UPI)</option>
+                <option value="DUE">Payment Still Pending (DUE)</option>
+            </select>
+
+            <label class="form-label">Barcode / Vial / Technician Note (Optional)</label>
+            <input type="text" id="scNoteInput" class="full-input" placeholder="e.g. Fasting EDTA + Serum vials collected">
+
+            <button id="btnConfirmSample" onclick="submitSampleCollected()" class="btn-act btn-sky" style="width:100%; justify-content:center; padding:13px; margin-top:16px; font-size:14.5px;">
+                <i class="fas fa-check-circle"></i> Mark Sample Collected
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL 3: WALK-IN / CAMP QUICK BOOKING ENTRY         -->
+    <!-- =================================================== -->
+    <div class="modal-backdrop" id="walkinModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeAllModals()">&times;</button>
+            <h3 style="margin-top:0; color:var(--success);"><i class="fas fa-walking"></i> Walk-in / Health Camp Entry</h3>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Direct patient entry without OTP. Reports auto-link if the patient logs in later with the same mobile number.</p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label">Patient Name *</label>
+                    <input type="text" id="wkName" class="full-input" placeholder="Full Name">
+                </div>
+                <div>
+                    <label class="form-label">Mobile Number (10 digits)</label>
+                    <input type="tel" id="wkMobile" maxlength="10" class="full-input" placeholder="Optional for WhatsApp">
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div>
+                    <label class="form-label">Entry Source</label>
+                    <select id="wkSource" class="full-input">
+                        <option value="walkin">Walk-in Center</option>
+                        <option value="camp">Health Camp</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Email (Optional)</label>
+                    <input type="email" id="wkEmail" class="full-input" placeholder="For PDF Report">
+                </div>
+            </div>
+
+            <label class="form-label">Search &amp; Add Tests / Packages *</label>
+            <input type="text" id="wkTestSearch" class="full-input" placeholder="Type CBC, Thyroid, Package..." onkeyup="searchWalkinServices()">
+            <div id="wkSearchResults" class="walkin-results"></div>
+
+            <div class="walkin-selected-box" id="wkSelectedList">
+                <span style="color:#64748b;">No tests added yet.</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;">
+                <div>
+                    <label class="form-label">Camp / Manual Discount (₹)</label>
+                    <input type="number" id="wkDiscount" class="full-input" value="0" oninput="renderWalkinSelected()">
+                </div>
+                <div>
+                    <label class="form-label">Payment Mode</label>
+                    <select id="wkPayStatus" class="full-input">
+                        <option value="PAID_CASH">Paid (Cash)</option>
+                        <option value="PAID_UPI">Paid (UPI)</option>
+                        <option value="DUE">Payment Pending (DUE)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; border:1px solid #bbf7d0; padding:11px 14px; border-radius:10px; margin-top:12px;">
+                <span style="font-weight:800; color:#166534;">Final Payable Amount</span>
+                <strong style="font-size:20px; color:#059669;">₹<span id="wkFinalTotal">0</span></strong>
+            </div>
+
+            <button id="btnSaveWalkin" onclick="submitWalkinBooking()" class="btn-act btn-green" style="width:100%; justify-content:center; padding:13px; margin-top:14px; font-size:14.5px;">
+                <i class="fas fa-check"></i> Save Walk-in / Camp Entry
+            </button>
+        </div>
+    </div>
+
+    <!-- =================================================== -->
+    <!-- MODAL 4: VIP APPROVAL / UNAPPROVE (AUTO-REVERT)     -->
     <!-- =================================================== -->
     <div class="modal-backdrop" id="vipActionModal">
-        <div class="modal-box" style="max-width:440px;">
+        <div class="modal-box" style="max-width:450px;">
             <button class="modal-close" onclick="closeAllModals()">&times;</button>
             <h3 style="margin-top:0; color:var(--primary);"><i class="fas fa-crown" style="color:var(--warning);"></i> Review VIP Application</h3>
             <p style="font-size:13px; color:var(--text-muted);">Applicant: <strong id="vipModalApplicant">-</strong></p>
@@ -472,18 +710,22 @@
 
             <div id="vipModalScreenshotBox" style="margin:12px 0; text-align:center;"></div>
 
-            <label class="form-label">Admin Remarks (Mandatory if rejecting)</label>
-            <textarea id="vipModalRemarks" rows="3" class="full-input" placeholder="e.g. Payment verified / Invalid UTR"></textarea>
+            <div style="background:#fffbeb; border:1px solid #fde68a; color:#92400e; padding:10px 12px; border-radius:9px; font-size:12px; margin-bottom:10px;">
+                <i class="fas fa-info-circle"></i> Clicking <strong>Reject / Unapprove</strong> will automatically revert this patient's uncompleted VIP-rate bookings back to <strong>Standard Basic rates</strong>.
+            </div>
 
-            <div style="display:flex; gap:10px; margin-top:16px;">
-                <button id="btnApproveVip" onclick="processVipApproval('active')" class="btn-act btn-green" style="flex:1; justify-content:center; padding:12px;">Approve &amp; Credit Cashback</button>
-                <button id="btnRejectVip" onclick="processVipApproval('rejected')" class="btn-act btn-red" style="flex:1; justify-content:center; padding:12px;">Reject</button>
+            <label class="form-label">Admin Remarks (Mandatory if rejecting/unapproving)</label>
+            <textarea id="vipModalRemarks" rows="3" class="full-input" placeholder="e.g. Payment verified / Payment not received"></textarea>
+
+            <div style="display:flex; gap:10px; margin-top:14px;">
+                <button id="btnApproveVip" onclick="processVipApproval('active')" class="btn-act btn-green" style="flex:1; justify-content:center; padding:12px;">Approve VIP</button>
+                <button id="btnRejectVip" onclick="processVipApproval('rejected')" class="btn-act btn-red" style="flex:1; justify-content:center; padding:12px;">Reject / Unapprove</button>
             </div>
         </div>
     </div>
 
     <!-- =================================================== -->
-    <!-- MODAL 3: PATIENT WALLET ADJUSTMENT (SUPER ADMIN)    -->
+    <!-- MODAL 5: PATIENT WALLET ADJUSTMENT (SUPER ADMIN)    -->
     <!-- =================================================== -->
     <div class="modal-backdrop" id="walletModal">
         <div class="modal-box" style="max-width:420px;">
@@ -509,7 +751,7 @@
     </div>
 
     <!-- =================================================== -->
-    <!-- MODAL 4: ADD CLINIC EXPENSE (PROFIT & LOSS)         -->
+    <!-- MODAL 6: ADD CLINIC EXPENSE (PROFIT & LOSS)         -->
     <!-- =================================================== -->
     <div class="modal-backdrop" id="expenseModal">
         <div class="modal-box" style="max-width:430px;">
@@ -544,6 +786,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    <script src="custom-alert.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>
