@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Bhavya VIP Family Membership | Bhavya Diagnostics Bahadurgarh</title>
-    <meta name="description" content="Activate Bhavya VIP Family Membership at Bhavya Diagnostics Bahadurgarh — Get up to 50% OFF on NABL lab blood tests, full body health packages, ECG &amp; PFT for your entire family.">
+    <title>Bhavya VIP Membership | Bhavya Diagnostics Bahadurgarh</title>
+    <meta name="description" content="Activate Bhavya VIP Membership at Bhavya Diagnostics Bahadurgarh — Up to 50% OFF on NABL lab blood tests, Platinum Full Body Package, ECG, PFT &amp; 50+ Body Parameters.">
     <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="https://www.bhavyadiagnostics.com/vip/vip_member.html">
     <link rel="icon" href="../image/logo.jpeg" type="image/jpeg">
@@ -19,27 +19,56 @@
             --success: #10b981; --success-light: #d1fae5;
             --warning: #f59e0b; --warning-light: #fef3c7;
             --danger: #ef4444; --danger-light: #fee2e2;
-            --bg-color: #f4f7f6; --card-bg: #ffffff;
+            --bg-color: #f4f7fb; --card-bg: #ffffff;
             --text-main: #0f172a; --text-light: #64748b;
             --border: #e2e8f0;
         }
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; color: var(--text-main); }
 
-        .header { background: var(--card-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-        .back-btn { color: var(--text-main); font-size: 15px; text-decoration: none; display: flex; align-items: center; gap: 8px; font-weight: 700; }
-        .back-btn:hover { color: var(--primary); }
+        .header { background: var(--card-bg); padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .back-btn { color: var(--text-main); font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; font-weight: 700; background: #f1f5f9; padding: 8px 13px; border-radius: 10px; }
+        .back-btn:hover { color: var(--primary); background: var(--primary-light); }
 
-        .main-content { padding: 20px; flex-grow: 1; max-width: 560px; width: 100%; margin: 0 auto; padding-bottom: 50px; }
-        .card { background: var(--card-bg); padding: 22px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 18px; border: 1px solid var(--border); }
+        .main-content { padding: 16px; flex-grow: 1; max-width: 560px; width: 100%; margin: 0 auto; padding-bottom: 50px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 18px; box-shadow: 0 4px 16px rgba(15,23,42,0.04); margin-bottom: 16px; border: 1px solid var(--border); }
         .input-box { width: 100%; padding: 13px 14px; margin-top: 6px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; outline: none; background: #f8fafc; color: var(--text-main); transition: 0.2s; }
         .input-box:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px var(--primary-light); }
         .input-box[readonly] { background: #e2e8f0; color: var(--text-light); cursor: not-allowed; }
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 14px; }
 
-        .radio-group { display: flex; gap: 12px; margin-top: 10px; }
-        .radio-option { flex: 1; display: flex; align-items: center; gap: 8px; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700; background: #f8fafc; }
-        .radio-option:has(input:checked) { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+        /* 1 vs 2 Member Plan Selector Cards */
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+        .plan-option {
+            position: relative; border: 2px solid var(--border); border-radius: 14px; padding: 14px 12px;
+            background: #f8fafc; cursor: pointer; transition: 0.2s; text-align: center;
+        }
+        .plan-option input { position: absolute; opacity: 0; pointer-events: none; }
+        .plan-option.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 6px 16px rgba(0,86,179,0.12); }
+        .plan-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px; margin-bottom: 6px; text-transform: uppercase; }
+        .plan-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin: 0 0 4px; }
+        .plan-price { font-size: 22px; font-weight: 900; color: var(--primary); margin: 0; }
+        .plan-sub { font-size: 11px; color: var(--text-light); margin-top: 4px; font-weight: 600; }
+
+        /* Payment Radio Options (3 Clean Mobile-Friendly Options) */
+        .radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .radio-option {
+            display: flex; align-items: flex-start; gap: 10px; padding: 13px 14px;
+            border: 1.5px solid var(--border); border-radius: 12px; cursor: pointer;
+            background: #f8fafc; transition: 0.2s;
+        }
+        .radio-option input { margin-top: 3px; accent-color: var(--primary); width: 16px; height: 16px; }
+        .radio-option:has(input:checked) { border-color: var(--primary); background: var(--primary-light); }
+        .radio-title { font-size: 13.5px; font-weight: 800; color: var(--text-main); display: block; }
+        .radio-desc { font-size: 11.5px; color: var(--text-light); font-weight: 500; display: block; margin-top: 2px; }
+
+        /* Pending VIP English Warning Box */
+        .vip-warning-box {
+            background: #fffbeb; border: 1.5px solid #f59e0b; color: #92400e;
+            border-radius: 12px; padding: 13px 14px; font-size: 12.5px; line-height: 1.5;
+            margin-bottom: 16px; text-align: left; display: flex; gap: 10px; align-items: flex-start;
+        }
+        .vip-warning-box i { color: #d97706; font-size: 17px; margin-top: 2px; flex-shrink: 0; }
 
         .btn-primary { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.25s; box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2); }
         .btn-primary:hover:not(:disabled) { background: #004494; transform: translateY(-1px); }
@@ -47,64 +76,62 @@
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #vip-form-container, #vip-pending-container, #vip-active-container, #vip-rejected-container, #vip-pincode-container, #vip-incomplete-profile-container { display: none; }
+        #vip-form-container, #vip-pending-container, #vip-active-container, #vip-rejected-container, #vip-pincode-container { display: none; }
+
+        @media (max-width: 420px) {
+            .main-content { padding: 12px; }
+            .card { padding: 16px; border-radius: 16px; }
+            .plan-price { font-size: 20px; }
+        }
     </style>
 </head>
 <body>
 
     <header class="header">
         <a href="../patient_dashboard/patient_dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
-        <h1 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--primary);">Bhavya <span style="color: var(--warning);">VIP Plan</span></h1>
+        <h1 style="margin: 0; font-size: 16.5px; font-weight: 800; color: var(--primary);">Bhavya <span style="color: var(--warning);">VIP Plan</span></h1>
     </header>
 
     <main class="main-content">
         <!-- LOADING STATE -->
         <div id="vip-loading-container" style="text-align: center; padding: 70px 20px;">
-            <div style="width: 48px; height: 48px; border: 5px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 15px;"></div>
+            <div style="width: 46px; height: 46px; border: 5px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 15px;"></div>
             <p style="font-size: 14px; font-weight: 700; color: var(--text-light);">Checking your VIP membership status...</p>
-        </div>
-
-        <!-- PROFILE INCOMPLETE WARNING -->
-        <div id="vip-incomplete-profile-container">
-            <div class="card" style="text-align: center; border-color: #fde68a; background: #fffbeb;">
-                <div style="background: #fef3c7; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                    <i class="fas fa-user-edit" style="font-size: 26px; color: #d97706;"></i>
-                </div>
-                <h3 style="margin: 0 0 8px 0; color: #92400e;">Complete Your Profile First</h3>
-                <p style="font-size: 13px; color: #b45309; line-height: 1.5; margin-bottom: 20px;">
-                    VIP Membership lene ke liye pehle apna <strong>Email, Full Address, City aur Pincode</strong> update karna zaroori hai.
-                </p>
-                <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary" style="background: #d97706;">
-                    Complete Profile in Dashboard <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
         </div>
 
         <!-- STEP 1: PINCODE AVAILABILITY -->
         <div id="vip-pincode-container">
             <div class="card" style="text-align: center;">
-                <div style="background: var(--primary-light); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
-                    <i class="fas fa-map-marker-alt" style="font-size: 26px; color: var(--primary);"></i>
+                <div style="background: var(--primary-light); width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 25px; color: var(--primary);"></i>
                 </div>
-                <h2 style="margin:0; font-size: 20px; color: var(--text-main);">Check VIP Availability</h2>
-                <p style="font-size:13px; color:var(--text-light); margin-top:6px; margin-bottom: 20px;">Enter your 6-digit area pincode to unlock Bhavya VIP Family Plan</p>
+                <h2 style="margin:0; font-size: 19px; color: var(--text-main);">Check VIP Availability</h2>
+                <p style="font-size:13px; color:var(--text-light); margin:6px 0 18px;">Enter your 6-digit area pincode to unlock Bhavya VIP Membership</p>
                 
                 <div class="form-group">
-                    <input type="number" id="checkPincodeInput" class="input-box" placeholder="e.g. 124507" style="text-align: center; font-size: 18px; letter-spacing: 2px;">
+                    <input type="tel" inputmode="numeric" maxlength="6" id="checkPincodeInput" class="input-box" placeholder="e.g. 124507" style="text-align: center; font-size: 18px; letter-spacing: 3px;">
                 </div>
-                <button id="btnCheckPincode" class="btn-primary" style="margin-top:10px;" onclick="verifyPincodeAndProceed()">Check &amp; Proceed <i class="fas fa-arrow-right"></i></button>
+                <button id="btnCheckPincode" class="btn-primary" style="margin-top:6px;" onclick="verifyPincodeAndProceed()">Check &amp; Proceed <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
 
         <!-- STATUS: UNDER REVIEW / PENDING -->
-        <div id="vip-pending-container" style="text-align: center; padding: 20px 0;">
+        <div id="vip-pending-container" style="text-align: center; padding: 10px 0;">
             <div class="card" style="border-color: #fed7aa; background: #fff7ed;">
-                <i class="fas fa-hourglass-half" style="font-size: 54px; color: #ea580c; margin-bottom: 16px;"></i>
-                <h2 style="margin: 0 0 8px 0; color: #9a3412; font-size: 20px;">Application Under Review</h2>
-                <p style="font-size: 13px; color: #c2410c; line-height: 1.6; margin: 0 0 18px 0;">
-                    Your VIP Family Plan application is currently being verified by our team. Meanwhile, <strong>VIP discounted rates are already unlocked</strong> for your bookings!
+                <i class="fas fa-hourglass-half" style="font-size: 48px; color: #ea580c; margin-bottom: 14px;"></i>
+                <h2 style="margin: 0 0 8px 0; color: #9a3412; font-size: 19px;">VIP Application Under Review</h2>
+                <p style="font-size: 13px; color: #c2410c; line-height: 1.55; margin: 0 0 14px 0;">
+                    Your application has been submitted. You can start booking tests at VIP rates immediately.
                 </p>
-                <div id="pendingSummaryBox" style="background: #ffffff; border-radius: 12px; padding: 14px; text-align: left; font-size: 13px; border: 1px solid #ffedd5; margin-bottom: 20px;"></div>
+
+                <div class="vip-warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Important Notice:</strong> Your VIP Membership is not active yet. If your VIP Membership is not activated before or at sample collection time, your booking prices will be automatically converted to <strong>Standard Basic rates</strong>.
+                    </div>
+                </div>
+
+                <div id="pendingSummaryBox" style="background: #ffffff; border-radius: 12px; padding: 14px; text-align: left; font-size: 13px; border: 1px solid #ffedd5; margin-bottom: 18px;"></div>
                 <button onclick="window.location.href='../booking/booking.html'" class="btn-primary" style="background: var(--success); margin-bottom: 10px;">
                     Book Tests at VIP Rates <i class="fas fa-microscope"></i>
                 </button>
@@ -117,22 +144,23 @@
         <!-- STATUS: ACTIVE -->
         <div id="vip-active-container" style="text-align: center;">
             <div class="card" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 1px solid #6ee7b7;">
-                <i class="fas fa-crown" style="font-size: 54px; color: #059669; margin-bottom: 12px;"></i>
-                <h2 style="color: #065f46; margin: 0; font-size: 22px;">VIP Family Plan Active</h2>
-                <p style="font-size: 13px; color: #047857; margin: 6px 0 0 0;">Enjoy up to 50% OFF on lab tests &amp; free home sample collection.</p>
-                <div style="background: white; border-radius: 12px; padding: 16px; margin-top: 20px; text-align: left; border: 1px solid #a7f3d0;">
+                <i class="fas fa-crown" style="font-size: 50px; color: #059669; margin-bottom: 10px;"></i>
+                <h2 style="color: #065f46; margin: 0; font-size: 21px;">VIP Membership Active</h2>
+                <p style="font-size: 13px; color: #047857; margin: 6px 0 0 0;">Enjoy up to 50% OFF on lab tests, Free Blood Package &amp; ECG/PFT/50+ BCA.</p>
+                <div style="background: white; border-radius: 12px; padding: 16px; margin-top: 18px; text-align: left; border: 1px solid #a7f3d0;">
+                    <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Plan:</strong> <span id="activePlanType" style="float:right; font-weight:800; color: var(--primary);">-</span></p>
                     <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Start Date:</strong> <span id="activeStartDate" style="float:right; font-weight:800;">-</span></p>
                     <p style="margin: 0 0 10px 0; font-size: 13px;"><strong>Valid Till:</strong> <span id="activeEndDate" style="float:right; font-weight:800; color: var(--danger);">-</span></p>
-                    <p style="margin: 0; font-size: 13px;"><strong>Covered Members:</strong> <span id="activeMembersList" style="float:right; font-weight:700; color: var(--primary);">-</span></p>
+                    <p style="margin: 0; font-size: 13px;"><strong>Covered Members:</strong> <span id="activeMembersList" style="float:right; font-weight:700; color: var(--text-main);">-</span></p>
                 </div>
             </div>
-            <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary">Go to Dashboard &amp; Download VIP Card</button>
+            <button onclick="window.location.href='../patient_dashboard/patient_dashboard.html'" class="btn-primary">Go to Dashboard &amp; Claim VIP Packages</button>
         </div>
 
         <!-- STATUS: REJECTED -->
         <div id="vip-rejected-container" style="text-align: center; padding: 10px 0;">
             <div class="card" style="border-color: #fecaca;">
-                <i class="fas fa-times-circle" style="font-size: 54px; color: var(--danger); margin-bottom: 12px;"></i>
+                <i class="fas fa-times-circle" style="font-size: 50px; color: var(--danger); margin-bottom: 12px;"></i>
                 <h2 style="color: var(--danger); margin: 0; font-size: 20px;">Application Rejected</h2>
                 <div style="background: var(--danger-light); color: #991b1b; padding: 14px; border-radius: 10px; margin-top: 16px; text-align: left; font-size: 13px;">
                     <strong>Admin Remarks:</strong> <br><span id="rejectedRemarks"></span>
@@ -144,48 +172,90 @@
         <!-- STEP 2: VIP APPLICATION FORM -->
         <div id="vip-form-container">
             <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border: none;">
-                <i class="fas fa-crown" style="font-size: 38px; color: var(--warning); margin-bottom: 8px;"></i>
-                <h2 style="margin: 0; color: #facc15; font-size: 20px;">Bhavya Diagnostics VIP</h2>
-                <p style="margin: 6px 0 0 0; font-size: 12px; color: #cbd5e1;">Up to 50% OFF on Blood Tests • Free Home Collection • Family Coverage</p>
+                <i class="fas fa-crown" style="font-size: 36px; color: var(--warning); margin-bottom: 8px;"></i>
+                <h2 style="margin: 0; color: #facc15; font-size: 19px;">Bhavya Diagnostics VIP</h2>
+                <p style="margin: 6px 0 0 0; font-size: 12px; color: #cbd5e1; line-height: 1.5;">
+                    Includes Blood Health Package + ECG, PFT &amp; 50+ Body Parameters • Up to 50% OFF on Tests • Free Home Collection
+                </p>
             </div>
 
+            <!-- PLAN SELECTOR: 1 MEMBER VS 2 MEMBERS -->
             <div class="card">
-                <h3 style="margin: 0 0 14px 0; font-size: 15px;"><i class="fas fa-users" style="color: var(--primary); margin-right: 6px;"></i> Covered Family Members (Up to 3)</h3>
-                <div class="form-group">
-                    <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 1 (Primary / Self)</label>
-                    <input type="text" id="mem1Name" class="input-box" readonly>
+                <h3 style="margin: 0 0 4px 0; font-size: 15px;"><i class="fas fa-users" style="color: var(--primary); margin-right: 6px;"></i> Select VIP Membership Plan</h3>
+                <p style="margin: 0 0 10px; font-size: 12px; color: var(--text-light);">Choose individual or 2-member family coverage</p>
+
+                <div class="plan-grid">
+                    <label class="plan-option selected" id="planCard1" onclick="selectMemberPlan(1)">
+                        <input type="radio" name="memberPlan" value="1" checked>
+                        <span class="plan-badge" style="background:#e0f2fe; color:#0284c7;">Individual</span>
+                        <div class="plan-title">1 Member</div>
+                        <div class="plan-price">₹<span id="price1Member">2000</span></div>
+                        <div class="plan-sub">Self Coverage</div>
+                    </label>
+                    <label class="plan-option" id="planCard2" onclick="selectMemberPlan(2)">
+                        <input type="radio" name="memberPlan" value="2">
+                        <span class="plan-badge" style="background:#fef3c7; color:#b45309;">Best Value</span>
+                        <div class="plan-title">2 Members</div>
+                        <div class="plan-price">₹<span id="price2Member">3600</span></div>
+                        <div class="plan-sub">Self + 1 Family Member</div>
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 2 Full Name (Optional)</label>
-                    <input type="text" id="mem2Name" class="input-box" placeholder="Enter Family Member 2 Name">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 3 Full Name (Optional)</label>
-                    <input type="text" id="mem3Name" class="input-box" placeholder="Enter Family Member 3 Name">
+
+                <div style="margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 14px;">
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 1 Full Name (Primary / Self) <span style="color:var(--danger);">*</span></label>
+                        <input type="text" id="mem1Name" class="input-box" placeholder="Enter Primary Member Full Name">
+                    </div>
+                    <div class="form-group" id="member2Group" style="display: none; margin-bottom: 0;">
+                        <label style="font-size:12px; font-weight:700; color: var(--text-light);">Member 2 Full Name <span style="color:var(--danger);">*</span></label>
+                        <input type="text" id="mem2Name" class="input-box" placeholder="Enter Family Member 2 Full Name">
+                    </div>
                 </div>
             </div>
 
+            <!-- CAMP PROMO CODE OR REFERRAL CODE -->
             <div class="card" style="background:#f8fafc;">
-                <label style="font-size:12px; font-weight:700; color: var(--text-main);">Have a Referral Code?</label>
-                <div style="display:flex; gap:10px; margin-top:6px;">
-                    <input type="text" id="refCodeInput" class="input-box" placeholder="e.g. DHE8888" style="margin-top:0; text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
-                    <button id="btn-apply-ref" type="button" onclick="verifyReferral()" style="background:var(--text-main); color:white; border:none; border-radius:10px; padding:0 18px; font-weight:800; cursor:pointer;">Apply</button>
+                <label style="font-size:12.5px; font-weight:800; color: var(--text-main);">Have a Camp Promo Code or Referral Code?</label>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <input type="text" id="refCodeInput" class="input-box" placeholder="e.g. CAMP500 or DHE8888" style="margin-top:0; text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
+                    <button id="btn-apply-ref" type="button" onclick="verifyCode()" style="background:var(--text-main); color:white; border:none; border-radius:10px; padding:0 18px; font-weight:800; cursor:pointer; white-space:nowrap;">Apply</button>
+                    <button id="btn-remove-ref" type="button" onclick="removeAppliedCode()" style="display:none; background:#fee2e2; color:#dc2626; border:1px solid #fecaca; border-radius:10px; padding:0 14px; font-weight:800; cursor:pointer;">Remove</button>
                 </div>
                 <small id="refMsg" style="display:none; font-weight:700; margin-top:8px; font-size: 12px;"></small>
             </div>
 
+            <!-- PAYMENT METHOD (3 OPTIONS) -->
             <div class="card">
-                <h3 style="margin: 0 0 12px 0; font-size: 15px;"><i class="fas fa-wallet" style="color: var(--primary); margin-right: 6px;"></i> Payment Method</h3>
+                <h3 style="margin: 0 0 6px 0; font-size: 15px;"><i class="fas fa-wallet" style="color: var(--primary); margin-right: 6px;"></i> Payment Method</h3>
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="payMode" value="online" onchange="togglePaymentMode()" checked> Online UPI</label>
-                    <label class="radio-option"><input type="radio" name="payMode" value="cash" onchange="togglePaymentMode()"> Cash at Center</label>
+                    <label class="radio-option">
+                        <input type="radio" name="payMode" value="online" onchange="togglePaymentMode()" checked>
+                        <div>
+                            <span class="radio-title">Online UPI (Instant Verification)</span>
+                            <span class="radio-desc">Pay via GPay, PhonePe or Paytm &amp; upload screenshot</span>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="payMode" value="pay_on_collection" onchange="togglePaymentMode()">
+                        <div>
+                            <span class="radio-title">Payment on Collection Time</span>
+                            <span class="radio-desc">Pay Cash or UPI directly to our technician during home sample collection</span>
+                        </div>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="payMode" value="cash_center" onchange="togglePaymentMode()">
+                        <div>
+                            <span class="radio-title">Cash at Center</span>
+                            <span class="radio-desc">Pay at Bhavya Diagnostics, Main Jhajjar Road, Bahadurgarh</span>
+                        </div>
+                    </label>
                 </div>
 
-                <div id="online-pay-section" style="margin-top: 18px; border-top: 1px dashed var(--border); padding-top: 16px;">
-                    <div style="text-align: center; margin-bottom: 16px; background: var(--primary-light); padding: 14px; border-radius: 12px;">
-                        <p style="font-size: 13px; font-weight: 800; color: var(--primary); margin: 0 0 8px 0;">Pay directly using GPay, PhonePe or Paytm</p>
-                        <button type="button" onclick="payViaUPI()" style="background: var(--success); color: white; border: none; padding: 12px 22px; border-radius: 10px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 14px;">
-                            <i class="fas fa-mobile-alt"></i> Pay ₹<span id="upiBtnAmt">3000</span> via UPI App
+                <div id="online-pay-section" style="margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 16px;">
+                    <div style="text-align: center; margin-bottom: 14px; background: var(--primary-light); padding: 14px; border-radius: 12px;">
+                        <p style="font-size: 12.5px; font-weight: 800; color: var(--primary); margin: 0 0 8px 0;">Pay directly using GPay, PhonePe or Paytm</p>
+                        <button type="button" onclick="payViaUPI()" style="background: var(--success); color: white; border: none; padding: 11px 20px; border-radius: 10px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px;">
+                            <i class="fas fa-mobile-alt"></i> Pay ₹<span id="upiBtnAmt">2000</span> via UPI App
                         </button>
                         <p style="font-size: 12px; color: var(--text-main); margin: 10px 0 0 0;">
                             UPI ID: <strong>8950112467@ptsbi</strong>
@@ -204,9 +274,20 @@
                 </div>
             </div>
 
+            <!-- ENGLISH WARNING FOR PENDING ACTIVATION -->
+            <div class="vip-warning-box">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Note:</strong> You can book tests at VIP prices immediately after submitting. However, if your VIP Membership is not activated before or at sample collection time, your booking prices will be converted to <strong>Standard Basic rates</strong>.
+                </div>
+            </div>
+
             <div class="card" style="display:flex; justify-content: space-between; align-items: center; background: var(--success-light); border-color: #6ee7b7;">
-                <span style="font-size: 15px; font-weight: 800; color: #065f46;">Total Payable</span>
-                <span style="font-size: 24px; font-weight:900; color:#047857;">₹<span id="finalPayable">3000</span></span>
+                <div>
+                    <span style="font-size: 14.5px; font-weight: 800; color: #065f46; display:block;">Total Payable</span>
+                    <small id="discountSummaryLine" style="font-size: 11.5px; color: #047857; font-weight: 700;"></small>
+                </div>
+                <span style="font-size: 24px; font-weight:900; color:#047857;">₹<span id="finalPayable">2000</span></span>
             </div>
 
             <label style="display:flex; align-items:flex-start; gap:10px; font-size:12px; color:var(--text-light); margin-bottom:16px; cursor:pointer; line-height:1.45;">
@@ -222,6 +303,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../custom-alert.js"></script>
     <script src="vip_member.js"></script>
 </body>
 </html>
