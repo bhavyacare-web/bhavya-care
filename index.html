@@ -11,16 +11,15 @@
                                 role && role !== "null" && role !== "undefined" && role.trim() !== "";
 
             if (isValidUser) {
-                if (role === "lab") window.location.replace("Lab/lab_dashboard.html"); 
-                else if (role === "patient") window.location.replace("patient_dashboard/patient_dashboard.html");
-                else if (role === "admin") window.location.replace("admin.html"); 
+                if (role === "patient") window.location.replace("patient_dashboard/patient_dashboard.html");
+                else if (role === "admin") window.location.replace("admin.html");
             }
         });
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     
-    <!-- ✨ BEST LOCAL & DIAGNOSTIC SEO META TAGS ✨ -->
+    <!-- ✨ LOCAL & DIAGNOSTIC SEO META TAGS ✨ -->
     <title>Bhavya Diagnostics Bahadurgarh | NABL Lab Blood Tests, Full Body Checkup, ECG &amp; PFT</title>
     <meta name="description" content="Bhavya Diagnostics, Main Jhajjar Road, Bahadurgarh — Book 700+ NABL certified lab tests (CBC, Thyroid, LFT, KFT, HbA1c, Vitamin D3/B12), Full Body Health Packages starting ₹199, ECG, PFT &amp; Bhavya VIP Membership with free home sample collection. Call/WhatsApp 89501 12467.">
     <meta name="keywords" content="Bhavya Diagnostics, Bhavya Diagnostics Bahadurgarh, blood test lab in Bahadurgarh, NABL lab Bahadurgarh, full body checkup Bahadurgarh, free home sample collection Bahadurgarh, Arogya Health Package 199, Gold Health Package 699, Platinum Health Package 1199, Bhavya VIP Membership, ECG test Bahadurgarh, PFT test Bahadurgarh, CBC LFT KFT Lipid Thyroid HbA1c Vitamin D3 Vitamin B12 test near Main Jhajjar Road Bahadurgarh">
@@ -83,48 +82,7 @@
         "opens": "07:00",
         "closes": "20:00"
       },
-      "description": "Bhavya Diagnostics in Bahadurgarh offers 700+ NABL accredited partner lab blood tests, Triple Protection accuracy cross-checking, Free Home Sample Collection, Full Body Health Packages, ECG, PFT, and 50+ Body Composition Analysis.",
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "Diagnostic Tests & Health Packages",
-        "itemListElement": [
-          {
-            "@type": "Offer",
-            "name": "Arogya Health Package (35+ Parameters)",
-            "description": "CBC, SGOT, S. Creatinine, Total Protein, S. Calcium, Blood Sugar, Urine Routine with Free Home Collection",
-            "price": "199",
-            "priceCurrency": "INR"
-          },
-          {
-            "@type": "Offer",
-            "name": "Gold Complete Care Package (60+ Parameters)",
-            "description": "NABL Lab package covering CBC, ESR, LFT, KFT, Lipid Profile, Sugar, Calcium, Thyroid Profile (T3, T4, TSH), Urine Routine",
-            "price": "699",
-            "priceCurrency": "INR"
-          },
-          {
-            "@type": "Offer",
-            "name": "Platinum Full Body + Vitamins Package (80+ Parameters)",
-            "description": "NABL Lab comprehensive checkup with CBC, ESR, LFT, KFT, Lipid Profile, Sugar, Calcium, HbA1c, Iron Profile, Thyroid Profile, Vitamin D3, Vitamin B12, Urine Routine",
-            "price": "1199",
-            "priceCurrency": "INR"
-          },
-          {
-            "@type": "Offer",
-            "name": "Bhavya VIP Membership (1 Member - 6 Months Validity)",
-            "description": "Includes Platinum Health Package (80+ Lab Tests), ECG, PFT (Pulmonary Function Test), 50+ Body Parameters Analysis, Diet Chart & Free Report Consultation",
-            "price": "2000",
-            "priceCurrency": "INR"
-          },
-          {
-            "@type": "Offer",
-            "name": "Bhavya VIP Membership (2 Members - 6 Months Validity)",
-            "description": "Preventive health program for 2 family members including Platinum Package, ECG, PFT, 50+ Body Parameters Analysis & Diet Guidance",
-            "price": "3600",
-            "priceCurrency": "INR"
-          }
-        ]
-      }
+      "description": "Bhavya Diagnostics in Bahadurgarh offers 700+ NABL accredited partner lab blood tests, Triple Protection accuracy cross-checking, Free Home Sample Collection, Full Body Health Packages, ECG, PFT, and 50+ Body Composition Analysis."
     }
     </script>
     
@@ -139,199 +97,344 @@
     <style>
         /* === PREMIUM MODERN UI CSS === */
         :root {
-            --primary: #2563eb; --primary-light: #eff6ff;
+            --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #eff6ff;
             --secondary: #10b981; --secondary-light: #d1fae5;
             --warning: #f59e0b; --danger: #ef4444;
             --bg-color: #f8fafc; --text-main: #0f172a; --text-muted: #64748b;
         }
         
-        /* 🛠️ PREVENT HORIZONTAL SCROLL 🛠️ */
-        html, body { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow-x: clip; width: 100vw; max-width: 100%; -webkit-tap-highlight-color: transparent; }
+        /* PREVENT HORIZONTAL SCROLL */
+        html, body { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow-x: clip; width: 100%; max-width: 100%; -webkit-tap-highlight-color: transparent; }
         *, *::before, *::after { box-sizing: inherit; }
 
-        /* 🌟 HEADER CSS 🌟 */
-        .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; padding: 10px 40px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #f1f5f9;}
-        .logo { display: flex; align-items: center; gap: 10px; } 
-        .logo img { height: 60px; object-fit: contain; display: block;}
+        .section-heading { text-align: center; max-width: 720px; margin: 0 auto 28px; }
+        .section-heading h2 { font-size: 28px; font-weight: 800; color: #0f172a; margin: 0 0 8px; letter-spacing: -0.5px; }
+        .section-heading p { font-size: 14.5px; color: var(--text-muted); margin: 0; font-weight: 500; }
+
+        /* HEADER */
+        .navbar { display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; padding: 10px 36px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #f1f5f9; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo img { height: 52px; border-radius: 8px; object-fit: contain; display: block; }
+        .logo-text { color: #0056b3; font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        .logo-text span { color: #10b981; }
         
-        .nav-actions { display: flex; align-items: center; gap: 15px; }
-        .nav-btn { border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; color: white; display: inline-block; text-align: center;}
-        .login-btn { background-color: var(--primary); }
-        .login-btn:hover { background-color: #1d4ed8; }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .nav-btn { border: none; padding: 10px 20px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.25s; color: white; display: inline-flex; align-items: center; gap: 6px; }
+        .login-btn { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); box-shadow: 0 4px 12px rgba(37,99,235,0.25); }
+        .login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.35); }
 
         #user-menu-container { display: none; }
-        .user-profile-btn { background: #f4f7f6; color: var(--primary); border: 1px solid #cce5ff; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .user-profile-btn:hover { background: #e6f0fa; }
+        .user-profile-btn { background: #eff6ff; color: var(--primary); border: 1px solid #bfdbfe; padding: 8px 15px; border-radius: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .user-profile-btn:hover { background: #dbeafe; }
         
         .dropdown { position: relative; display: inline-block; }
-        .dropbtn { background-color: transparent; color: #333; font-size: 24px; border: none; cursor: pointer; padding: 0 5px; font-weight: bold; }
-        .dropbtn:hover { color: var(--primary); }
-        .dropdown-content { display: none; position: absolute; right: 0; background-color: #ffffff; min-width: 240px; box-shadow: 0px 10px 25px rgba(0,0,0,0.15); z-index: 1001; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; margin-top: 10px;}
-        .dropdown-content a { color: #334155; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 14px; border-bottom: 1px solid #f1f5f9; font-weight: 600; cursor: pointer;}
-        .dropdown-content a:hover { background-color: #f8fafc; color: var(--primary); padding-left: 20px; transition: 0.2s;}
+        .dropbtn { background-color: #f8fafc; color: #334155; font-size: 20px; border: 1px solid #e2e8f0; width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .dropbtn:hover { color: var(--primary); border-color: #bfdbfe; }
+        .dropdown-content { display: none; position: absolute; right: 0; background-color: #ffffff; min-width: 240px; box-shadow: 0 14px 35px rgba(15,23,42,0.16); z-index: 1001; border-radius: 14px; overflow: hidden; border: 1px solid #e2e8f0; margin-top: 10px; }
+        .dropdown-content a { color: #334155; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 14px; border-bottom: 1px solid #f1f5f9; font-weight: 600; cursor: pointer; }
+        .dropdown-content a:hover { background-color: #f8fafc; color: var(--primary); padding-left: 20px; transition: 0.2s; }
         .dropdown-content hr { border: 0; border-top: 4px solid #f1f5f9; margin: 0; }
         .show-menu { display: block; }
 
-        /* ✨ COMPACT HEADER IMAGE SLIDER CSS ✨ */
-        .header-slider-wrap { max-width: 800px; margin: 0 auto 20px; position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1); background: #ffffff; border: 1px solid #dbeafe; }
+        /* COMPACT HEADER IMAGE SLIDER */
+        .header-slider-wrap { max-width: 800px; margin: 0 auto 18px; position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08); background: #ffffff; border: 1px solid #dbeafe; }
         .header-slider-track { display: flex; transition: transform 0.45s ease-in-out; width: 100%; }
         .header-slide { min-width: 100%; height: 210px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); cursor: pointer; text-decoration: none; }
         .header-slide img { width: 100%; height: 100%; object-fit: contain; display: block; }
-        .hs-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(15, 23, 42, 0.45); color: #ffffff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; z-index: 5; transition: 0.2s; backdrop-filter: blur(2px); }
+        .hs-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(15, 23, 42, 0.45); color: #ffffff; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; z-index: 5; transition: 0.2s; }
         .hs-arrow:hover { background: var(--primary); }
         .hs-prev { left: 10px; }
         .hs-next { right: 10px; }
-        .hs-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; background: rgba(255, 255, 255, 0.8); padding: 4px 8px; border-radius: 12px; }
+        .hs-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; background: rgba(255, 255, 255, 0.85); padding: 4px 8px; border-radius: 12px; }
         .hs-dot { width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; border: none; padding: 0; cursor: pointer; transition: 0.25s; }
         .hs-dot.active { width: 18px; border-radius: 4px; background: var(--primary); }
 
-        /* Login Popup Section CSS */
-        #login-section { width: 90%; max-width: 400px; margin: 40px auto; padding: 30px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-radius: 16px; text-align: center; display: none; position: fixed; top: 70px; right: 40px; z-index: 999; }
-        #login-section h3 { color: #333; margin-bottom: 20px; font-size: 22px; font-weight: 800;}
-        .input-box { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box;}
-        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        .action-btn { width: 100%; background-color: var(--secondary); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .action-btn:hover { background-color: #059669; }
+        /* ✨ MODERN CENTERED MOBILE-FIRST LOGIN MODAL ✨ */
+        #login-section {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: calc(100% - 28px);
+            max-width: 410px;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: #ffffff;
+            padding: 28px 24px 24px;
+            border-radius: 22px;
+            text-align: center;
+            z-index: 3500;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35), 0 0 0 100vmax rgba(15, 23, 42, 0.62);
+            animation: loginPop 0.25s ease-out;
+        }
+        @keyframes loginPop {
+            from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        .login-brand-icon {
+            width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 12px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            color: var(--primary); font-size: 24px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid #bfdbfe;
+        }
+        #login-section h3 { color: #0f172a; margin: 0 0 6px; font-size: 21px; font-weight: 800; }
+        .login-subtitle { font-size: 12.5px; color: #64748b; margin: 0 0 14px; font-weight: 500; }
+        .welcome-bonus-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            color: #065f46; border: 1px solid #6ee7b7;
+            padding: 7px 14px; border-radius: 999px; font-size: 12px; font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .field-label { display: block; text-align: left; font-size: 12.5px; font-weight: 700; color: #334155; margin: 10px 0 5px; }
+        .input-box {
+            width: 100%; padding: 13px 14px; margin: 0; border: 1.5px solid #cbd5e1;
+            border-radius: 12px; font-size: 15px; font-weight: 600; color: #0f172a;
+            background: #f8fafc; outline: none; transition: 0.2s; font-family: inherit;
+        }
+        .input-box:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        .phone-input-wrap {
+            display: flex; align-items: center; border: 1.5px solid #cbd5e1;
+            border-radius: 12px; background: #f8fafc; overflow: hidden; transition: 0.2s;
+        }
+        .phone-input-wrap:focus-within { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        .phone-prefix {
+            padding: 13px 12px; background: #eff6ff; color: #1e40af; font-weight: 800; font-size: 14px;
+            border-right: 1px solid #dbeafe; user-select: none;
+        }
+        .phone-input-wrap input {
+            border: none; background: transparent; padding: 13px 12px; width: 100%;
+            font-size: 15.5px; font-weight: 700; letter-spacing: 0.5px; outline: none; color: #0f172a; font-family: inherit;
+        }
+        .action-btn {
+            width: 100%; background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white; border: none; padding: 14px; border-radius: 12px;
+            font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 14px; transition: 0.2s;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.28);
+        }
+        .action-btn:hover:not(:disabled) { transform: translateY(-1px); }
         .action-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .login-close-btn {
+            position: absolute; top: 14px; right: 14px; background: #f1f5f9; border: none;
+            width: 34px; height: 34px; border-radius: 50%; font-size: 15px; color: #475569;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
 
-        /* 🌟 SECTIONS CSS 🌟 */
-        .section-hero { background: linear-gradient(180deg, #e0f2fe 0%, #eff6ff 100%); padding: 20px 20px 40px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .section-diagnostics { background: #ffffff; padding: 50px 20px; border-bottom: 1px solid #e2e8f0; } 
+        /* SECTIONS */
+        .section-hero { background: linear-gradient(180deg, #e0f2fe 0%, #eff6ff 100%); padding: 20px 20px 36px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        .section-diagnostics { background: #ffffff; padding: 48px 20px; border-bottom: 1px solid #e2e8f0; }
+        .section-vip-wrap { background: #ffffff; padding: 10px 20px 48px; }
         .section-trust { background: #f8fafc; padding: 30px 20px; border-bottom: 1px solid #e2e8f0; }
-        .section-packages { background: #f1f5f9; padding: 60px 20px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
-        .section-hiw { background: #ffffff; padding: 60px 20px; border-bottom: 1px solid #e2e8f0;}
+        .section-triple { background: #ffffff; padding: 52px 20px; border-bottom: 1px solid #e2e8f0; }
+        .section-packages { background: #f1f5f9; padding: 54px 20px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
+        .section-hiw { background: #ffffff; padding: 54px 20px; border-bottom: 1px solid #e2e8f0; }
 
-        /* 🌟 TEXT STYLES 🌟 */
-        .hero-title { font-size: 42px; font-weight: 800; color: #1e293b; margin-bottom: 12px; letter-spacing: -1px; line-height: 1.2;}
+        /* TEXT STYLES */
+        .hero-title { font-size: 38px; font-weight: 800; color: #0f172a; margin: 0 0 12px; letter-spacing: -0.8px; line-height: 1.2; }
         .hero-title span { color: var(--primary); }
-        .hero-subtitle { font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto; font-weight: 500; line-height: 1.6;}
+        .hero-subtitle { font-size: 15.5px; color: var(--text-muted); max-width: 620px; margin: 0 auto; font-weight: 500; line-height: 1.6; }
 
-        /* ✨ TRUST STATS BAR ✨ */
-        .trust-stats-bar { display: flex; justify-content: center; gap: 40px; margin-top: 30px; padding-top: 25px; border-top: 1px dashed #cbd5e1; flex-wrap: wrap;}
-        .stat-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        /* TRUST STATS BAR */
+        .trust-stats-bar { display: flex; justify-content: center; gap: 40px; margin-top: 26px; padding-top: 22px; border-top: 1px dashed #cbd5e1; flex-wrap: wrap; }
+        .stat-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .stat-num { font-size: 24px; font-weight: 800; color: #0f172a; }
-        .stat-text { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;}
+        .stat-text { font-size: 11.5px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .search-container { max-width: 800px; margin: 0 auto; background: white; padding: 8px; border-radius: 20px; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15); display: flex; align-items: center; border: 1px solid #cbd5e1; position: relative; margin-bottom: 25px;}
-        .search-container i.fa-search { color: #94a3b8; font-size: 20px; margin-left: 15px;}
-        .search-container input { flex: 1; border: none; padding: 15px; font-size: 16px; outline: none; font-weight: 500; color: var(--text-main); background: transparent;}
-        .search-btn { background: var(--primary); color: white; border: none; padding: 14px 28px; border-radius: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 15px;}
+        .search-container { max-width: 800px; margin: 0 auto 22px; background: white; padding: 7px; border-radius: 18px; box-shadow: 0 10px 28px rgba(37, 99, 235, 0.13); display: flex; align-items: center; border: 1.5px solid #cbd5e1; position: relative; }
+        .search-container i.fa-search { color: #94a3b8; font-size: 18px; margin-left: 14px; }
+        .search-container input { flex: 1; border: none; padding: 14px 12px; font-size: 15.5px; outline: none; font-weight: 500; color: var(--text-main); background: transparent; min-width: 0; }
+        .search-btn { background: var(--primary); color: white; border: none; padding: 13px 24px; border-radius: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14.5px; white-space: nowrap; }
 
-        /* ✨ PROMINENT QUICK ACTIONS ✨ */
-        .hero-quick-actions { display: flex; justify-content: center; gap: 15px; margin: 0 auto; max-width: 800px; flex-wrap: wrap;}
-        .btn-quick { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; text-decoration: none; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
-        .btn-quick:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        /* QUICK ACTIONS */
+        .hero-quick-actions { display: flex; justify-content: center; gap: 14px; margin: 0 auto; max-width: 800px; flex-wrap: wrap; }
+        .btn-quick { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 700; font-size: 14px; text-decoration: none; transition: 0.25s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .btn-quick:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .call-btn { background: white; color: #0f172a; border: 1px solid #cbd5e1; }
         .wa-btn { background: #10b981; color: white; border: 1px solid #059669; }
-        .rx-btn { background: #8b5cf6; color: white; border: 1px solid #7c3aed; }
+        .rx-btn { background: #7c3aed; color: white; border: 1px solid #6d28d9; }
 
-        .btn-more-services { display: inline-flex; align-items: center; gap: 8px; background: var(--text-main); color: white; padding: 14px 35px; border-radius: 12px; font-weight: 800; font-size: 15px; text-decoration: none; transition: 0.3s; margin-top: 15px; box-shadow: 0 4px 15px rgba(15,23,42,0.2);}
-        .btn-more-services:hover { background: var(--primary); box-shadow: 0 8px 25px rgba(37,99,235,0.3);}
+        .btn-more-services { display: inline-flex; align-items: center; gap: 8px; background: var(--text-main); color: white; padding: 14px 32px; border-radius: 12px; font-weight: 800; font-size: 15px; text-decoration: none; transition: 0.25s; margin-top: 18px; box-shadow: 0 6px 16px rgba(15,23,42,0.18); }
+        .btn-more-services:hover { background: var(--primary); }
 
-        /* 🛡️ TRUST BADGES */
-        .trust-grid { max-width: 1000px; margin: 0 auto; display: flex; justify-content: center; flex-wrap: wrap; gap: 30px;}
-        .trust-item { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #334155;}
-        .trust-item i { color: var(--secondary); font-size: 22px;}
+        /* ✨ CLEAN & PREMIUM VIP MEMBERSHIP SECTION ✨ */
+        .vip-banner {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 65%, #172554 100%);
+            border-radius: 24px;
+            color: white;
+            display: grid;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 24px;
+            align-items: center;
+            padding: 36px 38px;
+            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+            border: 1px solid rgba(250, 204, 21, 0.22);
+            position: relative;
+            overflow: hidden;
+        }
+        .vip-banner::before {
+            content: ''; position: absolute; width: 280px; height: 280px; right: -80px; top: -90px;
+            background: radial-gradient(circle, rgba(250, 204, 21, 0.16) 0%, transparent 70%); pointer-events: none;
+        }
+        .vip-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(250, 204, 21, 0.16); color: #fde047;
+            border: 1px solid rgba(250, 204, 21, 0.35);
+            font-size: 11.5px; font-weight: 800; padding: 5px 12px; border-radius: 999px;
+            text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 12px;
+        }
+        .vip-content h2 { font-size: 28px; font-weight: 800; color: #ffffff; margin: 0 0 10px; line-height: 1.25; }
+        .vip-content h2 span { color: #facc15; }
+        .vip-content p { font-size: 14.5px; color: #cbd5e1; margin: 0 0 18px; line-height: 1.6; }
+        .vip-perks-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .vip-perk {
+            display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #f1f5f9;
+            background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 9px 12px; border-radius: 10px;
+        }
+        .vip-perk i { color: #facc15; font-size: 14px; flex-shrink: 0; }
+        .vip-cta-card {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 18px;
+            padding: 24px 22px;
+            text-align: center;
+            backdrop-filter: blur(6px);
+            position: relative;
+            z-index: 2;
+        }
+        .vip-price-label { font-size: 12px; color: #cbd5e1; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .vip-price-main { font-size: 32px; font-weight: 800; color: #facc15; margin: 6px 0 4px; line-height: 1.1; }
+        .vip-price-sub { font-size: 12px; color: #94a3b8; margin: 0 0 18px; font-weight: 600; }
+        .btn-vip {
+            width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white;
+            border: none; padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 800;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35); transition: 0.25s;
+        }
+        .btn-vip:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
-        /* VIP BANNER */
-        .vip-banner { max-width: 1000px; margin: 0 auto 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 24px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 15px 30px rgba(15, 23, 42, 0.15); position: relative; overflow: hidden;}
-        .vip-banner::before { content: '👑'; position: absolute; right: -20px; top: -30px; font-size: 150px; opacity: 0.05; transform: rotate(15deg);}
-        .vip-content { flex: 1; padding: 40px; z-index: 2; position: relative;}
-        .vip-content h2 { font-size: 26px; font-weight: 800; color: #facc15; margin: 0 0 10px 0;}
-        .vip-content p { font-size: 15px; color: #cbd5e1; margin: 0 0 20px 0; line-height: 1.6; font-weight: 500;}
-        .btn-vip { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 15px 35px; border-radius: 12px; font-size: 16px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);}
+        /* ✨ TRIPLE PROTECTION GUARANTEE SECTION ✨ */
+        .triple-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .triple-card {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 24px 20px;
+            text-align: left; transition: 0.25s;
+        }
+        .triple-card:hover { border-color: #93c5fd; background: #ffffff; box-shadow: 0 12px 26px rgba(37,99,235,0.08); transform: translateY(-3px); }
+        .triple-badge {
+            width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 14px;
+        }
+        .triple-card h3 { margin: 0 0 8px; font-size: 16.5px; font-weight: 800; color: #0f172a; }
+        .triple-card p { margin: 0; font-size: 13.5px; color: #475569; line-height: 1.55; font-weight: 500; }
 
-        /* 🎁 TRENDING PACKAGES & SCROLL */
-        .home-cat-nav { display: flex; gap: 10px; overflow-x: auto; max-width: 1000px; margin: 0 auto 25px; padding: 10px 0; justify-content: center; cursor: grab; -webkit-overflow-scrolling: touch; white-space: nowrap;}
+        /* TRUST BADGES */
+        .trust-grid { max-width: 1000px; margin: 0 auto; display: flex; justify-content: center; flex-wrap: wrap; gap: 26px; }
+        .trust-item { display: flex; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 700; color: #334155; }
+        .trust-item i { color: var(--secondary); font-size: 20px; }
+
+        /* TRENDING PACKAGES */
+        .home-cat-nav { display: flex; gap: 10px; overflow-x: auto; max-width: 1000px; margin: 0 auto 22px; padding: 6px 0; justify-content: center; cursor: grab; -webkit-overflow-scrolling: touch; white-space: nowrap; }
         .home-cat-nav::-webkit-scrollbar { display: none; }
-        .home-cat-btn { background: white; border: 1px solid #cbd5e1; color: #475569; padding: 10px 22px; border-radius: 25px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; user-select: none; flex: 0 0 auto;}
-        .home-cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 6px 15px rgba(37,99,235,0.25);}
+        .home-cat-btn { background: white; border: 1px solid #cbd5e1; color: #475569; padding: 9px 20px; border-radius: 25px; font-size: 13.5px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; user-select: none; flex: 0 0 auto; }
+        .home-cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 6px 15px rgba(37,99,235,0.25); }
 
-        .slider-wrapper { max-width: 1020px; margin: 0 auto; overflow-x: auto; display: flex; gap: 20px; padding: 15px 10px 30px; cursor: grab; -webkit-overflow-scrolling: touch;}
+        .slider-wrapper { max-width: 1020px; margin: 0 auto; overflow-x: auto; display: flex; gap: 20px; padding: 12px 10px 26px; cursor: grab; -webkit-overflow-scrolling: touch; }
         .slider-wrapper::-webkit-scrollbar { display: none; }
         
-        .pkg-card { min-width: 330px; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; user-select: none;}
-        .pkg-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(37,99,235,0.12); border-color: #93c5fd;}
-        .pkg-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
-        .pkg-cat-badge { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
-        .pkg-test-count { background: #fef3c7; color: #d97706; font-size: 13px; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
-        .pkg-title { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px; line-height: 1.3;}
-        .pkg-desc { background: #f8fafc; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; }
-        .pkg-desc ul { margin: 0; padding-left: 18px; font-size: 14px; color: #334155; font-weight: 600; line-height: 1.7;}
-        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 13px; font-weight: 800; padding: 6px 14px; border-radius: 12px; display: inline-block; margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd;}
+        .pkg-card { min-width: 330px; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 12px; transition: 0.3s; user-select: none; }
+        .pkg-card:hover { transform: translateY(-4px); box-shadow: 0 14px 32px rgba(37,99,235,0.12); border-color: #93c5fd; }
+        .pkg-header-row { display: flex; justify-content: space-between; align-items: center; }
+        .pkg-cat-badge { background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .pkg-test-count { background: #fef3c7; color: #d97706; font-size: 12.5px; font-weight: 800; padding: 5px 12px; border-radius: 8px; }
+        .pkg-title { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px; line-height: 1.3; }
+        .pkg-desc { background: #f8fafc; border-radius: 12px; padding: 14px; border: 1px solid #e2e8f0; }
+        .pkg-desc ul { margin: 0; padding-left: 18px; font-size: 13.5px; color: #334155; font-weight: 600; line-height: 1.65; }
+        .pkg-param-pill { background: #e0f2fe; color: #0284c7; font-size: 12.5px; font-weight: 800; padding: 5px 13px; border-radius: 10px; display: inline-block; margin-top: 10px; cursor: pointer; border: 1px solid #bae6fd; }
 
-        /* ✨ FASTING & REPORTING TIME BADGES ✨ */
         .pkg-meta-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
         .pkg-meta-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 7px; line-height: 1.25; }
         .pkg-meta-fasting { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
         .pkg-meta-report { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
 
-        .pkg-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 10px;}
-        .pkg-price-area { display: flex; flex-direction: column; gap: 2px;}
-        .pkg-total-mrp { font-size: 12px; color: #94a3b8; font-weight: 600;}
-        .pkg-basic-price { font-size: 24px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; line-height: 1.1;}
+        .pkg-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 10px; }
+        .pkg-price-area { display: flex; flex-direction: column; gap: 2px; }
+        .pkg-total-mrp { font-size: 12px; color: #94a3b8; font-weight: 600; }
+        .pkg-basic-price { font-size: 24px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px; line-height: 1.1; }
         .pkg-basic-badge { font-size: 10px; font-weight: 800; background: #e0f2fe; color: #0284c7; padding: 3px 8px; border-radius: 6px; }
-        .pkg-vip-pill { background: #ffffff; color: #475569; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; border: 1px solid #cbd5e1; width: max-content; cursor: pointer; transition: 0.3s; text-decoration: none;}
-        .pkg-vip-pill:hover { background: #fef3c7; border-color: #f59e0b; color: #d97706;}
+        .pkg-vip-pill { background: #ffffff; color: #475569; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; border: 1px solid #cbd5e1; width: max-content; cursor: pointer; transition: 0.25s; text-decoration: none; }
+        .pkg-vip-pill:hover { background: #fef3c7; border-color: #f59e0b; color: #d97706; }
         
-        .btn-add-cart { background: white; color: var(--primary); border: 2px solid var(--primary); padding: 10px 25px; border-radius: 10px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; height: max-content;}
+        .btn-add-cart { background: white; color: var(--primary); border: 2px solid var(--primary); padding: 10px 22px; border-radius: 10px; font-size: 14.5px; font-weight: 800; cursor: pointer; transition: 0.2s; height: max-content; }
         .btn-add-cart:hover { background: var(--primary-light); }
-        .qty-control { display: flex; align-items: center; background: white; border: 2px solid var(--primary); border-radius: 10px; overflow: hidden; height: max-content;}
-        .qty-control button { background: var(--primary-light); color: var(--primary); border: none; padding: 10px 14px; font-weight: bold; cursor: pointer; font-size: 15px; transition: 0.2s;}
-        .qty-control button:hover { background: var(--primary); color: white;}
-        .qty-text { font-size: 15px; font-weight: 800; width: 35px; text-align: center; color: var(--text-main);}
+        .qty-control { display: flex; align-items: center; background: white; border: 2px solid var(--primary); border-radius: 10px; overflow: hidden; height: max-content; }
+        .qty-control button { background: var(--primary-light); color: var(--primary); border: none; padding: 9px 13px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .qty-control button:hover { background: var(--primary); color: white; }
+        .qty-text { font-size: 14.5px; font-weight: 800; width: 32px; text-align: center; color: var(--text-main); }
 
-        /* 🛠️ HOW IT WORKS */
-        .hiw-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-        .hiw-step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; padding: 40px 20px; background: #ffffff; border-radius: 24px; border: 1px solid #e2e8f0; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
-        .hiw-step:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.08); transform: translateY(-5px);}
-        .hiw-icon { width: 80px; height: 80px; border-radius: 20px; background: #f8fafc; color: var(--primary); font-size: 32px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 0 1px #e2e8f0;}
-        .hiw-step h4 { font-size: 20px; font-weight: 800; margin: 0; color: #1e293b;}
-        .hiw-step p { font-size: 15px; color: #64748b; margin: 0; line-height: 1.6; font-weight: 500;}
+        /* HOW IT WORKS */
+        .hiw-grid { max-width: 920px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .hiw-step { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; padding: 32px 20px; background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.25s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .hiw-step:hover { box-shadow: 0 10px 28px rgba(0,0,0,0.07); transform: translateY(-4px); }
+        .hiw-icon { width: 70px; height: 70px; border-radius: 18px; background: #eff6ff; color: var(--primary); font-size: 28px; display: flex; align-items: center; justify-content: center; }
+        .hiw-step h4 { font-size: 18px; font-weight: 800; margin: 0; color: #1e293b; }
+        .hiw-step p { font-size: 14px; color: #64748b; margin: 0; line-height: 1.55; font-weight: 500; }
 
-        /* 💬 PATIENT REVIEWS SECTION 💬 */
-        .section-reviews { background: #f8fafc; padding: 60px 20px; border-bottom: 1px solid #e2e8f0; }
-        .reviews-wrapper { max-width: 1050px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; cursor: grab; }
-        .reviews-wrapper:active { cursor: grabbing; }
-        .review-card { background: #ffffff; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; transition: 0.3s; user-select: none; }
-        .review-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(37,99,235,0.08); border-color: #cbd5e1; }
+        /* PATIENT REVIEWS */
+        .section-reviews { background: #f8fafc; padding: 54px 20px; border-bottom: 1px solid #e2e8f0; }
+        .reviews-wrapper { max-width: 1050px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; cursor: grab; }
+        .review-card { background: #ffffff; padding: 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; transition: 0.25s; user-select: none; }
+        .review-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(37,99,235,0.08); border-color: #cbd5e1; }
         .review-stars { color: #f59e0b; font-size: 14px; margin-bottom: 12px; }
-        .review-text { font-size: 14px; color: #475569; line-height: 1.6; font-style: italic; margin-bottom: 20px; }
+        .review-text { font-size: 14px; color: #475569; line-height: 1.6; font-style: italic; margin-bottom: 18px; }
         .review-user { display: flex; align-items: center; gap: 12px; }
-        .review-avatar { width: 45px; height: 45px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
-        .review-info h4 { margin: 0 0 3px 0; font-size: 15px; color: #1e293b; font-weight: 800; }
+        .review-avatar { width: 42px; height: 42px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; }
+        .review-info h4 { margin: 0 0 3px; font-size: 15px; color: #1e293b; font-weight: 800; }
         .review-info p { margin: 0; font-size: 12px; color: #94a3b8; font-weight: 600; }
 
-        /* ✨ AGGREGATOR SECTION ✨ */
-        .section-about { background: #ffffff; padding: 60px 20px; text-align: center; }
-        .about-box { max-width: 800px; margin: 0 auto; background: #f8fafc; padding: 40px; border-radius: 24px; box-shadow: inset 0 0 0 1px #e2e8f0;}
-        .about-box h2 { font-size: 26px; color: #1e293b; margin-bottom: 15px; font-weight: 800;}
-        .about-box p { font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 25px; font-weight: 500;}
-        .badge-wrap { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;}
-        .badge-wrap span { background: #ffffff; color: #2563eb; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 700; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        /* ABOUT SECTION */
+        .section-about { background: #ffffff; padding: 52px 20px; text-align: center; }
+        .about-box { max-width: 820px; margin: 0 auto; background: #f8fafc; padding: 36px 28px; border-radius: 22px; border: 1px solid #e2e8f0; }
+        .about-box h2 { font-size: 24px; color: #1e293b; margin: 0 0 12px; font-weight: 800; }
+        .about-box p { font-size: 14.5px; color: #475569; line-height: 1.7; margin: 0 0 22px; font-weight: 500; }
+        .badge-wrap { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .badge-wrap span { background: #ffffff; color: #2563eb; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; border: 1px solid #bfdbfe; display: flex; align-items: center; gap: 6px; }
 
-        /* ✨ MEGA FOOTER ✨ */
-        .footer { background: #0f172a; color: #94a3b8; padding: 60px 40px 20px; font-size: 14px;}
-        .footer-grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; border-bottom: 1px solid #334155; padding-bottom: 40px; margin-bottom: 20px;}
-        .footer-col h3 { color: white; font-size: 18px; margin-bottom: 20px; font-weight: 700;}
-        .footer-col p { margin: 0 0 15px; line-height: 1.6;}
-        .footer-col a { color: #94a3b8; text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; transition: 0.2s; font-weight: 500;}
-        .footer-col a:hover { color: var(--primary-light); transform: translateX(5px);}
-        .footer-bottom { text-align: center; font-size: 13px; color: #64748b;}
+        /* CLEAN FOOTER */
+        .footer { background: #0f172a; color: #94a3b8; padding: 52px 32px 24px; font-size: 14px; }
+        .footer-grid { max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 36px; border-bottom: 1px solid #1e293b; padding-bottom: 34px; margin-bottom: 20px; }
+        .footer-col h3 { color: white; font-size: 16px; margin: 0 0 16px; font-weight: 800; }
+        .footer-col p { margin: 0 0 14px; line-height: 1.6; font-size: 13.5px; }
+        .footer-col a { color: #94a3b8; text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 11px; transition: 0.2s; font-weight: 500; font-size: 13.5px; }
+        .footer-col a:hover { color: #ffffff; transform: translateX(4px); }
+        .footer-contact-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+        .footer-chip { background: #1e293b; color: #e2e8f0 !important; padding: 8px 13px; border-radius: 10px; font-size: 12.5px !important; font-weight: 700 !important; margin-bottom: 0 !important; border: 1px solid #334155; }
+        .footer-chip:hover { background: #2563eb; border-color: #2563eb; transform: none !important; }
+        .footer-bottom { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12.5px; color: #64748b; }
 
         @keyframes slideUpToast { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        /* 📱 100% PERFECT MOBILE OPTIMIZATION 📱 */
-        @media (max-width: 768px) {
-            .navbar { padding: 10px 15px; }
-            .logo img { height: 45px; } 
-            .logo h2 { font-size: 18px !important; }
 
-            .section-hero { padding: 15px 15px 25px; }
-            .section-diagnostics { padding: 30px 15px; }
+        /* 📱 MOBILE OPTIMIZATION 📱 */
+        @media (max-width: 768px) {
+            .navbar { padding: 10px 14px; }
+            .logo img { height: 42px; }
+            .logo-text { font-size: 17.5px; }
+            .nav-btn { padding: 8px 14px; font-size: 13px; border-radius: 9px; }
+            .dropbtn { width: 35px; height: 35px; font-size: 18px; }
+
+            .section-hero { padding: 14px 14px 24px; }
+            .section-diagnostics { padding: 28px 14px; }
+            .section-vip-wrap { padding: 6px 14px 32px; }
+            .section-triple { padding: 34px 14px; }
+
+            .section-heading { margin-bottom: 18px; }
+            .section-heading h2 { font-size: 21px; }
+            .section-heading p { font-size: 13px; }
 
             .header-slider-wrap { margin-bottom: 14px; border-radius: 14px; }
-            .header-slide { height: 155px; }
+            .header-slide { height: 152px; }
             .hs-arrow { width: 26px; height: 26px; font-size: 11px; }
             .hs-prev { left: 6px; }
             .hs-next { right: 6px; }
@@ -339,102 +442,111 @@
             .hs-dot { width: 6px; height: 6px; }
             .hs-dot.active { width: 14px; }
             
-            .trust-stats-bar { gap: 15px; margin-top: 20px; padding-top: 20px; justify-content: space-between; }
+            .trust-stats-bar { gap: 12px; margin-top: 18px; padding-top: 18px; justify-content: space-around; }
             .stat-num { font-size: 18px; }
-            .stat-text { font-size: 9px; }
+            .stat-text { font-size: 9.5px; }
 
-            .search-container { padding: 6px; border-radius: 16px; margin: 0 auto 15px;}
-            .search-container input { padding: 10px 10px 10px 35px; font-size: 13px; }
-            .search-container i.fa-search { font-size: 15px; left: 14px;}
-            .search-btn { padding: 10px 18px; font-size: 12px; border-radius: 12px;}
+            .search-container { padding: 5px; border-radius: 14px; margin: 0 auto 14px; }
+            .search-container input { padding: 10px 8px; font-size: 13.5px; }
+            .search-container i.fa-search { font-size: 15px; margin-left: 10px; }
+            .search-btn { padding: 10px 16px; font-size: 12.5px; border-radius: 10px; }
 
-            .hero-quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 0; width: 100%;}
-            .btn-quick { flex-direction: column; text-align: center; padding: 12px 5px; font-size: 10px; gap: 6px; border-radius: 12px;}
-            .btn-quick i { font-size: 20px; }
+            .hero-quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+            .btn-quick { flex-direction: column; text-align: center; padding: 11px 6px; font-size: 10.5px; gap: 5px; border-radius: 12px; }
+            .btn-quick i { font-size: 18px; }
 
-            .hero-title { font-size: 20px; line-height: 1.3; margin-bottom: 10px;}
-            .hero-subtitle { font-size: 13px; line-height: 1.5; margin-top: 5px; margin-bottom: 20px;}
+            .hero-title { font-size: 22px; line-height: 1.28; margin-bottom: 8px; }
+            .hero-subtitle { font-size: 13px; line-height: 1.5; }
+            .btn-more-services { padding: 12px 24px; font-size: 14px; width: 100%; justify-content: center; }
 
-            .section-packages { 
-                position: -webkit-sticky; 
-                position: sticky; 
-                top: 55px; 
-                z-index: 90; 
-                padding: 15px 10px; 
+            /* Clean Mobile VIP Card */
+            .vip-banner { grid-template-columns: 1fr; padding: 24px 18px; gap: 18px; border-radius: 20px; text-align: left; }
+            .vip-content h2 { font-size: 21px; }
+            .vip-content p { font-size: 13px; margin-bottom: 14px; }
+            .vip-perks-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .vip-perk { font-size: 11.5px; padding: 8px 9px; }
+            .vip-cta-card { padding: 18px 16px; }
+            .vip-price-main { font-size: 26px; }
+
+            /* Mobile Triple Protection */
+            .triple-grid { grid-template-columns: 1fr; gap: 12px; }
+            .triple-card { padding: 18px 16px; display: flex; gap: 14px; align-items: flex-start; }
+            .triple-badge { margin-bottom: 0; flex-shrink: 0; width: 42px; height: 42px; font-size: 18px; }
+            .triple-card h3 { font-size: 15px; margin-bottom: 4px; }
+            .triple-card p { font-size: 12.5px; }
+
+            .section-packages {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 56px;
+                z-index: 90;
+                padding: 15px 10px;
                 background: linear-gradient(to bottom, #ffffff, #f8fafc);
-                border-top: 1px solid #e2e8f0;
-                border-bottom: 1px solid #e2e8f0;
             }
-            .section-packages .section-heading { margin-bottom: 10px; }
-            .section-packages .section-heading h2 { font-size: 20px; margin-bottom: 2px; }
-            .section-packages .section-heading p { display: none; } 
+            .section-packages .section-heading { margin-bottom: 8px; }
+            .section-packages .section-heading h2 { font-size: 19px; margin-bottom: 0; }
+            .section-packages .section-heading p { display: none; }
             
-            .home-cat-nav { margin: 0 auto 10px; padding: 5px 0; gap: 8px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start;}
-            .home-cat-btn { padding: 6px 16px; font-size: 12px; border-radius: 20px; background: #f1f5f9; border: 1px solid #e2e8f0; flex: 0 0 auto;}
-            .home-cat-btn.active { background: var(--primary); color: white; border: none; box-shadow: 0 4px 10px rgba(37,99,235,0.3);}
+            .home-cat-nav { margin: 0 auto 10px; padding: 4px 0; gap: 8px; justify-content: flex-start; }
+            .home-cat-btn { padding: 6px 15px; font-size: 12px; background: #f1f5f9; border: 1px solid #e2e8f0; }
             
-            .slider-wrapper { 
+            .slider-wrapper {
                 margin-left: -10px; margin-right: -10px; padding-left: 10px; padding-right: 10px; width: calc(100% + 20px);
-                scroll-snap-type: x mandatory; padding-bottom: 15px; gap: 15px; overflow-x: auto; flex-wrap: nowrap;
+                scroll-snap-type: x mandatory; padding-bottom: 14px; gap: 14px;
             }
-            .pkg-card { min-width: 85vw; max-width: 340px; padding: 18px; gap: 10px; border-radius: 18px; scroll-snap-align: start; background: #ffffff; flex: 0 0 auto;}
-            .pkg-title { font-size: 17px; margin-bottom: 2px;}
-            .pkg-test-count { font-size: 12.5px; padding: 5px 11px; }
-            .pkg-desc { padding: 12px 14px; border-radius: 12px; background: #f8fafc; margin-bottom: 2px;}
-            .pkg-desc ul { font-size: 13.5px; line-height: 1.65; }
-            .pkg-param-pill { font-size: 12.5px; padding: 6px 13px; margin-top: 10px; }
-            .pkg-meta-badge { font-size: 10px; padding: 3px 8px; }
-            .pkg-basic-price { font-size: 18px; }
-            .btn-add-cart { padding: 6px 14px; font-size: 12px; border-radius: 8px;}
-            .qty-control { height: 30px; }
-            .qty-control button { padding: 0 10px; font-size: 14px;}
-            .qty-text { font-size: 13px; width: 25px; }
-            .pkg-vip-pill { margin-top: 4px; padding: 4px 8px; font-size: 10px; }
+            .pkg-card { min-width: 85vw; max-width: 340px; padding: 17px; gap: 10px; border-radius: 18px; scroll-snap-align: start; flex: 0 0 auto; }
+            .pkg-title { font-size: 16.5px; }
+            .pkg-desc { padding: 12px; }
+            .pkg-desc ul { font-size: 13px; }
+            .pkg-basic-price { font-size: 19px; }
+            .btn-add-cart { padding: 7px 14px; font-size: 12.5px; }
+            .qty-control { height: 32px; }
+            .qty-control button { padding: 0 10px; font-size: 13px; }
+            .qty-text { font-size: 13px; width: 24px; }
 
-            .section-trust { padding: 25px 10px; }
+            .section-trust { padding: 22px 12px; }
             .trust-grid { gap: 10px; }
-            .trust-item { font-size: 11px; width: 45%; justify-content: center; padding: 8px; background: white; border: 1px solid #e2e8f0;}
-            
-            .vip-banner { flex-direction: column; text-align: center; border-radius: 20px; margin: 0 15px 30px;}
-            .vip-content { padding: 30px 20px;}
-            .btn-vip { width: 100%; justify-content: center;}
+            .trust-item { font-size: 11.5px; width: 46%; justify-content: center; padding: 9px; background: white; border: 1px solid #e2e8f0; border-radius: 10px; }
 
-            .section-hiw { padding: 40px 15px; }
-            .hiw-grid { grid-template-columns: 1fr; gap: 12px;}
-            .hiw-step { flex-direction: row; text-align: left; padding: 15px;}
-            .hiw-icon { margin-right: 15px; margin-bottom:0; flex-shrink: 0; width: 50px; height: 50px; font-size: 20px;}
-            .hiw-step h4 { font-size: 16px; }
-            .hiw-step p { font-size: 13px; }
+            .section-hiw { padding: 36px 14px; }
+            .hiw-grid { grid-template-columns: 1fr; gap: 12px; }
+            .hiw-step { flex-direction: row; text-align: left; padding: 16px; }
+            .hiw-icon { flex-shrink: 0; width: 50px; height: 50px; font-size: 20px; border-radius: 14px; }
+            .hiw-step h4 { font-size: 15.5px; }
+            .hiw-step p { font-size: 12.5px; }
 
-            .section-reviews { padding: 40px 15px; }
-            .reviews-wrapper { 
-                margin-left: -15px; margin-right: -15px; padding-left: 15px; padding-right: 15px; width: calc(100% + 30px);
-                display: flex; overflow-x: auto; justify-content: flex-start; gap: 15px; flex-wrap: nowrap;
+            .section-reviews { padding: 36px 14px; }
+            .reviews-wrapper {
+                margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; width: calc(100% + 28px);
+                display: flex; overflow-x: auto; justify-content: flex-start; gap: 14px; flex-wrap: nowrap;
             }
             .reviews-wrapper::-webkit-scrollbar { display: none; }
-            .review-card { min-width: 280px; flex: 0 0 auto; padding: 20px;}
+            .review-card { min-width: 280px; flex: 0 0 auto; padding: 18px; }
             
-            .about-box { padding: 25px 15px; border-radius: 16px; }
+            .about-box { padding: 24px 16px; border-radius: 16px; }
             .about-box h2 { font-size: 20px; }
             
-            .footer { padding: 40px 20px 20px; text-align: left;}
-            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
-            .footer-col h3 { font-size: 16px; margin-bottom: 12px; }
-            .footer-col a { justify-content: flex-start; margin-bottom: 10px;}
+            .footer { padding: 36px 18px 20px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 26px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+
+            /* Mobile Login Modal Polish */
+            #login-section { padding: 24px 18px 20px; border-radius: 20px; }
+            #login-section h3 { font-size: 19px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 HEADER 🌟 -->
+    <!-- HEADER -->
     <header class="navbar">
-        <div class="logo">
+        <a href="index.html" class="logo">
             <img src="image/logo.jpeg" alt="Bhavya Diagnostics Logo - Bahadurgarh">
-            <h2 style="color: #0056b3; font-size: 26px; font-weight: 800; margin: 0;">Bhavya <span style="color: #28a745;">Diagnostics</span></h2>
-        </div>
+            <h2 class="logo-text">Bhavya <span>Diagnostics</span></h2>
+        </a>
         
         <div class="nav-actions">
-            <button id="nav-login-btn" class="nav-btn login-btn" onclick="openPatientLogin()">Login</button>
+            <button id="nav-login-btn" class="nav-btn login-btn" onclick="openPatientLogin()"><i class="fas fa-user"></i> Login</button>
             
             <div class="dropdown">
                 <button id="main-menu-btn" class="dropbtn" onclick="toggleMenu()" aria-label="Menu">⋮</button>
@@ -443,10 +555,9 @@
                 </div>
                 <div id="myDropdown" class="dropdown-content">
                     <a href="#" id="menu-dashboard" onclick="goToDashboard()" style="display: none;"><i class="fas fa-chart-line" style="color: var(--secondary); width: 20px;"></i> My Dashboard</a>
-                    <a href="prescription.html"><i class="fas fa-upload" style="color: #8b5cf6; width: 20px;"></i> Upload Prescription</a>
-                    <a href="terms.html"><i class="fas fa-file-contract" style="color: #64748b; width: 20px;"></i> Terms &amp; Conditions</a>
-                    <a href="privacy.html"><i class="fas fa-user-shield" style="color: #64748b; width: 20px;"></i> Privacy Policy</a>
-                    <a href="refund.html"><i class="fas fa-undo" style="color: #64748b; width: 20px;"></i> Refund Policy</a>
+                    <a href="booking/booking.html"><i class="fas fa-microscope" style="color: var(--primary); width: 20px;"></i> Book Lab Tests</a>
+                    <a href="prescription.html"><i class="fas fa-upload" style="color: #7c3aed; width: 20px;"></i> Upload Prescription</a>
+                    <a href="about.html"><i class="fas fa-info-circle" style="color: #64748b; width: 20px;"></i> About Us</a>
                     <a href="contact.html"><i class="fas fa-headset" style="color: #64748b; width: 20px;"></i> Help &amp; Support</a>
                     <hr>
                     <a href="#" id="menu-logout" onclick="logoutUser()" style="display: none; color: #e74c3c;"><i class="fas fa-sign-out-alt" style="width: 20px;"></i> Logout</a>
@@ -455,51 +566,59 @@
         </div>
     </header>
 
-    <!-- 🌟 PATIENT LOGIN SECTION 🌟 -->
-    <div id="login-section">
-        <button onclick="closeLoginPopup()" style="position:absolute; top:15px; right:15px; background:#f1f5f9; border:none; width:32px; height:32px; border-radius:50%; font-size:16px; color:#64748b; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s;"><i class="fas fa-times"></i></button>
+    <!-- ✨ MODERN MOBILE-FIRST PATIENT LOGIN MODAL ✨ -->
+    <div id="login-section" role="dialog" aria-modal="true" aria-labelledby="form-title">
+        <button class="login-close-btn" onclick="closeLoginPopup()" aria-label="Close Login"><i class="fas fa-times"></i></button>
+        <div class="login-brand-icon"><i class="fas fa-mobile-alt"></i></div>
         <h3 id="form-title">Login / Sign Up</h3>
+        <p class="login-subtitle">Instant mobile OTP login for fast booking &amp; digital reports</p>
+        <div class="welcome-bonus-pill"><i class="fas fa-gift"></i> Get ₹100 Welcome Bonus on First Login!</div>
+
         <div id="phone-section">
-            <div id="partner-role-container" style="display: none; margin-bottom: 15px;">
-                <p style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Select Partner Type:</p>
-                <select id="partnerRole" class="input-box" onchange="updateNameLabel()">
-                    <option value="lab" selected>Lab</option>
-                </select>
+            <!-- Kept hidden for backward compatibility with existing app.js -->
+            <div id="partner-role-container" style="display: none;">
+                <select id="partnerRole" class="input-box"><option value="patient" selected>Patient</option></select>
             </div>
-            <p id="nameLabel" style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Full Name:</p>
-            <input type="text" id="userName" class="input-box" placeholder="Enter your full name">
-            <p style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Mobile Number:</p>
-            <input type="tel" id="phoneNumber" class="input-box" placeholder="e.g. 8950112467" maxlength="10">
-            <div id="recaptcha-container" style="margin-top: 10px;"></div>
-            <button id="send-otp-btn" class="action-btn" onclick="sendOTP()">Get OTP</button>
+
+            <label id="nameLabel" for="userName" class="field-label">Full Name</label>
+            <input type="text" id="userName" class="input-box" placeholder="Enter your full name" autocomplete="name">
+
+            <label for="phoneNumber" class="field-label">Mobile Number</label>
+            <div class="phone-input-wrap">
+                <span class="phone-prefix">+91</span>
+                <input type="tel" id="phoneNumber" inputmode="numeric" placeholder="Enter 10-digit mobile" maxlength="10" autocomplete="tel">
+            </div>
+
+            <div id="recaptcha-container" style="margin-top: 12px; display: flex; justify-content: center;"></div>
+            <button id="send-otp-btn" class="action-btn" onclick="sendOTP()">Get OTP <i class="fas fa-arrow-right" style="margin-left:4px;"></i></button>
         </div>
+
         <div id="otp-section" style="display: none;">
-            <p style="text-align: left; font-size: 14px; color: #666; margin-bottom: 2px;">Enter OTP:</p>
-            <input type="tel" id="otpCode" class="input-box" placeholder="6-digit OTP" maxlength="6">
-            <button class="action-btn" style="background-color: #0056b3;" onclick="verifyOTP()">Verify Mobile</button>
+            <label for="otpCode" class="field-label">Enter 6-Digit OTP</label>
+            <input type="tel" id="otpCode" inputmode="numeric" class="input-box" placeholder="• • • • • •" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:6px;">
+            <button class="action-btn" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); box-shadow: 0 6px 16px rgba(37,99,235,0.28);" onclick="verifyOTP()">Verify &amp; Continue</button>
         </div>
-        <p class="support-text" style="font-size:12px; color:#64748b; margin-top:12px;">Need help? Email us at contact@bhavyadiagnostics.com</p>
+
+        <p style="font-size: 11.5px; color: #64748b; margin: 14px 0 0;">By continuing, you agree to our <a href="terms.html" style="color:var(--primary); font-weight:700;">Terms</a> &amp; <a href="privacy.html" style="color:var(--primary); font-weight:700;">Privacy Policy</a>.</p>
     </div>
 
-    <!-- ✨ PERMANENT FIREBASE ADMIN / STAFF LOGIN MODAL ✨ -->
-    <div id="adminPasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.8); z-index:3000; justify-content:center; align-items:center; backdrop-filter: blur(5px);">
-        <div style="background:white; padding:30px; border-radius:24px; width:90%; max-width:360px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation: slideUpToast 0.3s ease-out;">
-            <button onclick="closeAdminPasswordModal()" style="position:absolute; right:15px; top:15px; border:none; background:#f1f5f9; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; color:#64748b; transition:0.2s;"><i class="fas fa-times"></i></button>
-            <div style="background:#e0f2fe; color:#0284c7; width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 15px;">
+    <!-- ADMIN / STAFF LOGIN MODAL -->
+    <div id="adminPasswordModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.8); z-index:3500; justify-content:center; align-items:center; backdrop-filter: blur(5px);">
+        <div style="background:white; padding:28px 24px; border-radius:22px; width:92%; max-width:360px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation: slideUpToast 0.25s ease-out;">
+            <button onclick="closeAdminPasswordModal()" style="position:absolute; right:14px; top:14px; border:none; background:#f1f5f9; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:15px; color:#64748b;"><i class="fas fa-times"></i></button>
+            <div style="background:#e0f2fe; color:#0284c7; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 14px;">
                 <i class="fas fa-user-shield"></i>
             </div>
-            <h3 style="margin:0 0 8px 0; color:#0f172a; font-size:22px; font-weight:800;">Admin &amp; Staff Login</h3>
-            <p style="color:#64748b; font-size:13px; margin:0 0 18px;">Sign in with your authorized email &amp; password.</p>
-            <input type="email" id="adminEmailInput" placeholder="Admin / Staff Email" style="width:100%; padding:13px; border:2px solid #e2e8f0; border-radius:12px; font-size:14px; outline:none; margin-bottom:10px; font-weight:600;">
-            <input type="password" id="adminPassInput" placeholder="Password" onkeypress="if(event.key==='Enter') verifyAdminPassword()" style="width:100%; padding:13px; border:2px solid #e2e8f0; border-radius:12px; font-size:15px; outline:none; margin-bottom:15px; font-weight:600;">
-            <button id="btnAdminLoginSubmit" onclick="verifyAdminPassword()" style="background:var(--primary); color:white; border:none; width:100%; padding:14px; border-radius:12px; font-weight:800; font-size:15px; cursor:pointer; transition:0.2s; box-shadow:0 4px 15px rgba(37,99,235,0.3);">Access Panel</button>
+            <h3 style="margin:0 0 6px; color:#0f172a; font-size:20px; font-weight:800;">Admin &amp; Staff Login</h3>
+            <p style="color:#64748b; font-size:12.5px; margin:0 0 16px;">Sign in with your authorized email &amp; password.</p>
+            <input type="email" id="adminEmailInput" placeholder="Admin / Staff Email" style="width:100%; padding:12px; border:1.5px solid #cbd5e1; border-radius:11px; font-size:14px; outline:none; margin-bottom:10px; font-weight:600;">
+            <input type="password" id="adminPassInput" placeholder="Password" onkeypress="if(event.key==='Enter') verifyAdminPassword()" style="width:100%; padding:12px; border:1.5px solid #cbd5e1; border-radius:11px; font-size:14px; outline:none; margin-bottom:14px; font-weight:600;">
+            <button id="btnAdminLoginSubmit" onclick="verifyAdminPassword()" style="background:var(--primary); color:white; border:none; width:100%; padding:13px; border-radius:11px; font-weight:800; font-size:15px; cursor:pointer; box-shadow:0 4px 14px rgba(37,99,235,0.3);">Access Panel</button>
         </div>
     </div>
 
-    <!-- 🌟 SECTION 1: HEADER IMAGE SLIDER, SEARCH BAR & QUICK ACTIONS 🌟 -->
+    <!-- SECTION 1: HEADER IMAGE SLIDER, SEARCH BAR & QUICK ACTIONS -->
     <section class="section-hero">
-
-        <!-- ✨ COMPACT HEADER IMAGE SLIDER ✨ -->
         <div class="header-slider-wrap" id="headerSliderWrap">
             <div class="header-slider-track" id="headerSliderTrack">
                 <a href="booking/booking.html?search=fever" class="header-slide">
@@ -522,57 +641,70 @@
 
         <div class="search-container">
             <i class="fas fa-search"></i>
-            <input type="text" id="globalSearchInput" placeholder="Search Lab Tests, Scans, or Profiles..." onkeyup="liveHomeSearch()" onfocus="liveHomeSearch()">
+            <input type="text" id="globalSearchInput" placeholder="Search CBC, Thyroid, Vitamin D3, Full Body Packages..." onkeyup="liveHomeSearch()" onfocus="liveHomeSearch()">
             <button class="search-btn" onclick="executeHomeSearch()">Search</button>
             <div id="homeSearchResults" style="display:none; position:absolute; top:110%; left:0; width:100%; background:white; border-radius:16px; box-shadow:0 15px 40px rgba(0,0,0,0.15); border:1px solid #e2e8f0; z-index:1000; max-height:350px; overflow-y:auto; text-align:left;"></div>
         </div>
 
         <div class="hero-quick-actions">
             <a href="tel:8950112467" class="btn-quick call-btn"><i class="fas fa-phone-alt"></i> <span>Book by Call</span></a>
-            <a href="https://wa.me/918950112467" class="btn-quick wa-btn"><i class="fab fa-whatsapp"></i> <span>WhatsApp Booking</span></a>
+            <a href="https://wa.me/918950112467" target="_blank" rel="noopener noreferrer" class="btn-quick wa-btn"><i class="fab fa-whatsapp"></i> <span>WhatsApp Booking</span></a>
             <a href="prescription.html" class="btn-quick rx-btn"><i class="fas fa-file-prescription"></i> <span>Upload Prescription</span></a>
         </div>
 
-        <!-- ✨ TRUST STATS BAR ✨ -->
         <div class="trust-stats-bar">
             <div class="stat-item">
                 <span class="stat-num" id="happy-patients-count">20,000+</span>
                 <span class="stat-text">Happy Patients</span>
             </div>
             <div class="stat-item">
-                <span class="stat-num">500+</span>
-                <span class="stat-text">NABL Labs</span>
+                <span class="stat-num">700+</span>
+                <span class="stat-text">NABL Lab Tests</span>
             </div>
             <div class="stat-item">
                 <span class="stat-num">100%</span>
-                <span class="stat-text">Accurate</span>
+                <span class="stat-text">Triple Protection</span>
             </div>
         </div>
     </section>
 
-    <!-- ✨ TEST & PACKAGE BOOKING HEADING SECTION ✨ -->
+    <!-- TEST & PACKAGE BOOKING HEADING SECTION -->
     <section class="section-diagnostics" style="text-align: center;">
-        <div class="section-heading" style="margin-bottom: 20px;">
-            <h1 class="hero-title" style="margin-bottom: 10px;">Book Lab Tests &amp; Health Packages<br><span>Fast, Affordable &amp; Trusted.</span></h1>
-            <p class="hero-subtitle" style="margin-bottom: 0;">Choose from 700+ NABL-certified blood tests, full body checkup packages, ECG &amp; PFT with doorstep sample collection in Bahadurgarh and assured discounts.</p>
+        <div class="section-heading" style="margin-bottom: 18px;">
+            <h1 class="hero-title">Book Lab Tests &amp; Health Packages<br><span>Fast, Affordable &amp; Trusted.</span></h1>
+            <p class="hero-subtitle">Choose from 700+ NABL-certified blood tests, full body checkup packages, ECG &amp; PFT with doorstep sample collection in Bahadurgarh.</p>
         </div>
         <a href="booking/booking.html" class="btn-more-services">Book Tests &amp; Packages <i class="fas fa-arrow-right"></i></a>
     </section>
 
-    <!-- VIP BANNER -->
-    <div class="vip-banner">
-        <div class="vip-content">
-            <h2>One VIP Plan = Maximum Savings!</h2>
-            <p>Get up to <b>50% OFF</b> on Lab Tests, <b>20% OFF</b> on Medicines, and exclusive discounts on Doctor Consultations for your entire family.</p>
-            <button onclick="openVipImageModal()" class="btn-vip"><i class="fas fa-crown"></i> Buy VIP Plan</button>
+    <!-- ✨ CLEAN BHAVYA VIP MEMBERSHIP SECTION ✨ -->
+    <section class="section-vip-wrap">
+        <div class="vip-banner">
+            <div class="vip-content">
+                <div class="vip-tag"><i class="fas fa-crown"></i> Bhavya VIP Membership</div>
+                <h2>Complete Preventive Care &amp; <span>Up to 50% OFF</span> for Your Family</h2>
+                <p>One smart membership for Bahadurgarh families — combining full-body NABL lab checkups, heart &amp; lung screening, and priority home sample collection.</p>
+                <div class="vip-perks-grid">
+                    <div class="vip-perk"><i class="fas fa-vials"></i> 80+ Platinum Lab Tests</div>
+                    <div class="vip-perk"><i class="fas fa-heartbeat"></i> ECG, PFT &amp; 50+ BCA</div>
+                    <div class="vip-perk"><i class="fas fa-home"></i> Free Home Collection</div>
+                    <div class="vip-perk"><i class="fas fa-tags"></i> VIP Rates All Year</div>
+                </div>
+            </div>
+            <div class="vip-cta-card">
+                <div class="vip-price-label">Membership Plans</div>
+                <div class="vip-price-main">₹2,000 <span style="font-size:13px; color:#cbd5e1; font-weight:600;">onwards</span></div>
+                <p class="vip-price-sub">Individual &amp; Family Plans • Free Diet &amp; Report Guidance</p>
+                <button onclick="openVipImageModal()" class="btn-vip"><i class="fas fa-crown"></i> Explore &amp; Buy VIP Plan</button>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <!-- 🎁 SECTION 5: TRENDING PACKAGES (STICKY ON MOBILE) 🎁 -->
+    <!-- TRENDING PACKAGES (STICKY ON MOBILE) -->
     <section class="section-packages">
-        <div class="section-heading" id="packagesHeading" style="margin-top: 0;">
+        <div class="section-heading" id="packagesHeading">
             <h2>Trending Health Packages</h2>
-            <p>Our most popular preventive health checkups.</p>
+            <p>Our most popular preventive health checkups in Bahadurgarh.</p>
         </div>
         <div id="homePackageCategories" class="home-cat-nav"></div>
         <div class="slider-wrapper" id="homePackageSlider">
@@ -580,49 +712,80 @@
         </div>
     </section>
 
-    <!-- 🛡️ SECTION 3: TRUST BADGES 🛡️ -->
+    <!-- TRUST BADGES -->
     <section class="section-trust">
         <div class="trust-grid">
-            <div class="trust-item"><i class="fas fa-award"></i> NABL Labs</div>
-            <div class="trust-item"><i class="fas fa-motorcycle"></i> Fast Delivery</div>
-            <div class="trust-item"><i class="fas fa-user-nurse"></i> Expert Staff</div>
-            <div class="trust-item"><i class="fas fa-shield-alt"></i> Safe Data</div>
+            <div class="trust-item"><i class="fas fa-award"></i> NABL Partner Labs</div>
+            <div class="trust-item"><i class="fas fa-home"></i> Free Home Collection</div>
+            <div class="trust-item"><i class="fas fa-user-nurse"></i> Trained Phlebotomists</div>
+            <div class="trust-item"><i class="fas fa-shield-alt"></i> Triple Protection</div>
         </div>
     </section>
 
-    <!-- 🛠️ SECTION 6: HOW IT WORKS 🛠️ -->
+    <!-- ✨ TRIPLE PROTECTION GUARANTEE SECTION ✨ -->
+    <section class="section-triple">
+        <div class="section-heading">
+            <h2>Our Triple Protection Accuracy Promise</h2>
+            <p>Every sample is handled with clinical precision — and backed by our doubtful-result re-test support.</p>
+        </div>
+        <div class="triple-grid">
+            <div class="triple-card">
+                <div class="triple-badge" style="background:#eff6ff; color:#2563eb;"><i class="fas fa-barcode"></i></div>
+                <div>
+                    <h3>1. NABL Barcoded Processing</h3>
+                    <p>Strict cold-chain transport and barcode tracking with accredited NABL partner laboratories.</p>
+                </div>
+            </div>
+            <div class="triple-card">
+                <div class="triple-badge" style="background:#ecfdf5; color:#059669;"><i class="fas fa-check-double"></i></div>
+                <div>
+                    <h3>2. Pathologist Cross-Check</h3>
+                    <p>Critical and abnormal test parameters undergo automated and expert verification before report release.</p>
+                </div>
+            </div>
+            <div class="triple-card">
+                <div class="triple-badge" style="background:#fef3c7; color:#d97706;"><i class="fas fa-sync-alt"></i></div>
+                <div>
+                    <h3>3. Doubtful Result Re-test Support</h3>
+                    <p>If any report value seems doubtful, request a guided re-test directly from your Patient Dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
     <section class="section-hiw">
-        <div class="section-heading" style="margin-top:0;">
+        <div class="section-heading">
             <h2>How Bhavya Diagnostics Works</h2>
-            <p>3 simple steps to a healthier you.</p>
+            <p>3 simple steps to accurate diagnostic reports.</p>
         </div>
         <div class="hiw-grid">
             <div class="hiw-step">
                 <div class="hiw-icon"><i class="fas fa-mobile-alt"></i></div>
-                <div><h4>1. Book Online</h4><p>Select your required Lab Test, Profile, ECG, or PFT.</p></div>
+                <div><h4>1. Book Online or Call</h4><p>Select your Lab Test, Full Body Package, ECG, or PFT.</p></div>
             </div>
             <div class="hiw-step">
                 <div class="hiw-icon"><i class="fas fa-home"></i></div>
-                <div><h4>2. Home Collection</h4><p>Sample collection directly at your doorstep.</p></div>
+                <div><h4>2. Home / Center Collection</h4><p>Painless sample collection at your doorstep or our Bahadurgarh center.</p></div>
             </div>
             <div class="hiw-step">
                 <div class="hiw-icon"><i class="fas fa-file-medical-alt"></i></div>
-                <div><h4>3. Digital Records</h4><p>Access your reports and order history directly on your phone.</p></div>
+                <div><h4>3. Fast Digital Reports</h4><p>Receive verified PDF reports on WhatsApp, Email &amp; Patient Dashboard.</p></div>
             </div>
         </div>
     </section>
 
-    <!-- 💬 SECTION: PATIENT REVIEWS 💬 -->
+    <!-- PATIENT REVIEWS -->
     <section class="section-reviews">
-        <div class="section-heading" style="margin-top:0;">
+        <div class="section-heading">
             <h2>What Our Patients Say</h2>
-            <p>Trusted by thousands of happy families across India.</p>
+            <p>Trusted by thousands of families in Bahadurgarh &amp; nearby areas.</p>
         </div>
         
         <div class="reviews-wrapper" id="reviewsSlider">
             <div class="review-card">
                 <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <p class="review-text">"Bahut acchi service hai! Maine papa ke liye Full Body test book kiya tha. Sample lene wale bhaiya bahut polite the aur report phone par hi aa gayi 4 ghante mein."</p>
+                <p class="review-text">"Bahut acchi service hai! Maine papa ke liye Full Body test book kiya tha. Sample lene wale bhaiya bahut polite the aur report phone par hi aa gayi."</p>
                 <div class="review-user">
                     <div class="review-avatar">R</div>
                     <div class="review-info"><h4>Rahul Sharma</h4><p><i class="fas fa-check-circle" style="color:var(--secondary);"></i> Verified Patient</p></div>
@@ -631,7 +794,7 @@
 
             <div class="review-card">
                 <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                <p class="review-text">"The VIP plan is amazing! I saved around ₹1200 on my family's blood tests and packages. Highly recommended!"</p>
+                <p class="review-text">"The Bhavya VIP plan is amazing! We saved significantly on our family's blood tests, ECG, and health packages. Highly recommended!"</p>
                 <div class="review-user">
                     <div class="review-avatar" style="background:#fef3c7; color:#d97706;">S</div>
                     <div class="review-info"><h4>Sneha Patel</h4><p><i class="fas fa-crown" style="color:var(--warning);"></i> VIP Member</p></div>
@@ -640,7 +803,7 @@
 
             <div class="review-card">
                 <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
-                <p class="review-text">"Full body checkup book kiya tha, service bahut fast thi aur home collection time par hua. Great diagnostic platform."</p>
+                <p class="review-text">"Full body checkup book kiya tha, service bahut fast thi aur home collection bilkul time par hua. Best lab service in Bahadurgarh."</p>
                 <div class="review-user">
                     <div class="review-avatar" style="background:#fce7f3; color:#db2777;">V</div>
                     <div class="review-info"><h4>Vikas Singh</h4><p><i class="fas fa-check-circle" style="color:var(--secondary);"></i> Verified Patient</p></div>
@@ -649,49 +812,46 @@
         </div>
     </section>
 
-    <!-- ✨ SECTION 7: AGGREGATOR DISCLAIMER ✨ -->
+    <!-- ABOUT SECTION -->
     <section class="section-about">
         <div class="about-box">
-            <h2>Your Trusted Healthcare Aggregator</h2>
-            <p>At Bhavya Diagnostics (Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh, Haryana), we believe in bringing the best of healthcare directly to your fingertips. We partner exclusively with strictly verified, <strong>NABL/NABH accredited institutions</strong> and follow our Triple Protection process to ensure you receive 100% accurate, reliable, and affordable diagnostic services at your doorstep.</p>
+            <h2>Bhavya Diagnostics — Bahadurgarh</h2>
+            <p>Located at <strong>Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh, Haryana</strong>, we partner exclusively with strictly verified, <strong>NABL/NABH accredited laboratories</strong> and follow our Triple Protection process to deliver 100% accurate, reliable, and affordable diagnostic services at your doorstep.</p>
             <div class="badge-wrap">
-                <span><i class="fas fa-check-circle"></i> Verified Partners</span>
-                <span><i class="fas fa-award"></i> NABL/NABH Labs</span>
-                <span><i class="fas fa-shield-alt"></i> Quality Assured</span>
+                <span><i class="fas fa-award"></i> NABL/NABH Partner Labs</span>
+                <span><i class="fas fa-shield-alt"></i> Triple Protection</span>
+                <span><i class="fas fa-clock"></i> Open Daily 7 AM – 8 PM</span>
             </div>
         </div>
     </section>
 
-    <!-- ✨ MEGA FOOTER ✨ -->
+    <!-- ✨ CLEAN FOOTER (NO UNUSED BUTTONS) ✨ -->
     <footer class="footer">
         <div class="footer-grid">
             <div class="footer-col">
-                <div class="logo" style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                    <img src="image/logo.jpeg" alt="Bhavya Diagnostics Logo" style="height: 45px; border-radius: 8px;">
-                    <h2 style="color: white; font-size: 24px; font-weight: 800; margin: 0;">Bhavya <span style="color: #28a745;">Diagnostics</span></h2>
+                <div class="logo" style="margin-bottom: 14px;">
+                    <img src="image/logo.jpeg" alt="Bhavya Diagnostics Logo" style="height: 42px; border-radius: 8px;">
+                    <h2 style="color: white; font-size: 22px; font-weight: 800; margin: 0;">Bhavya <span style="color: #10b981;">Diagnostics</span></h2>
                 </div>
-                <p>Making premium healthcare accessible, affordable, and accurate for everyone in Bahadurgarh. Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh, Haryana | Timings: 7:00 AM – 8:00 PM.</p>
-                <div style="display: flex; gap: 15px; margin-top: 15px;">
-                    <a href="https://wa.me/918950112467" style="color: white; font-size: 20px;" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" style="color: white; font-size: 20px;" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" style="color: white; font-size: 20px;" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <p>Main Jhajjar Road, Opp. Narendra Farm, Bahadurgarh, Haryana – 124507.<br>Open Daily: 7:00 AM – 8:00 PM</p>
+                <div class="footer-contact-row">
+                    <a href="tel:8950112467" class="footer-chip"><i class="fas fa-phone-alt"></i> 89501 12467</a>
+                    <a href="https://wa.me/918950112467" target="_blank" rel="noopener noreferrer" class="footer-chip"><i class="fab fa-whatsapp"></i> WhatsApp</a>
                 </div>
             </div>
             
             <div class="footer-col">
-                <h3>Our Services</h3>
+                <h3>Services</h3>
                 <a href="booking/booking.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Book Lab Tests</a>
                 <a href="vip/vip_member.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> VIP Membership</a>
                 <a href="prescription.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Upload Prescription</a>
             </div>
 
             <div class="footer-col">
-                <h3>Company</h3>
+                <h3>Quick Links</h3>
                 <a href="about.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> About Us</a>
-                <a href="#" onclick="openPartnerLogin()"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Join Us (Partner)</a>
-                <a href="#" onclick="openAdminPasswordModal(event)"><i class="fas fa-shield-alt" style="font-size:10px; color:#17a2b8;"></i> Admin / Staff Login</a>
                 <a href="contact.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Contact Support</a>
-                <a href="withdraw.html"><i class="fas fa-chevron-right" style="font-size:10px;"></i> Partnership</a>
+                <a href="#" onclick="openAdminPasswordModal(event)"><i class="fas fa-shield-alt" style="font-size:11px; color:#38bdf8;"></i> Admin / Staff Login</a>
             </div>
 
             <div class="footer-col">
@@ -702,46 +862,49 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Bhavya Diagnostics. All Rights Reserved.</p>
+            <span>&copy; 2026 Bhavya Diagnostics, Bahadurgarh. All Rights Reserved.</span>
+            <span>Helpline: contact@bhavyadiagnostics.com</span>
         </div>
     </footer>
 
-    <!-- ✨ FLOATING CART BUTTON ✨ -->
-    <div id="homeFloatingCart" onclick="window.location.href='booking/booking.html?view=cart'" style="display:none; position:fixed; bottom:30px; right:20px; background:var(--primary); color:white; width:60px; height:60px; border-radius:50%; align-items:center; justify-content:center; font-size:24px; box-shadow:0 10px 25px rgba(37,99,235,0.4); cursor:pointer; z-index:1000; transition:0.3s;">
+    <!-- FLOATING CART BUTTON -->
+    <div id="homeFloatingCart" onclick="window.location.href='booking/booking.html?view=cart'" style="display:none; position:fixed; bottom:24px; right:18px; background:var(--primary); color:white; width:58px; height:58px; border-radius:50%; align-items:center; justify-content:center; font-size:22px; box-shadow:0 10px 25px rgba(37,99,235,0.4); cursor:pointer; z-index:1000; transition:0.3s;">
         <i class="fas fa-shopping-cart"></i>
-        <span id="homeCartBadge" style="position:absolute; top:-5px; right:-5px; background:var(--danger); color:white; font-size:12px; font-weight:800; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid white;">0</span>
+        <span id="homeCartBadge" style="position:absolute; top:-4px; right:-4px; background:var(--danger); color:white; font-size:12px; font-weight:800; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid white;">0</span>
     </div>
 
-    <!-- ✨ VIP IMAGE MODAL WITH SKIP & REMOVE ✨ -->
+    <!-- VIP IMAGE MODAL -->
     <div id="vipImageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.85); z-index:3000; justify-content:center; align-items:center; backdrop-filter: blur(4px);">
-        <div style="background:white; padding:20px; border-radius:24px; width:90%; max-width:450px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation: slideUpToast 0.3s ease-out;">
-            <button onclick="closeVipImageModal()" style="position:absolute; right:15px; top:15px; border:none; background:#f1f5f9; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:16px; color:#64748b; transition:0.2s;"><i class="fas fa-times"></i></button>
-            <h3 style="margin:0 0 15px 0; color:#0f172a; font-size:20px; font-weight:800;">Basic vs <span style="color:var(--warning);">VIP Plan</span></h3>
-            <img src="image/BASIC AND VIP PLAN.jpg" alt="Basic vs VIP Plan Comparison" style="width:100%; border-radius:12px; margin-bottom:20px; border:1px solid #e2e8f0; display:block;">
+        <div style="background:white; padding:20px; border-radius:24px; width:92%; max-width:440px; position:relative; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3); animation: slideUpToast 0.25s ease-out;">
+            <button onclick="closeVipImageModal()" style="position:absolute; right:14px; top:14px; border:none; background:#f1f5f9; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:15px; color:#64748b;"><i class="fas fa-times"></i></button>
+            <h3 style="margin:0 0 14px; color:#0f172a; font-size:19px; font-weight:800;">Basic vs <span style="color:var(--warning);">Bhavya VIP Plan</span></h3>
+            <img src="image/BASIC AND VIP PLAN.jpg" alt="Basic vs VIP Plan Comparison" style="width:100%; border-radius:12px; margin-bottom:18px; border:1px solid #e2e8f0; display:block;">
             <div style="display:flex; gap:10px; width:100%;">
-                <button onclick="closeVipImageModal()" style="flex:1; background:#f1f5f9; color:#64748b; border:none; padding:16px; border-radius:14px; font-weight:800; font-size:15px; cursor:pointer; transition:0.2s;">Skip</button>
-                <button onclick="handleVipBuyClick()" style="flex:2; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; padding:16px; border-radius:14px; font-weight:800; font-size:15px; cursor:pointer; box-shadow:0 6px 20px rgba(245, 158, 11, 0.4); display:flex; align-items:center; justify-content:center; gap:8px;">
+                <button onclick="closeVipImageModal()" style="flex:1; background:#f1f5f9; color:#64748b; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:14px; cursor:pointer;">Skip</button>
+                <button onclick="handleVipBuyClick()" style="flex:2; background:linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color:white; border:none; padding:14px; border-radius:12px; font-weight:800; font-size:14.5px; cursor:pointer; box-shadow:0 6px 20px rgba(245, 158, 11, 0.4); display:flex; align-items:center; justify-content:center; gap:8px;">
                     <i class="fas fa-crown"></i> Buy VIP Plan
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ✨ HOME INFO MODAL ✨ -->
+    <!-- HOME INFO MODAL -->
     <div id="homeInfoModal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; backdrop-filter: blur(4px);">
-        <div style="background:#fff; padding:20px; border-radius:16px; width:90%; max-width:400px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUpToast 0.3s ease-out;">
-            <button onclick="closeHomeInfoModal()" style="position:absolute; right:15px; top:15px; border:none; background:#f1f5f9; color:#64748b; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:16px;"><i class="fas fa-times"></i></button>
+        <div style="background:#fff; padding:20px; border-radius:16px; width:92%; max-width:400px; position:relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUpToast 0.25s ease-out;">
+            <button onclick="closeHomeInfoModal()" style="position:absolute; right:14px; top:14px; border:none; background:#f1f5f9; color:#64748b; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:15px;"><i class="fas fa-times"></i></button>
             <h3 id="homeModalTitle" style="margin-top:0; font-size:16px; font-weight:800; border-bottom:1px solid #e2e8f0; padding-bottom:10px; color:#1e293b;">Details</h3>
             <div id="homeModalDesc" style="font-size:13px; line-height:1.6; max-height:60vh; overflow-y:auto; padding-top:10px; color:#64748b;"></div>
         </div>
     </div>
 
-    <div id="homeToastContainer" style="position:fixed; bottom:100px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none; width: 90%; max-width: 400px;"></div>
+    <div id="homeToastContainer" style="position:fixed; bottom:90px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none; width: 92%; max-width: 400px;"></div>
 
+    <!-- Branded Popup Alert Override -->
+    <script src="custom-alert.js"></script>
     <script src="app.js"></script>
 
     <script>
-        // ✨ COMPACT HEADER IMAGE SLIDER LOGIC ✨
+        // COMPACT HEADER IMAGE SLIDER LOGIC
         let headerSlideIndex = 0;
         let headerSlideTimer = null;
 
@@ -782,47 +945,37 @@
             startHeaderAutoSlide();
         }
 
-        function moveHeaderSlide(step) {
-            goToHeaderSlide(headerSlideIndex + step);
-        }
+        function moveHeaderSlide(step) { goToHeaderSlide(headerSlideIndex + step); }
 
         function startHeaderAutoSlide() {
             if (headerSlideTimer) clearInterval(headerSlideTimer);
-            headerSlideTimer = setInterval(() => {
-                goToHeaderSlide(headerSlideIndex + 1);
-            }, 3500);
+            headerSlideTimer = setInterval(() => { goToHeaderSlide(headerSlideIndex + 1); }, 3500);
         }
 
-        // ✨ AUTO OPEN VIP MODAL, SLIDER & DYNAMIC STATS LOGIC ✨
         document.addEventListener("DOMContentLoaded", () => {
             initHeaderSlider();
-
             if (!sessionStorage.getItem('vipPopupShown')) {
                 setTimeout(() => {
                     openVipImageModal();
                     sessionStorage.setItem('vipPopupShown', 'true');
-                }, 800); 
+                }, 800);
             }
-
             updateHappyPatients();
         });
 
         function updateHappyPatients() {
-            const baseDate = new Date("2026-05-01T00:00:00").getTime(); 
+            const baseDate = new Date("2026-05-01T00:00:00").getTime();
             const now = new Date().getTime();
             const diffInMinutes = Math.max(0, (now - baseDate) / (1000 * 60));
             const extraPatients = Math.floor(diffInMinutes / 15);
             const totalPatients = 20000 + extraPatients;
-            
             const pCountElement = document.getElementById('happy-patients-count');
-            if (pCountElement) {
-                pCountElement.innerText = totalPatients.toLocaleString() + "+";
-            }
+            if (pCountElement) pCountElement.innerText = totalPatients.toLocaleString() + "+";
         }
 
-        // ✨ PERMANENT FIREBASE ADMIN / STAFF LOGIN LOGIC ✨
+        // FIREBASE ADMIN / STAFF LOGIN LOGIC
         function openAdminPasswordModal(e) {
-            e.preventDefault(); 
+            e.preventDefault();
             document.getElementById('adminPasswordModal').style.display = 'flex';
             setTimeout(() => document.getElementById('adminEmailInput').focus(), 100);
         }
@@ -860,20 +1013,19 @@
         }
 
         function handleVipRateClick(event) {
-            if(event) event.stopPropagation();
+            if (event) event.stopPropagation();
             const userId = localStorage.getItem("bhavya_user_id");
-            if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") { 
-                window.location.href = 'vip/vip_member.html'; 
+            if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") {
+                window.location.href = 'vip/vip_member.html';
             } else {
                 showHomeToast("Please Login to view VIP details!", "error");
-                if (typeof openPatientLogin === "function") { setTimeout(() => openPatientLogin(), 800); } 
-                else { setTimeout(() => alert("Please Login First to proceed."), 800); }
+                if (typeof openPatientLogin === "function") setTimeout(() => openPatientLogin(), 600);
             }
         }
 
         function homeFormatText(text) {
             if (!text) return "";
-            let cleanText = String(text).replace(/_/g, ' '); 
+            let cleanText = String(text).replace(/_/g, ' ');
             let formatted = cleanText.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
             const acronyms = /\b(cbc|esr|usg|mri|ecg|echo|ct|lft|kft|hba1c|tsh|t3|t4|ana|psa|hiv|hcv|bun|aptt|sgpt|sgot|vdrl|rbc|wbc|bchg|aec|anc|amh|ada|hbsag|crp|abp|ncv|emg|ssep|dlco|eeg|pft)\b/gi;
             return formatted.replace(acronyms, match => match.toUpperCase());
@@ -897,31 +1049,30 @@
                     formattedDesc = `<div style="background:#e0f2fe; color:#0284c7; padding:8px 12px; border-radius:8px; font-weight:bold; font-size:12px; margin-bottom:15px; display:inline-block;"><i class="fas fa-microscope"></i> Includes ${service.number_of_test} Parameters</div>` + formattedDesc;
                 }
             }
-            document.getElementById("homeModalDesc").innerHTML = formattedDesc; 
+            document.getElementById("homeModalDesc").innerHTML = formattedDesc;
             document.getElementById("homeInfoModal").style.display = "flex";
         }
         function closeHomeInfoModal() { document.getElementById("homeInfoModal").style.display = "none"; }
 
         function handleVipBuyClick() {
             const userId = localStorage.getItem("bhavya_user_id");
-            if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") { 
-                window.location.href = "vip/vip_member.html"; 
+            if (userId && userId !== "null" && userId !== "undefined" && userId.trim() !== "") {
+                window.location.href = "vip/vip_member.html";
             } else {
                 closeVipImageModal();
                 showHomeToast("Login First to Buy VIP Plan!", "error");
-                if (typeof openPatientLogin === "function") { setTimeout(() => openPatientLogin(), 800); } 
-                else { setTimeout(() => alert("Please Login First to proceed."), 800); }
+                if (typeof openPatientLogin === "function") setTimeout(() => openPatientLogin(), 600);
             }
         }
 
         function executeHomeSearch() {
             let query = document.getElementById("globalSearchInput").value.trim();
-            if (query) { window.location.href = `booking/booking.html?search=${encodeURIComponent(query)}`; }
+            if (query) window.location.href = `booking/booking.html?search=${encodeURIComponent(query)}`;
         }
 
         function enableDragScroll(selector) {
             const slider = document.querySelector(selector);
-            if(!slider) return;
+            if (!slider) return;
             let isDown = false; let startX; let scrollLeft;
             slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
             slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
@@ -930,7 +1081,7 @@
                 if (!isDown) return;
                 e.preventDefault();
                 const x = e.pageX - slider.offsetLeft;
-                const walk = (x - startX) * 2; 
+                const walk = (x - startX) * 2;
                 slider.scrollLeft = scrollLeft - walk;
             });
         }
@@ -943,7 +1094,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             try {
                 let stored = localStorage.getItem('bhavyaCart');
-                if (stored) { homePageCart = JSON.parse(stored); }
+                if (stored) homePageCart = JSON.parse(stored);
 
                 let cachedServices = localStorage.getItem('bhavya_services_cache') || localStorage.getItem('bhavyaServicesCache');
                 if (cachedServices) {
@@ -957,13 +1108,13 @@
 
             fetch(HOME_GAS_URL, { method: 'POST', body: JSON.stringify({ action: "getBookingData", user_id: "" }) })
             .then(r => r.json()).then(res => {
-                if(res.status === "success") {
+                if (res.status === "success") {
                     homeAllServices = res.data.services || [];
                     try {
                         localStorage.setItem('bhavya_services_cache', JSON.stringify(homeAllServices));
                         localStorage.setItem('bhavyaServicesCache', JSON.stringify(homeAllServices));
                     } catch (e) {}
-                    renderHomePackages(); 
+                    renderHomePackages();
                     enableDragScroll('.slider-wrapper');
                     enableDragScroll('.home-cat-nav');
                     enableDragScroll('#reviewsSlider');
@@ -974,26 +1125,26 @@
                 }
             }).catch(e => console.log("Silent fetch error", e));
             
-            updateHomeCartBadge(); 
+            updateHomeCartBadge();
         });
 
         function renderHomePackages(subCat = homeCurrentSubCat) {
             homeCurrentSubCat = subCat;
             const slider = document.getElementById("homePackageSlider");
             const nav = document.getElementById("homePackageCategories");
-            if(!slider || !nav) return;
+            if (!slider || !nav) return;
 
-            let packages = homeAllServices.filter(s => 
-                s.service_id !== "VIP-FREE-001" && 
-                (String(s.service_type).trim().toLowerCase() === 'profile' || 
-                 String(s.service_type).trim().toLowerCase() === 'package' || 
+            let packages = homeAllServices.filter(s =>
+                s.service_id !== "VIP-FREE-001" &&
+                (String(s.service_type).trim().toLowerCase() === 'profile' ||
+                 String(s.service_type).trim().toLowerCase() === 'package' ||
                  String(s.service_type).trim().toLowerCase() === 'discount_profile')
             );
 
             let categories = ['all', ...new Set(packages.map(s => String(s.service_category || 'Other').trim()))];
             let navHtml = "";
             categories.forEach(c => {
-                if(c === "") return;
+                if (c === "") return;
                 let activeClass = c === homeCurrentSubCat ? "active" : "";
                 let displayName = c === 'all' ? "All" : homeFormatText(c);
                 navHtml += `<button class="home-cat-btn ${activeClass}" onclick="renderHomePackages('${c.replace(/'/g, "\\'")}')">${displayName}</button>`;
@@ -1001,8 +1152,8 @@
             nav.innerHTML = navHtml;
 
             let displayPkgs = packages;
-            if (homeCurrentSubCat !== 'all') { 
-                displayPkgs = packages.filter(s => String(s.service_category || 'Other').trim() === homeCurrentSubCat); 
+            if (homeCurrentSubCat !== 'all') {
+                displayPkgs = packages.filter(s => String(s.service_category || 'Other').trim() === homeCurrentSubCat);
             }
 
             if (displayPkgs.length === 0) {
@@ -1024,14 +1175,10 @@
                 const inCart = !!cartItem;
                 const currentQty = cartItem ? cartItem.qty : 0;
                 
-                let actionBtnHtml = "";
-                if (inCart) {
-                    actionBtnHtml = `<div class="qty-control"><button onclick="updateHomeQty('${s_id}', -1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-minus"></i></button><span class="qty-text">${currentQty}</span><button onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-plus"></i></button></div>`;
-                } else {
-                    actionBtnHtml = `<button class="btn-add-cart" onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')">ADD +</button>`;
-                }
+                let actionBtnHtml = inCart
+                    ? `<div class="qty-control"><button onclick="updateHomeQty('${s_id}', -1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-minus"></i></button><span class="qty-text">${currentQty}</span><button onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-plus"></i></button></div>`
+                    : `<button class="btn-add-cart" onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')">ADD +</button>`;
 
-                // Fasting (Column L) aur Reporting Time (Column N)
                 let fastingVal = String(pkg.fasting || '').trim();
                 let reportVal = String(pkg.reporting_time || '').trim();
                 let fastingLabel = fastingVal
@@ -1109,18 +1256,15 @@
                 const inCart = !!cartItem;
                 const currentQty = cartItem ? cartItem.qty : 0;
 
-                let actionBtnHtml = "";
-                if (inCart) {
-                    actionBtnHtml = `<div class="qty-control" style="border-width:1px;"><button style="padding:4px 8px;" onclick="updateHomeQty('${s_id}', -1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-minus"></i></button><span class="qty-text" style="width:20px;">${currentQty}</span><button style="padding:4px 8px;" onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-plus"></i></button></div>`;
-                } else {
-                    actionBtnHtml = `<button onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')" style="background:var(--primary-light); color:var(--primary); border:none; padding:8px 16px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer; transition:0.2s;">ADD +</button>`;
-                }
+                let actionBtnHtml = inCart
+                    ? `<div class="qty-control" style="border-width:1px;"><button style="padding:4px 8px;" onclick="updateHomeQty('${s_id}', -1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-minus"></i></button><span class="qty-text" style="width:20px;">${currentQty}</span><button style="padding:4px 8px;" onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')"><i class="fas fa-plus"></i></button></div>`
+                    : `<button onclick="updateHomeQty('${s_id}', 1, ${price}, '${cleanName.replace(/'/g, "\\'")}', '${cleanType}')" style="background:var(--primary-light); color:var(--primary); border:none; padding:8px 16px; border-radius:10px; font-weight:800; font-size:12px; cursor:pointer;">ADD +</button>`;
 
                 let pkgBadge = isPkg
                     ? `<span style="background:#e0f2fe; color:#0284c7; font-size:10px; font-weight:800; padding:2px 7px; border-radius:6px; margin-left:6px; vertical-align:middle;">PACKAGE${s.number_of_test ? ' • ' + s.number_of_test + ' Tests' : ''}</span> <i class="fas fa-info-circle" style="color:var(--primary); font-size:13px; cursor:pointer; margin-left:4px;" onclick="openHomeInfoModal('${s_id}')" title="View included tests"></i>`
                     : "";
 
-                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:13px 18px; border-bottom:1px solid #f1f5f9; transition:0.2s;"><div style="flex:1; padding-right:10px;"><div style="font-weight:800; font-size:14px; color:#0f172a; margin-bottom:4px;">${cleanName}${pkgBadge}</div><div style="font-size:13px; color:#10b981; font-weight:800;">₹${price} <del style="color:#94a3b8; font-size:11px; font-weight:600; margin-left:5px;">₹${totalMrp}</del></div></div>${actionBtnHtml}</div>`;
+                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:13px 16px; border-bottom:1px solid #f1f5f9;"><div style="flex:1; padding-right:10px;"><div style="font-weight:800; font-size:14px; color:#0f172a; margin-bottom:4px;">${cleanName}${pkgBadge}</div><div style="font-size:13px; color:#10b981; font-weight:800;">₹${price} <del style="color:#94a3b8; font-size:11px; font-weight:600; margin-left:5px;">₹${totalMrp}</del></div></div>${actionBtnHtml}</div>`;
             };
 
             let html = "";
@@ -1128,24 +1272,16 @@
             if (query.length === 0) {
                 const importantKeywords = ["cbc", "thyroid", "hba1c", "lipid", "lft", "kft", "vitamin d", "full body"];
                 let popular = [];
-
                 importantKeywords.forEach(k => {
-                    let match = homeAllServices.find(s =>
-                        s.service_id !== "VIP-FREE-001" &&
-                        !popular.includes(s) &&
-                        String(s.service_name).toLowerCase().includes(k)
-                    );
+                    let match = homeAllServices.find(s => s.service_id !== "VIP-FREE-001" && !popular.includes(s) && String(s.service_name).toLowerCase().includes(k));
                     if (match) popular.push(match);
                 });
                 popular = popular.slice(0, 6);
+                if (popular.length === 0) popular = homeAllServices.filter(s => s.service_id !== "VIP-FREE-001").slice(0, 6);
 
-                if (popular.length === 0) {
-                    popular = homeAllServices.filter(s => s.service_id !== "VIP-FREE-001").slice(0, 6);
-                }
-
-                html += `<div style="padding:10px 18px; background:#f8fafc; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; border-bottom:1px solid #e2e8f0; border-top-left-radius:16px; border-top-right-radius:16px;">🔥 Popular Tests</div>`;
+                html += `<div style="padding:10px 16px; background:#f8fafc; font-size:11.5px; font-weight:800; color:#64748b; text-transform:uppercase; border-bottom:1px solid #e2e8f0;">🔥 Popular Tests</div>`;
                 popular.forEach(s => { html += renderSearchRow(s, isPkgType(s)); });
-                html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="window.location.href='booking/booking.html'">View all tests &amp; packages <i class="fas fa-arrow-right"></i></div>`;
+                html += `<div style="padding:12px; text-align:center; background:#f8fafc; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="window.location.href='booking/booking.html'">View all tests &amp; packages <i class="fas fa-arrow-right"></i></div>`;
             } else {
                 const matchesQuery = (s) => {
                     const name = String(s.service_name || '').toLowerCase();
@@ -1155,35 +1291,26 @@
                     return name.includes(query) || secondName.includes(query) || cat.includes(query) || desc.includes(query);
                 };
 
-                let matchingTests = homeAllServices.filter(s =>
-                    s.service_id !== "VIP-FREE-001" &&
-                    !isPkgType(s) &&
-                    matchesQuery(s)
-                ).slice(0, 5);
-
-                let matchingPackages = homeAllServices.filter(s =>
-                    s.service_id !== "VIP-FREE-001" &&
-                    isPkgType(s) &&
-                    matchesQuery(s)
-                ).slice(0, 5);
+                let matchingTests = homeAllServices.filter(s => s.service_id !== "VIP-FREE-001" && !isPkgType(s) && matchesQuery(s)).slice(0, 5);
+                let matchingPackages = homeAllServices.filter(s => s.service_id !== "VIP-FREE-001" && isPkgType(s) && matchesQuery(s)).slice(0, 5);
 
                 if (matchingTests.length === 0 && matchingPackages.length === 0) {
-                    resultsDiv.innerHTML = "<div style='padding:15px; text-align:center; color:#64748b; font-weight:600;'><i class='fas fa-search' style='font-size:24px; color:#cbd5e1; margin-bottom:10px;'></i><br>No tests or packages found</div>";
+                    resultsDiv.innerHTML = "<div style='padding:16px; text-align:center; color:#64748b; font-weight:600;'><i class='fas fa-search' style='font-size:22px; color:#cbd5e1; margin-bottom:8px;'></i><br>No tests or packages found</div>";
                     resultsDiv.style.display = "block";
                     return;
                 }
 
                 if (matchingTests.length > 0) {
-                    html += `<div style="padding:9px 18px; background:#f8fafc; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; border-bottom:1px solid #e2e8f0;">🧪 Tests</div>`;
+                    html += `<div style="padding:9px 16px; background:#f8fafc; font-size:11px; font-weight:800; color:#64748b; text-transform:uppercase; border-bottom:1px solid #e2e8f0;">🧪 Tests</div>`;
                     matchingTests.forEach(s => { html += renderSearchRow(s, false); });
                 }
 
                 if (matchingPackages.length > 0) {
-                    html += `<div style="padding:9px 18px; background:#eff6ff; font-size:11px; font-weight:800; color:#2563eb; text-transform:uppercase; border-bottom:1px solid #bfdbfe;">📦 Packages (Test Included)</div>`;
+                    html += `<div style="padding:9px 16px; background:#eff6ff; font-size:11px; font-weight:800; color:#2563eb; text-transform:uppercase; border-bottom:1px solid #bfdbfe;">📦 Packages (Test Included)</div>`;
                     matchingPackages.forEach(s => { html += renderSearchRow(s, true); });
                 }
 
-                html += `<div style="padding:12px; text-align:center; background:#f8fafc; border-bottom-left-radius:16px; border-bottom-right-radius:16px; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="executeHomeSearch()">View all results <i class="fas fa-arrow-right"></i></div>`;
+                html += `<div style="padding:12px; text-align:center; background:#f8fafc; cursor:pointer; color:var(--primary); font-size:13px; font-weight:800;" onclick="executeHomeSearch()">View all results <i class="fas fa-arrow-right"></i></div>`;
             }
 
             resultsDiv.innerHTML = html;
@@ -1196,7 +1323,7 @@
             if (index > -1) {
                 homePageCart[index].qty += change;
                 if (homePageCart[index].qty <= 0) { homePageCart.splice(index, 1); showHomeToast("Item removed from Cart.", "info"); }
-            } else if (change > 0) { 
+            } else if (change > 0) {
                 const svcObj = homeAllServices.find(s => String(s.service_id) === id);
                 homePageCart.push({
                     service_id: id,
@@ -1206,20 +1333,21 @@
                     service_type: type,
                     labs: svcObj ? (svcObj.labs || "") : "",
                     lab_cost: svcObj ? (Number(svcObj.lab_cost) || 0) : 0
-                }); 
+                });
                 showHomeToast("Item Added to Cart! 🛒", "success");
             }
             localStorage.setItem('bhavyaCart', JSON.stringify(homePageCart));
-            updateHomeCartBadge(); renderHomePackages(homeCurrentSubCat); 
+            updateHomeCartBadge();
+            renderHomePackages(homeCurrentSubCat);
             let resultsDiv = document.getElementById("homeSearchResults");
-            if (resultsDiv && resultsDiv.style.display === "block") { liveHomeSearch(); }
+            if (resultsDiv && resultsDiv.style.display === "block") liveHomeSearch();
         }
 
         function updateHomeCartBadge() {
             let totalItems = homePageCart.reduce((sum, item) => sum + (Number(item.qty) || 1), 0);
             let floatingBtn = document.getElementById("homeFloatingCart");
             let badge = document.getElementById("homeCartBadge");
-            if (totalItems > 0) { floatingBtn.style.display = "flex"; badge.innerText = totalItems; } 
+            if (totalItems > 0) { floatingBtn.style.display = "flex"; badge.innerText = totalItems; }
             else { floatingBtn.style.display = "none"; }
         }
 
@@ -1227,9 +1355,10 @@
             let container = document.getElementById('homeToastContainer');
             let toast = document.createElement('div');
             let bg = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#f59e0b');
-            toast.style.cssText = `background:${bg}; color:white; padding:12px 20px; border-radius:10px; font-weight:bold; font-size:13px; box-shadow:0 5px 15px rgba(0,0,0,0.2); animation:slideUpToast 0.4s ease forwards; display:flex; align-items:center; justify-content:space-between;`;
-            toast.innerHTML = `<span>${message}</span> <button onclick="window.location.href='booking/booking.html?view=cart'" style="background:white; color:${bg}; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">View Cart</button>`;
-            container.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000);
+            toast.style.cssText = `background:${bg}; color:white; padding:12px 18px; border-radius:10px; font-weight:bold; font-size:13px; box-shadow:0 5px 15px rgba(0,0,0,0.2); animation:slideUpToast 0.35s ease forwards; display:flex; align-items:center; justify-content:space-between; pointer-events:auto;`;
+            toast.innerHTML = `<span>${message}</span> <button onclick="window.location.href='booking/booking.html?view=cart'" style="background:white; color:${bg}; border:none; padding:5px 10px; border-radius:6px; font-size:11px; font-weight:800; cursor:pointer;">View Cart</button>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
         }
 
         document.addEventListener('click', function(event) {
